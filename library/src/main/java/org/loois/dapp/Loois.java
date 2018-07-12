@@ -2,6 +2,8 @@ package org.loois.dapp;
 
 import android.text.TextUtils;
 
+import org.web3j.tx.ChainId;
+
 /**
  * <pre>
  * Create by  :    L
@@ -12,6 +14,8 @@ import android.text.TextUtils;
 public class Loois {
 
     private static String tag = "Loois";
+
+    public static byte chainId = ChainId.MAINNET;
 
     private static ILogger mLogger = (tag, msg) -> {
         // do nothing by default
@@ -28,6 +32,11 @@ public class Loois {
         public Builder initLogger(ILogger logger,String tag){
             mLogger = logger;
             Loois.tag = TextUtils.isEmpty(tag)?Loois.tag:tag;
+            return this;
+        }
+
+        public Builder chainId(byte chainId){
+            Loois.chainId = chainId;
             return this;
         }
 
