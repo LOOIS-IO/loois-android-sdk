@@ -29,6 +29,8 @@ public class Loois {
 
     public static final String WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
+    public static final String BIND_CONTRACT_ADDRESS = "0xbf78B6E180ba2d1404c92Fc546cbc9233f616C42";
+
     private static ILogger mLogger = (tag, msg) -> {
         // do nothing by default
     };

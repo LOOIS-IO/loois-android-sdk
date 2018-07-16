@@ -15,7 +15,9 @@ import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.Uint;
+import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Uint256;
+import org.web3j.abi.datatypes.generated.Uint8;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.ECKeyPair;
@@ -366,6 +368,23 @@ public class SignManager {
                                       BigInteger amount) throws Exception {
         String data = Params.Abi.withdraw + Numeric.toHexStringNoPrefixZeroPadded(amount, 64);
         RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Loois.WETH_ADDRESS, data);
+        return signData(rawTransaction, wallet, password);
+    }
+
+
+    public String signBindData(BigInteger gasPrice,
+                               BigInteger gasLimit,
+                               BigInteger nonce,
+                               HDWallet wallet,
+                               String password,
+                               boolean isNeo,
+                               String address) throws Exception {
+        Function function = new Function("bind",
+                Arrays.asList(new Uint8(isNeo ? 1 : 2), new Utf8String(address)),
+                Collections.emptyList());
+        String data = FunctionEncoder.encode(function);
+
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Loois.BIND_CONTRACT_ADDRESS, data);
         return signData(rawTransaction, wallet, password);
     }
 
