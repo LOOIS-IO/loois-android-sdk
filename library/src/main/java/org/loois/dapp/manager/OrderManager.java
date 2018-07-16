@@ -23,23 +23,42 @@ public class OrderManager {
         return sOrderManager;
     }
 
-    public void order(OrderInfo orderInfo) {
+
+    /**
+     * Submit an order.
+     * @param orderInfo User order information
+     */
+    public void submitOrder(OrderInfo orderInfo) {
+
+    }
+
+
+    /**
+     * Cancel an order
+     * @param orderInfo User order information
+     */
+    public void cancelOrder(OrderInfo orderInfo) {
 
     }
 
     /**
-     *
-     * @param orderInfo Order details
-     * @return True if order token amount is higher than 1 dollar.
+     * Check if token is authenticated.
      */
-    private boolean checkOrderAmount(OrderInfo orderInfo) {
-        return true;
+    public void  authenticate() {
+
     }
 
 
-    public interface OrderStatusChangeListener {
 
-        void onOrderAmountLow();
+    public void ethExchangeWeth() {
+
+    }
+
+    public void wethExchangeEth() {
+
+    }
+
+    public interface OrderStatusChangeListener {
 
         void onInsufficientLrcFee(String lrcAmount, String lastFee);
 

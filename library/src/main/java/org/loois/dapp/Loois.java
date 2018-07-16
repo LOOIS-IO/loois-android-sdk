@@ -17,6 +17,8 @@ public class Loois {
 
     public static byte chainId = ChainId.MAINNET;
 
+    public static final String DELEGATE_ADDRESS = "0x17233e07c67d086464fD408148c3ABB56245FA64";
+
     private static ILogger mLogger = (tag, msg) -> {
         // do nothing by default
     };
