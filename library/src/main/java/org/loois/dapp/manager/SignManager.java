@@ -10,7 +10,6 @@ import org.loois.dapp.model.OriginalOrder;
 import org.loois.dapp.model.SubmitOrderParams;
 import org.loois.dapp.utils.IBan;
 import org.loois.dapp.utils.StringUtils;
-import org.spongycastle.crypto.io.CipherIOException;
 import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.Function;
@@ -389,6 +388,62 @@ public class SignManager {
     }
 
 
+    public String signedEthTransactionData(String to,
+                                              BigInteger nonce,
+                                              BigInteger gasPrice,
+                                              BigInteger gasLimit,
+                                              BigDecimal amount,
+                                              HDWallet wallet,
+                                              String password) throws Exception {
+
+
+        BigDecimal realValue = Convert.toWei(amount.toString(), Convert.Unit.ETHER);
+        RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, gasPrice, gasLimit, to, realValue.toBigInteger());
+        return signData(rawTransaction, wallet, password);
+    }
+
+    public String signedEthTransactionData(byte chainId,
+                                           String to,
+                                           BigInteger nonce,
+                                           BigInteger gasPrice,
+                                           BigInteger gasLimit,
+                                           BigDecimal amount,
+                                           HDWallet wallet,
+                                           String password) throws Exception {
+
+
+        // 把十进制的转换成ETH的Wei, 1ETH = 10^18 Wei
+        BigDecimal realValue = Convert.toWei(amount.toString(), Convert.Unit.ETHER);
+        RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, gasPrice, gasLimit, to, realValue.toBigInteger());
+        return signData(chainId, rawTransaction, wallet,password);
+    }
+
+    public String signedContractTransactionData(String contractAddress,
+                                                   String to,
+                                                   BigInteger nonce,
+                                                   BigInteger gasPrice,
+                                                   BigInteger gasLimit,
+                                                   BigDecimal amount,
+                                                   BigDecimal decimal,
+                                                   HDWallet wallet,
+                                                   String password) throws Exception {
+        //因为每个代币可以规定自己的小数位, 所以实际的转账值=数值 * 10^小数位
+        BigDecimal realValue = amount.multiply(decimal);
+        //0xa9059cbb代表某个代币的转账方法hex(transfer) + 对方的转账地址hex + 转账的值的hex
+        String data = Params.Abi.transfer +
+                Numeric.toHexStringNoPrefixZeroPadded(Numeric.toBigInt(to), 64) +
+                Numeric.toHexStringNoPrefixZeroPadded(realValue.toBigInteger(), 64);
+
+        RawTransaction rawTransaction = RawTransaction.createTransaction(
+                nonce,
+                gasPrice,
+                gasLimit,
+                contractAddress,
+                data);
+        return signData(rawTransaction, wallet, password);
+    }
+
+
 
     private String signData(RawTransaction rawTransaction,
                             HDWallet wallet,
@@ -398,6 +453,18 @@ public class SignManager {
         byte[] signMessage = TransactionEncoder.signMessage(rawTransaction, Loois.chainId, credentials);
         return Numeric.toHexString(signMessage);
     }
+
+
+    private String signData(byte chainId,
+                            RawTransaction rawTransaction,
+                            HDWallet wallet,
+                            String password) throws Exception {
+            Credentials credentials;
+            credentials = Credentials.create(Wallet.decrypt(password, wallet.getWalletFile()));
+            byte[] signMessage = TransactionEncoder.signMessage(rawTransaction, chainId, credentials);
+            return Numeric.toHexString(signMessage);
+    }
+
 
     // ---------------- singleton stuff --------------------------
     public static SignManager shared() {
