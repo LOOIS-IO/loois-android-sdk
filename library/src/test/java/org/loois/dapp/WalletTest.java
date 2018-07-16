@@ -4,9 +4,12 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.loois.dapp.manager.InitWalletManager;
-import org.loois.dapp.validation.MnemonicValidation;
 import org.loois.dapp.utils.HDValidUtils;
+import org.loois.dapp.validation.MnemonicValidation;
 import org.web3j.utils.Numeric;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import io.github.novacrypto.bip39.SeedCalculator;
 import io.github.novacrypto.bip39.Words;
@@ -37,7 +40,23 @@ public class WalletTest {
         Assert.assertEquals(actual,expect);
     }
 
+    @Test
+    public void testHmacSha512() throws Exception{
+        String mnemonic = "traffic buddy void three pink bronze radar rule science grab orbit surge";
 
+        final String HMAC_SHA512 = "HmacSHA512";
+        byte[] byteKey = "Bitcoin seed".getBytes();
+        byte[] seed = new SeedCalculator().calculateSeed(mnemonic,"");
+        Mac hmacSha512 = Mac.getInstance(HMAC_SHA512);
+        final SecretKeySpec keySpec = new SecretKeySpec(byteKey, HMAC_SHA512);
+        hmacSha512.init(keySpec);
+        byte[] result = hmacSha512.doFinal(seed);
+        for (byte b : result) {
+            System.out.print((b&0xff)+",");
+        }
+        String hex = Numeric.toHexString(result);
+        System.out.println("\n"+hex+"\nlength:"+hex.length());
+    }
 
 
 }

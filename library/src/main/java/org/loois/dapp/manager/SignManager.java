@@ -1,5 +1,6 @@
 package org.loois.dapp.manager;
 
+import org.loois.dapp.LWallet;
 import org.loois.dapp.Loois;
 import org.loois.dapp.model.HDWallet;
 import org.web3j.abi.FunctionEncoder;
@@ -10,7 +11,6 @@ import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.RawTransaction;
 import org.web3j.crypto.TransactionEncoder;
-import org.web3j.crypto.Wallet;
 import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
 
@@ -70,7 +70,7 @@ public class SignManager {
                             HDWallet wallet,
                             String password) throws IOException, CipherException {
 
-        Credentials credentials = Credentials.create(Wallet.decrypt(password, wallet.getWalletFile()));
+        Credentials credentials = Credentials.create(LWallet.decrypt(password, wallet.getWalletFile()));
         byte[] signMessage = TransactionEncoder.signMessage(rawTransaction, Loois.chainId, credentials);
         return Numeric.toHexString(signMessage);
     }
