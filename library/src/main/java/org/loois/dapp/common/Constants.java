@@ -2,6 +2,8 @@ package org.loois.dapp.common;
 
 public class Constants {
 
+    public static String PREFIX_16 = "0x";
+
     interface Token {
         String ETH = "ETH";
         String LRC = "LRC";

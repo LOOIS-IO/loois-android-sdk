@@ -1,7 +1,11 @@
 package org.loois.dapp.manager;
 
 import org.loois.dapp.Loois;
+import org.loois.dapp.common.Constants;
 import org.loois.dapp.model.HDWallet;
+import org.loois.dapp.model.SubmitOrderParams;
+import org.loois.dapp.utils.IBan;
+import org.loois.dapp.utils.StringUtils;
 import org.spongycastle.crypto.io.CipherIOException;
 import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.datatypes.Address;
@@ -10,9 +14,14 @@ import org.web3j.abi.datatypes.Uint;
 import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
+import org.web3j.crypto.ECKeyPair;
+import org.web3j.crypto.Hash;
+import org.web3j.crypto.Keys;
 import org.web3j.crypto.RawTransaction;
+import org.web3j.crypto.Sign;
 import org.web3j.crypto.TransactionEncoder;
 import org.web3j.crypto.Wallet;
+import org.web3j.crypto.WalletFile;
 import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
 
@@ -21,6 +30,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.UUID;
 
 /**
  * <pre>
@@ -108,6 +118,100 @@ public class SignManager {
                                    BigInteger gasLimit, String password) throws IOException, CipherException {
         BigInteger value = new BigInteger("0");
         return signApproveData(tokenProtocol, wallet, nonce, gasPrice, gasLimit, value, password);
+    }
+
+    /**
+     * Create submit order params.
+     *  https://github.com/Loopring/relay/blob/wallet_v2/LOOPRING_RELAY_API_SPEC_V2.md#loopring_submitorder
+     *
+     * @param privateKey
+     * @param owner
+     * @param tokenS
+     * @param tokenB
+     * @param amountS
+     * @param amountB
+     * @param lrcFee
+     * @param validUntil
+     * @param buyNoMoreThanAmountB
+     * @param marginSplitPercentage
+     * @param orderWalletAddress
+     * @return
+     * @throws Exception
+     */
+    public SubmitOrderParams createSumitOrderParams(String privateKey,
+                                             String owner,
+                                             String tokenS,
+                                             String tokenB,
+                                             String amountS,
+                                             String amountB,
+                                             String lrcFee,
+                                             long validUntil,
+                                             boolean buyNoMoreThanAmountB,
+                                             int marginSplitPercentage,
+                                             String orderWalletAddress) throws Exception {
+        int powNonce = 100; // hard code for now . proof of work
+        long validSince = System.currentTimeMillis() / 1000;
+        ECKeyPair ecKeyPair = Keys.createEcKeyPair();
+        BigInteger privateKeyInDec = ecKeyPair.getPrivateKey();
+        WalletFile wallet = Wallet.createLight(UUID.randomUUID().toString(), ecKeyPair);
+        String authAddress = Constants.PREFIX_16 + wallet.getAddress();
+        String s1 = Numeric.toHexStringNoPrefix(privateKeyInDec);
+        String authPrivateKey = IBan.padLeft(s1, 64, '0');
+
+        ECKeyPair keyPair = Credentials.create(privateKey).getEcKeyPair();
+        byte[] message = Hash.sha3(
+                Numeric.hexStringToByteArray(
+                        getSubmitOrderMessage(
+                                authAddress, owner,
+                                tokenS, tokenB, amountS, amountB, lrcFee,
+                                validSince, validSince + validUntil,
+                                buyNoMoreThanAmountB, marginSplitPercentage,
+                                orderWalletAddress
+                        ).toLowerCase()
+                )
+        );
+        byte[] prefix = "\u0019Ethereum Signed Message:\n32".getBytes();
+        byte[] hash = StringUtils.unitByteArray(prefix, message);
+        Sign.SignatureData sign = Sign.signMessage(hash, keyPair);
+        int v = StringUtils.byteToInt(sign.getV());
+        String r = Numeric.toHexStringNoPrefix(sign.getR());
+        String s = Numeric.toHexStringNoPrefix(sign.getS());
+        String finalPrivate = Constants.PREFIX_16 + authPrivateKey;
+        return new SubmitOrderParams(
+                owner, tokenS, tokenB, amountS, amountB,
+                validSince, validUntil, orderWalletAddress
+                lrcFee, buyNoMoreThanAmountB, marginSplitPercentage, v, r, s, powNonce, authAddress, finalPrivate
+        );
+    }
+
+    private String getSubmitOrderMessage(
+            String authAddress,
+            String owner,
+            String tokenS,
+            String tokenB,
+            String amountS,
+            String amountB,
+            String lrcFee,
+            long validSince,
+            long validUntil,
+            boolean buyNoMoreThanAmountB,
+            int marginSplitPercentage,
+            String orderWalletAddress) {
+        int length = 64;
+        char zero = '0';
+        return Numeric.cleanHexPrefix(Loois.DELEGATE_ADDRESS) +
+                Numeric.cleanHexPrefix(owner) +
+                Numeric.cleanHexPrefix(tokenS) +
+                Numeric.cleanHexPrefix(tokenB) +
+                Numeric.cleanHexPrefix(orderWalletAddress) +
+                Numeric.cleanHexPrefix(authAddress) +
+                IBan.padLeft(Numeric.cleanHexPrefix(amountS), length, zero) +
+                IBan.padLeft(Numeric.cleanHexPrefix(amountB), length, zero) +
+                IBan.padLeft(Numeric.cleanHexPrefix(BigDecimal.valueOf(validSince).toBigInteger().toString(16)), length, zero) +
+                IBan.padLeft(Numeric.cleanHexPrefix(BigDecimal.valueOf(validUntil).toBigInteger().toString(16)), length, zero) +
+                IBan.padLeft(Numeric.cleanHexPrefix(lrcFee), length, zero) +
+                (buyNoMoreThanAmountB ? "01" : "00") +
+                Numeric.toHexStringNoPrefix(BigInteger.valueOf(marginSplitPercentage));
     }
 
 
