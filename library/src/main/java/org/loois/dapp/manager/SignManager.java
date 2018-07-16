@@ -1,8 +1,12 @@
 package org.loois.dapp.manager;
 
+import android.content.Context;
+
 import org.loois.dapp.Loois;
 import org.loois.dapp.common.Constants;
+import org.loois.dapp.common.Params;
 import org.loois.dapp.model.HDWallet;
+import org.loois.dapp.model.OriginalOrder;
 import org.loois.dapp.model.SubmitOrderParams;
 import org.loois.dapp.utils.IBan;
 import org.loois.dapp.utils.StringUtils;
@@ -82,11 +86,11 @@ public class SignManager {
      * If token's allowance is 0, it means token never authenticated before, we need to sign a big value.
      *
      * @param tokenProtocol Sell token's protocol address
-     * @param wallet User wallet
-     * @param nonce Transaction nonce
-     * @param gasPrice Gas price
-     * @param gasLimit Gas limit
-     * @param password Wallet password
+     * @param wallet        User wallet
+     * @param nonce         Transaction nonce
+     * @param gasPrice      Gas price
+     * @param gasLimit      Gas limit
+     * @param password      Wallet password
      * @return Signed data
      * @throws IOException
      * @throws CipherException
@@ -105,11 +109,11 @@ public class SignManager {
      * 2. Call signApproveOnce to sign a big value and send the signed data.
      *
      * @param tokenProtocol Sell token's protocol address
-     * @param wallet User wallet
-     * @param nonce Transaction nonce
-     * @param gasPrice Gas price
-     * @param gasLimit Gas limit
-     * @param password Wallet password
+     * @param wallet        User wallet
+     * @param nonce         Transaction nonce
+     * @param gasPrice      Gas price
+     * @param gasLimit      Gas limit
+     * @param password      Wallet password
      * @return Signed data
      * @throws IOException
      * @throws CipherException
@@ -122,7 +126,7 @@ public class SignManager {
 
     /**
      * Create submit order params.
-     *  https://github.com/Loopring/relay/blob/wallet_v2/LOOPRING_RELAY_API_SPEC_V2.md#loopring_submitorder
+     * https://github.com/Loopring/relay/blob/wallet_v2/LOOPRING_RELAY_API_SPEC_V2.md#loopring_submitorder
      *
      * @param privateKey
      * @param owner
@@ -139,16 +143,16 @@ public class SignManager {
      * @throws Exception
      */
     public SubmitOrderParams createSumitOrderParams(String privateKey,
-                                             String owner,
-                                             String tokenS,
-                                             String tokenB,
-                                             String amountS,
-                                             String amountB,
-                                             String lrcFee,
-                                             long validUntil,
-                                             boolean buyNoMoreThanAmountB,
-                                             int marginSplitPercentage,
-                                             String orderWalletAddress) throws Exception {
+                                                    String owner,
+                                                    String tokenS,
+                                                    String tokenB,
+                                                    String amountS,
+                                                    String amountB,
+                                                    String lrcFee,
+                                                    long validUntil,
+                                                    boolean buyNoMoreThanAmountB,
+                                                    int marginSplitPercentage,
+                                                    String orderWalletAddress) throws Exception {
         int powNonce = 100; // hard code for now . proof of work
         long validSince = System.currentTimeMillis() / 1000;
         ECKeyPair ecKeyPair = Keys.createEcKeyPair();
@@ -179,8 +183,8 @@ public class SignManager {
         String finalPrivate = Constants.PREFIX_16 + authPrivateKey;
         return new SubmitOrderParams(
                 owner, tokenS, tokenB, amountS, amountB,
-                validSince, validUntil, orderWalletAddress
-                lrcFee, buyNoMoreThanAmountB, marginSplitPercentage, v, r, s, powNonce, authAddress, finalPrivate
+                validSince, validUntil,
+                lrcFee, buyNoMoreThanAmountB, marginSplitPercentage,orderWalletAddress, v, r, s, powNonce, authAddress, finalPrivate
         );
     }
 
@@ -224,6 +228,100 @@ public class SignManager {
 
         RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, tokenProtocol, data);
         return signData(rawTransaction, wallet, password);
+    }
+
+
+    public String signedCancelOrderData(String sellTokenProtocol,
+                                        String buyTokenProtocol,
+                                        OriginalOrder order,
+                                        BigInteger nonce,
+                                        BigInteger gasPrice,
+                                        BigInteger gasLimit,
+                                        HDWallet wallet,
+                                        String password) throws Exception {
+        String data = getCancelOrderMessage(sellTokenProtocol, buyTokenProtocol, order);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Loois.PROTOCAL_ADDRESS, data);
+        return signData(rawTransaction, wallet, password);
+    }
+
+
+    public String signCancelTokenPairOrdersData(String tokenA,
+                                                   String tokenB,
+                                                   BigInteger gasPrice,
+                                                   BigInteger gasLimit,
+                                                   BigInteger nonce,
+                                                   HDWallet wallet,
+                                                   String password) throws Exception {
+        String data = abiCancelTokenPairOrder(tokenA, tokenB);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Loois.PROTOCAL_ADDRESS, data);
+        return signData(rawTransaction, wallet, password);
+    }
+
+
+    public String abiCancelTokenPairOrder(String tokenA,
+                                          String tokenB) {
+        int length = 64;
+        char zero = '0';
+        return Params.Abi.cancelAllOrdersByTradingPair +
+                IBan.padLeft(Numeric.cleanHexPrefix(tokenA), length, zero) +
+                IBan.padLeft(Numeric.cleanHexPrefix(tokenB), length, zero)
+                + Numeric.toHexStringNoPrefixZeroPadded(BigInteger.valueOf(System.currentTimeMillis() / 1000), 64);
+    }
+
+
+
+    public String abiCancelAllOrders(long timestamp) {
+        return Params.Abi.cancelAllOrders +
+                Numeric.toHexStringNoPrefixZeroPadded(BigInteger.valueOf(timestamp), 64);
+    }
+
+    public String signCancelAllOrdersData(long timestamp,
+                                             BigInteger gasPrice,
+                                             BigInteger gasLimit,
+                                             BigInteger nonce,
+                                             HDWallet wallet,
+                                             String password) throws Exception {
+        String data = abiCancelAllOrders(timestamp);
+
+        RawTransaction rawTransaction = RawTransaction.createTransaction(
+                nonce,
+                gasPrice,
+                gasLimit,
+                Loois.PROTOCAL_ADDRESS,
+                data);
+        return signData(rawTransaction, wallet, password);
+    }
+
+
+
+    private String getCancelOrderMessage(
+
+            String sellTokenProtocol,
+            String buyTokenProtocol,
+            OriginalOrder order) {
+        StringBuilder builder = new StringBuilder();
+
+        char zero = '0';
+        int length = 64;
+        builder.append(IBan.padLeft(Numeric.cleanHexPrefix(order.address), length, zero))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(sellTokenProtocol), length, zero))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(buyTokenProtocol), length, zero))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(order.walletAddress), length, zero))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(order.authAddr), length, zero))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(order.amountS), length, zero))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(order.amountB), length, zero))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(order.validSince), length, zero))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(order.validUntil), length, zero))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(order.lrcFee), length, zero))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(order.buyNoMoreThanAmountB ? order.amountB : order.amountS), length, zero))
+                .append(Numeric.toHexStringNoPrefixZeroPadded(BigInteger.valueOf((order.buyNoMoreThanAmountB ? 1 : 0)), length))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(order.marginSplitPercentage), length, zero))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(order.v), length, zero))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(order.r), length, zero))
+                .append(IBan.padLeft(Numeric.cleanHexPrefix(order.s), length, zero))
+        ;
+
+        return Params.Abi.cancelOrder + builder.toString();
     }
 
 
