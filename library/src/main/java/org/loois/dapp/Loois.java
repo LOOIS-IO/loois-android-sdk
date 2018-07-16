@@ -27,6 +27,8 @@ public class Loois {
      */
     public static final String PROTOCAL_ADDRESS = "0x8d8812b72d1e4ffCeC158D25f56748b7d67c1e78";
 
+    public static final String WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+
     private static ILogger mLogger = (tag, msg) -> {
         // do nothing by default
     };

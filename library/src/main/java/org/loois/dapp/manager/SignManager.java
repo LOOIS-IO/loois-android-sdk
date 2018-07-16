@@ -325,6 +325,52 @@ public class SignManager {
     }
 
 
+    /**
+     * Used for exchange ETH to WETH
+     * @param gasPrice
+     * @param gasLimit
+     * @param nonce
+     * @param wallet
+     * @param password
+     * @param amount
+     * @return
+     * @throws Exception
+     */
+    public String signDepositData(BigInteger gasPrice,
+                                     BigInteger gasLimit,
+                                     BigInteger nonce,
+                                     HDWallet wallet,
+                                     String password,
+                                     BigInteger amount) throws Exception {
+        String data = Params.Abi.deposit;
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Loois.WETH_ADDRESS, amount, data);
+        return signData(rawTransaction, wallet, password);
+    }
+
+    /**
+     * Used for exchange WETH to ETH
+     * @param gasPrice
+     * @param gasLimit
+     * @param nonce
+     * @param wallet
+     * @param password
+     * @param amount
+     * @return
+     * @throws Exception
+     */
+    public String signWithdrawData(BigInteger gasPrice,
+                                      BigInteger gasLimit,
+                                      BigInteger nonce,
+                                      HDWallet wallet,
+                                      String password,
+                                      BigInteger amount) throws Exception {
+        String data = Params.Abi.withdraw + Numeric.toHexStringNoPrefixZeroPadded(amount, 64);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Loois.WETH_ADDRESS, data);
+        return signData(rawTransaction, wallet, password);
+    }
+
+
+
     private String signData(RawTransaction rawTransaction,
                             HDWallet wallet,
                             String password) throws IOException, CipherException {
