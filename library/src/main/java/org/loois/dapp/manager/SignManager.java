@@ -231,7 +231,7 @@ public class SignManager {
     }
 
 
-    public String signedCancelOrderData(String sellTokenProtocol,
+    public String signedCancelOrder(String sellTokenProtocol,
                                         String buyTokenProtocol,
                                         OriginalOrder order,
                                         BigInteger nonce,
@@ -245,7 +245,7 @@ public class SignManager {
     }
 
 
-    public String signCancelTokenPairOrdersData(String tokenA,
+    public String signCancelTokenPairOrders(String tokenA,
                                                    String tokenB,
                                                    BigInteger gasPrice,
                                                    BigInteger gasLimit,
@@ -275,7 +275,7 @@ public class SignManager {
                 Numeric.toHexStringNoPrefixZeroPadded(BigInteger.valueOf(timestamp), 64);
     }
 
-    public String signCancelAllOrdersData(long timestamp,
+    public String signCancelAllOrders(long timestamp,
                                              BigInteger gasPrice,
                                              BigInteger gasLimit,
                                              BigInteger nonce,
@@ -336,7 +336,7 @@ public class SignManager {
      * @return
      * @throws Exception
      */
-    public String signDepositData(BigInteger gasPrice,
+    public String signDeposit(BigInteger gasPrice,
                                      BigInteger gasLimit,
                                      BigInteger nonce,
                                      HDWallet wallet,
@@ -358,7 +358,7 @@ public class SignManager {
      * @return
      * @throws Exception
      */
-    public String signWithdrawData(BigInteger gasPrice,
+    public String signWithdraw(BigInteger gasPrice,
                                       BigInteger gasLimit,
                                       BigInteger nonce,
                                       HDWallet wallet,
@@ -370,7 +370,7 @@ public class SignManager {
     }
 
 
-    public String signBindData(BigInteger gasPrice,
+    public String signBind(BigInteger gasPrice,
                                BigInteger gasLimit,
                                BigInteger nonce,
                                HDWallet wallet,
@@ -386,64 +386,6 @@ public class SignManager {
         return signData(rawTransaction, wallet, password);
     }
 
-
-    public String signedEthTransactionData(String to,
-                                              BigInteger nonce,
-                                              BigInteger gasPrice,
-                                              BigInteger gasLimit,
-                                              BigDecimal amount,
-                                              HDWallet wallet,
-                                              String password) throws Exception {
-
-
-        BigDecimal realValue = Convert.toWei(amount.toString(), Convert.Unit.ETHER);
-        RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, gasPrice, gasLimit, to, realValue.toBigInteger());
-        return signData(rawTransaction, wallet, password);
-    }
-
-    public String signedEthTransactionData(byte chainId,
-                                           String to,
-                                           BigInteger nonce,
-                                           BigInteger gasPrice,
-                                           BigInteger gasLimit,
-                                           BigDecimal amount,
-                                           HDWallet wallet,
-                                           String password) throws Exception {
-
-
-        // 把十进制的转换成ETH的Wei, 1ETH = 10^18 Wei
-        BigDecimal realValue = Convert.toWei(amount.toString(), Convert.Unit.ETHER);
-        RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, gasPrice, gasLimit, to, realValue.toBigInteger());
-        return signData(rawTransaction,wallet,password);
-    }
-
-    public String signedContractTransactionData(String contractAddress,
-                                                   String to,
-                                                   BigInteger nonce,
-                                                   BigInteger gasPrice,
-                                                   BigInteger gasLimit,
-                                                   BigDecimal amount,
-                                                   BigDecimal decimal,
-                                                   HDWallet wallet,
-                                                   String password) throws Exception {
-        //因为每个代币可以规定自己的小数位, 所以实际的转账值=数值 * 10^小数位
-        BigDecimal realValue = amount.multiply(decimal);
-        //0xa9059cbb代表某个代币的转账方法hex(transfer) + 对方的转账地址hex + 转账的值的hex
-        String data = Params.Abi.transfer +
-                Numeric.toHexStringNoPrefixZeroPadded(Numeric.toBigInt(to), 64) +
-                Numeric.toHexStringNoPrefixZeroPadded(realValue.toBigInteger(), 64);
-
-        RawTransaction rawTransaction = RawTransaction.createTransaction(
-                nonce,
-                gasPrice,
-                gasLimit,
-                contractAddress,
-                data);
-        return signData(rawTransaction, wallet, password);
-    }
-
-
-
     private String signData(RawTransaction rawTransaction,
                             HDWallet wallet,
                             String password) throws IOException, CipherException {
@@ -451,6 +393,17 @@ public class SignManager {
         Credentials credentials = Credentials.create(LWallet.decrypt(password, wallet.getWalletFile()));
         byte[] signMessage = TransactionEncoder.signMessage(rawTransaction, Loois.chainId, credentials);
         return Numeric.toHexString(signMessage);
+    }
+
+
+    private String signData(byte chainId,
+                            RawTransaction rawTransaction,
+                            HDWallet wallet,
+                            String password) throws Exception {
+            Credentials credentials;
+            credentials = Credentials.create(Wallet.decrypt(password, wallet.getWalletFile()));
+            byte[] signMessage = TransactionEncoder.signMessage(rawTransaction, chainId, credentials);
+            return Numeric.toHexString(signMessage);
     }
 
 
