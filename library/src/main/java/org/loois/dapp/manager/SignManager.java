@@ -7,6 +7,7 @@ import org.loois.dapp.common.Params;
 import org.loois.dapp.model.HDWallet;
 import org.loois.dapp.model.OriginalOrder;
 import org.loois.dapp.model.SubmitOrderParams;
+import org.loois.dapp.protocol.Config;
 import org.loois.dapp.utils.IBan;
 import org.loois.dapp.utils.StringUtils;
 import org.web3j.abi.FunctionEncoder;
@@ -203,7 +204,7 @@ public class SignManager {
             String orderWalletAddress) {
         int length = 64;
         char zero = '0';
-        return Numeric.cleanHexPrefix(Loois.DELEGATE_ADDRESS) +
+        return Numeric.cleanHexPrefix(Config.DELEGATE_ADDRESS) +
                 Numeric.cleanHexPrefix(owner) +
                 Numeric.cleanHexPrefix(tokenS) +
                 Numeric.cleanHexPrefix(tokenB) +
@@ -222,7 +223,7 @@ public class SignManager {
     public String signApproveData(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPrice,
                                   BigInteger gasLimit, BigInteger value, String password) throws IOException, CipherException {
         Function function = new Function("approve",
-                Arrays.asList(new Address(Loois.DELEGATE_ADDRESS), new Uint(value)),
+                Arrays.asList(new Address(Config.DELEGATE_ADDRESS), new Uint(value)),
                 Collections.emptyList());
         String data = FunctionEncoder.encode(function);
 
@@ -240,7 +241,7 @@ public class SignManager {
                                         HDWallet wallet,
                                         String password) throws Exception {
         String data = getCancelOrderMessage(sellTokenProtocol, buyTokenProtocol, order);
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Loois.PROTOCAL_ADDRESS, data);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.PROTOCAL_ADDRESS, data);
         return signData(rawTransaction, wallet, password);
     }
 
@@ -253,7 +254,7 @@ public class SignManager {
                                                    HDWallet wallet,
                                                    String password) throws Exception {
         String data = abiCancelTokenPairOrder(tokenA, tokenB);
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Loois.PROTOCAL_ADDRESS, data);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.PROTOCAL_ADDRESS, data);
         return signData(rawTransaction, wallet, password);
     }
 
@@ -287,7 +288,7 @@ public class SignManager {
                 nonce,
                 gasPrice,
                 gasLimit,
-                Loois.PROTOCAL_ADDRESS,
+                Config.PROTOCAL_ADDRESS,
                 data);
         return signData(rawTransaction, wallet, password);
     }
@@ -343,7 +344,7 @@ public class SignManager {
                                      String password,
                                      BigInteger amount) throws Exception {
         String data = Params.Abi.deposit;
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Loois.WETH_ADDRESS, amount, data);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.WETH_ADDRESS, amount, data);
         return signData(rawTransaction, wallet, password);
     }
 
@@ -365,7 +366,7 @@ public class SignManager {
                                       String password,
                                       BigInteger amount) throws Exception {
         String data = Params.Abi.withdraw + Numeric.toHexStringNoPrefixZeroPadded(amount, 64);
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Loois.WETH_ADDRESS, data);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.WETH_ADDRESS, data);
         return signData(rawTransaction, wallet, password);
     }
 
@@ -382,7 +383,7 @@ public class SignManager {
                 Collections.emptyList());
         String data = FunctionEncoder.encode(function);
 
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Loois.BIND_CONTRACT_ADDRESS, data);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.BIND_CONTRACT_ADDRESS, data);
         return signData(rawTransaction, wallet, password);
     }
 

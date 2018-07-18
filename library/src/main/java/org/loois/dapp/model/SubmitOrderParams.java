@@ -1,7 +1,7 @@
 package org.loois.dapp.model;
 
-import org.loois.dapp.Loois;
 import org.loois.dapp.common.Constants;
+import org.loois.dapp.protocol.Config;
 
 import java.math.BigDecimal;
 
@@ -10,11 +10,11 @@ public  class SubmitOrderParams {
     /**
      * Loopring contract address
      */
-    public String protocol = Loois.PROTOCAL_ADDRESS;
+    public String protocol = Config.PROTOCAL_ADDRESS;
     /**
      * The loopring TokenTransferDelegate Protocol.
      */
-    public String delegateAddress = Loois.DELEGATE_ADDRESS;
+    public String delegateAddress = Config.DELEGATE_ADDRESS;
     /**
      * user's wallet address
      */
