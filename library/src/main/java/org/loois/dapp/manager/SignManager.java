@@ -6,7 +6,7 @@ import org.loois.dapp.common.Constants;
 import org.loois.dapp.common.Params;
 import org.loois.dapp.model.HDWallet;
 import org.loois.dapp.model.OriginalOrder;
-import org.loois.dapp.model.SubmitOrderParams;
+import org.loois.dapp.protocol.core.params.SubmitOrderParams;
 import org.loois.dapp.protocol.Config;
 import org.loois.dapp.utils.IBan;
 import org.loois.dapp.utils.StringUtils;

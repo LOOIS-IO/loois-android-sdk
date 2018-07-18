@@ -1,13 +1,20 @@
 package org.loois.dapp.protocol.core;
 
+import org.loois.dapp.protocol.Loopring;
+import org.loois.dapp.protocol.core.params.DepthParams;
+import org.loois.dapp.protocol.core.params.OrderParams;
+import org.loois.dapp.protocol.core.params.SubmitOrderParams;
 import org.loois.dapp.protocol.Loois;
 import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.response.LoopringBalance;
+import org.loois.dapp.protocol.core.response.LoopringDepth;
+import org.loois.dapp.protocol.core.response.LoopringOrders;
+import org.loois.dapp.protocol.core.response.LoopringSubmitOrder;
 import org.web3j.protocol.Web3jService;
 import org.web3j.protocol.core.Request;
 import org.web3j.utils.Async;
 
-import java.util.Arrays;
+ import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class JsonRpc2_0Loois implements Loois {
@@ -37,6 +44,36 @@ public class JsonRpc2_0Loois implements Loois {
                 Arrays.asList(params),
                 web3jService,
                 LoopringBalance.class
+        );
+    }
+
+    @Override
+    public Request<?, LoopringSubmitOrder> loopringSubmitOrder(SubmitOrderParams... params) {
+        return new Request<>(
+                Method.submitOrder,
+                Arrays.asList(params),
+                web3jService,
+                LoopringSubmitOrder.class
+        );
+    }
+
+    @Override
+    public Request<?, LoopringOrders> loopringOrders(OrderParams... params) {
+        return new Request<>(
+                Method.getOrders,
+                Arrays.asList(params),
+                web3jService,
+                LoopringOrders.class
+        );
+    }
+
+    @Override
+    public Request<?, LoopringDepth> loopringDepth(DepthParams... params) {
+        return new Request<>(
+                Method.getDepth,
+                Arrays.asList(params),
+                web3jService,
+                LoopringDepth.class
         );
     }
 }

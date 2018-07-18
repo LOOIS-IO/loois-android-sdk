@@ -1,4 +1,4 @@
-package org.loois.dapp.model;
+package org.loois.dapp.protocol.core.params;
 
 import org.loois.dapp.common.Constants;
 import org.loois.dapp.protocol.Config;
@@ -10,11 +10,11 @@ public  class SubmitOrderParams {
     /**
      * Loopring contract address
      */
-    public String protocol = Config.PROTOCAL_ADDRESS;
+    public String protocol;
     /**
      * The loopring TokenTransferDelegate Protocol.
      */
-    public String delegateAddress = Config.DELEGATE_ADDRESS;
+    public String delegateAddress;
     /**
      * user's wallet address
      */
