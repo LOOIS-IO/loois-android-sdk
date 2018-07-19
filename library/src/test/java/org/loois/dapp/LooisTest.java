@@ -6,10 +6,12 @@ import org.loois.dapp.protocol.LooisFactory;
 import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.params.CutoffParams;
 import org.loois.dapp.protocol.core.params.DepthParams;
+import org.loois.dapp.protocol.core.params.PriceQuoteParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.response.LooisCutoff;
+import org.loois.dapp.protocol.core.response.LooisPriceQuote;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.loois.dapp.protocol.core.response.Ring;
@@ -122,8 +124,16 @@ public class LooisTest {
         log("testCutoff", latest.getCutoffTimestamp());
     }
 
+    @Test
+    public void testPriceQuote() throws ExecutionException, InterruptedException {
+        Loois loois = LooisFactory.build(new HttpService(LOOIS_URL));
+        LooisPriceQuote cny = loois.looisPriceQuote(new PriceQuoteParams("CNY")).sendAsync().get();
+        log("testPriceQuote", cny.getCurrency());
+        log("testPriceQuote", cny.getPriceQuoteTokens().get(0).symbol);
+    }
+
 
     public static void log(String tag, String msg) {
-        System.out.println(tag + ":" + msg);
+        System.out.println(tag + " : " + msg);
     }
 }

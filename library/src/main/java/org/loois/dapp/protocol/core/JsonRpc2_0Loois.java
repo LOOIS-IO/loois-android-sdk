@@ -4,6 +4,7 @@ import org.loois.dapp.protocol.core.params.CutoffParams;
 import org.loois.dapp.protocol.core.params.DepthParams;
 import org.loois.dapp.protocol.core.params.FillsParams;
 import org.loois.dapp.protocol.core.params.OrderParams;
+import org.loois.dapp.protocol.core.params.PriceQuoteParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
 import org.loois.dapp.protocol.core.params.SubmitOrderParams;
 import org.loois.dapp.protocol.Loois;
@@ -15,6 +16,7 @@ import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisDepth;
 import org.loois.dapp.protocol.core.response.LooisFills;
 import org.loois.dapp.protocol.core.response.LooisOrders;
+import org.loois.dapp.protocol.core.response.LooisPriceQuote;
 import org.loois.dapp.protocol.core.response.LooisRingMined;
 import org.loois.dapp.protocol.core.response.LooisSubmitOrder;
 import org.loois.dapp.protocol.core.response.LooisTicker;
@@ -145,6 +147,16 @@ public class JsonRpc2_0Loois implements Loois {
                 Arrays.asList(params),
                 web3jService,
                 LooisCutoff.class
+        );
+    }
+
+    @Override
+    public Request<?, LooisPriceQuote> looisPriceQuote(PriceQuoteParams... params) {
+        return new Request<>(
+                Method.getPriceQuote,
+                Arrays.asList(params),
+                web3jService,
+                LooisPriceQuote.class
         );
     }
 }
