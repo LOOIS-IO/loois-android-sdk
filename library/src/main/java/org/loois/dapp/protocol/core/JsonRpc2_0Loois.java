@@ -5,13 +5,17 @@ import org.loois.dapp.protocol.core.params.DepthParams;
 import org.loois.dapp.protocol.core.params.EstimatedAllocatedAllowanceParams;
 import org.loois.dapp.protocol.core.params.FillsParams;
 import org.loois.dapp.protocol.core.params.FrozenLRCFeeParams;
+import org.loois.dapp.protocol.core.params.LRCSuggestChargeParams;
 import org.loois.dapp.protocol.core.params.NotifyTransactionSubmittedParams;
 import org.loois.dapp.protocol.core.params.OrderParams;
 import org.loois.dapp.protocol.core.params.PriceQuoteParams;
+import org.loois.dapp.protocol.core.params.RegisterERC20TokenParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
+import org.loois.dapp.protocol.core.params.SearchLocalERC20TokenParams;
 import org.loois.dapp.protocol.core.params.SubmitOrderParams;
 import org.loois.dapp.protocol.Loois;
 import org.loois.dapp.protocol.core.params.BalanceParams;
+import org.loois.dapp.protocol.core.params.SubmitRingForP2PParams;
 import org.loois.dapp.protocol.core.params.SupportedTokensParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
 import org.loois.dapp.protocol.core.params.TransactionParams;
@@ -24,11 +28,15 @@ import org.loois.dapp.protocol.core.response.LooisEstimateGasPrice;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFills;
 import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
+import org.loois.dapp.protocol.core.response.LooisLRCSuggestCharge;
 import org.loois.dapp.protocol.core.response.LooisNotifyTransactionSubmitted;
 import org.loois.dapp.protocol.core.response.LooisOrders;
 import org.loois.dapp.protocol.core.response.LooisPriceQuote;
+import org.loois.dapp.protocol.core.response.LooisRegisterERC20Token;
 import org.loois.dapp.protocol.core.response.LooisRingMined;
+import org.loois.dapp.protocol.core.response.LooisSearchLocalERC20Token;
 import org.loois.dapp.protocol.core.response.LooisSubmitOrder;
+import org.loois.dapp.protocol.core.response.LooisSubmitRingForP2P;
 import org.loois.dapp.protocol.core.response.LooisSupportedMarket;
 import org.loois.dapp.protocol.core.response.LooisSupportedTokens;
 import org.loois.dapp.protocol.core.response.LooisTicker;
@@ -256,6 +264,46 @@ public class JsonRpc2_0Loois implements Loois {
                 Collections.emptyList(),
                 web3jService,
                 LooisEstimateGasPrice.class
+        );
+    }
+
+    @Override
+    public Request<?, LooisSubmitRingForP2P> looisSubmitRingForP2P(SubmitRingForP2PParams... params) {
+        return new Request<>(
+                Method.loopring_submitRingForP2P,
+                Arrays.asList(params),
+                web3jService,
+                LooisSubmitRingForP2P.class
+        );
+    }
+
+    @Override
+    public Request<?, LooisRegisterERC20Token> looisRegisterERC20Token(RegisterERC20TokenParams... params) {
+        return new Request<>(
+                Method.registerERC20Token,
+                Arrays.asList(params),
+                web3jService,
+                LooisRegisterERC20Token.class
+        );
+    }
+
+    @Override
+    public Request<?, LooisLRCSuggestCharge> looisLRCSuggestCharge(LRCSuggestChargeParams... params) {
+        return new Request<>(
+                Method.getLRCSuggestCharge,
+                Arrays.asList(params),
+                web3jService,
+                LooisLRCSuggestCharge.class
+        );
+    }
+
+    @Override
+    public Request<?, LooisSearchLocalERC20Token> looisSearchLocalERC20Token(SearchLocalERC20TokenParams... params) {
+        return new Request<>(
+                Method.searchLocalERC20Token,
+                Arrays.asList(params),
+                web3jService,
+                LooisSearchLocalERC20Token.class
         );
     }
 }

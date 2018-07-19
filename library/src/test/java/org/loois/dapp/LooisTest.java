@@ -8,6 +8,7 @@ import org.loois.dapp.protocol.core.params.CutoffParams;
 import org.loois.dapp.protocol.core.params.DepthParams;
 import org.loois.dapp.protocol.core.params.EstimatedAllocatedAllowanceParams;
 import org.loois.dapp.protocol.core.params.FrozenLRCFeeParams;
+import org.loois.dapp.protocol.core.params.LRCSuggestChargeParams;
 import org.loois.dapp.protocol.core.params.NotifyTransactionSubmittedParams;
 import org.loois.dapp.protocol.core.params.PriceQuoteParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
@@ -20,6 +21,7 @@ import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisEstimateGasPrice;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
+import org.loois.dapp.protocol.core.response.LooisLRCSuggestCharge;
 import org.loois.dapp.protocol.core.response.LooisPriceQuote;
 import org.loois.dapp.protocol.core.response.LooisSupportedMarket;
 import org.loois.dapp.protocol.core.response.LooisSupportedTokens;
@@ -198,6 +200,13 @@ public class LooisTest {
         Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
         LooisEstimateGasPrice looisEstimateGasPrice = loois.looisEstimateGasPrice().sendAsync().get();
         log("testEstimateGasPrice",looisEstimateGasPrice.getEstimateGasPrice());
+    }
+
+    @Test
+    public void testLRCSuggestCharge() throws ExecutionException, InterruptedException {
+        Loois loois = LooisFactory.build(new HttpService(LOOIS_URL));
+        LooisLRCSuggestCharge cny = loois.looisLRCSuggestCharge(new LRCSuggestChargeParams(WALLET_ADDRESS, "CNY")).sendAsync().get();
+        log("testLRCSuggestCharge", cny.getLRCSuggestCharge());
     }
 
 
