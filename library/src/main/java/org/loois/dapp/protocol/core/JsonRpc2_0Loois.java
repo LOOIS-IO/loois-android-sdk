@@ -7,6 +7,7 @@ import org.loois.dapp.protocol.core.params.SubmitOrderParams;
 import org.loois.dapp.protocol.Loois;
 import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
+import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.response.LooisBalance;
 import org.loois.dapp.protocol.core.response.LooisDepth;
 import org.loois.dapp.protocol.core.response.LooisFills;
@@ -14,6 +15,7 @@ import org.loois.dapp.protocol.core.response.LooisOrders;
 import org.loois.dapp.protocol.core.response.LooisSubmitOrder;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTickers;
+import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.web3j.protocol.Web3jService;
 import org.web3j.protocol.core.Request;
 import org.web3j.utils.Async;
@@ -109,6 +111,16 @@ public class JsonRpc2_0Loois implements Loois {
                 Arrays.asList(params),
                 web3jService,
                 LooisFills.class
+        );
+    }
+
+    @Override
+    public Request<?, LooisTrend> looisTrend(TrendParams... params) {
+        return new Request<>(
+                Method.getTrend,
+                Arrays.asList(params),
+                web3jService,
+                LooisTrend.class
         );
     }
 }

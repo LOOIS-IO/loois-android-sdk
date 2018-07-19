@@ -6,7 +6,9 @@ import org.loois.dapp.protocol.LooisFactory;
 import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.params.DepthParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
+import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.response.LooisTicker;
+import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.loois.dapp.protocol.core.response.TickersResult;
 import org.loois.dapp.protocol.core.response.Token;
 import org.web3j.protocol.http.HttpService;
@@ -85,6 +87,14 @@ public class LooisTest {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+    }
+
+
+    @Test
+    public void testLooisTrend() throws ExecutionException, InterruptedException {
+        Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
+        LooisTrend looisTrend = loois.looisTrend(new TrendParams("LRC-WETH", "1Day")).sendAsync().get();
+        log("testLooisTrend", looisTrend.getTrend().get(0).toString());
     }
 
 
