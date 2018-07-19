@@ -16,6 +16,7 @@ import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
 import org.loois.dapp.protocol.core.response.LooisPriceQuote;
+import org.loois.dapp.protocol.core.response.LooisSupportedMarket;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.loois.dapp.protocol.core.response.Ring;
@@ -24,7 +25,6 @@ import org.loois.dapp.protocol.core.response.Token;
 import org.web3j.protocol.http.HttpService;
 
 import java.io.IOException;
-import java.security.PublicKey;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -147,12 +147,26 @@ public class LooisTest {
     @Test
     public void testFrozenLRCFee() throws ExecutionException, InterruptedException {
         Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
-        LooisFrozenLRCFee looisFrozenLRCFee = loois.LooisFrozenLRCFee(new FrozenLRCFeeParams(WALLET_ADDRESS)).sendAsync().get();
+        LooisFrozenLRCFee looisFrozenLRCFee = loois.looisFrozenLRCFee(new FrozenLRCFeeParams(WALLET_ADDRESS)).sendAsync().get();
         log("testFrozenLRCFee", looisFrozenLRCFee.getProzenLRCFee());
+    }
+
+    @Test
+    public void testSupportedMarket() throws ExecutionException, InterruptedException {
+        Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
+        LooisSupportedMarket looisSupportedMarket = loois.looisSupportedMarket().sendAsync().get();
+        log("testSupportedMarket", looisSupportedMarket.getSupportedMarket());
     }
 
 
     public static void log(String tag, String msg) {
         System.out.println(tag + " : " + msg);
+    }
+
+    public static void log(String tag, List<String> result) {
+        System.out.println(tag + ":");
+        for (int i = 0; i < result.size(); i++) {
+            System.out.println(result.get(i));
+        }
     }
 }

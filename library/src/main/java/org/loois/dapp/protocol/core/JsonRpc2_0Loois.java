@@ -23,6 +23,7 @@ import org.loois.dapp.protocol.core.response.LooisOrders;
 import org.loois.dapp.protocol.core.response.LooisPriceQuote;
 import org.loois.dapp.protocol.core.response.LooisRingMined;
 import org.loois.dapp.protocol.core.response.LooisSubmitOrder;
+import org.loois.dapp.protocol.core.response.LooisSupportedMarket;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTickers;
 import org.loois.dapp.protocol.core.response.LooisTrend;
@@ -176,12 +177,22 @@ public class JsonRpc2_0Loois implements Loois {
 
 
     @Override
-    public Request<?, LooisFrozenLRCFee> LooisFrozenLRCFee(FrozenLRCFeeParams... params) {
+    public Request<?, LooisFrozenLRCFee> looisFrozenLRCFee(FrozenLRCFeeParams... params) {
         return new Request<>(
                 Method.getFrozenLRCFEE,
                 Arrays.asList(params),
                 web3jService,
                 LooisFrozenLRCFee.class
+        );
+    }
+
+    @Override
+    public Request<?, LooisSupportedMarket> looisSupportedMarket() {
+        return new Request<>(
+                Method.getSupportedMarket,
+                Collections.emptyList(),
+                web3jService,
+                LooisSupportedMarket.class
         );
     }
 }

@@ -22,6 +22,7 @@ import org.loois.dapp.protocol.core.response.LooisOrders;
 import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.response.LooisBalance;
 import org.loois.dapp.protocol.core.response.LooisSubmitOrder;
+import org.loois.dapp.protocol.core.response.LooisSupportedMarket;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTickers;
 import org.loois.dapp.protocol.core.response.LooisTrend;
@@ -57,5 +58,7 @@ public interface LooisApi {
 
     Request<?, LooisEstimatedAllocatedAllowance> looisEstimatedAllocatedAllowance(EstimatedAllocatedAllowanceParams ...params);
 
-    Request<?, LooisFrozenLRCFee> LooisFrozenLRCFee(FrozenLRCFeeParams ...params);
+    Request<?, LooisFrozenLRCFee> looisFrozenLRCFee(FrozenLRCFeeParams ...params);
+
+    Request<?, LooisSupportedMarket> looisSupportedMarket();
 }
