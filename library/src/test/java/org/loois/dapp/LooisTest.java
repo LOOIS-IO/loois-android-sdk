@@ -5,7 +5,9 @@ import org.loois.dapp.protocol.Loois;
 import org.loois.dapp.protocol.LooisFactory;
 import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.params.DepthParams;
+import org.loois.dapp.protocol.core.params.TickersParams;
 import org.loois.dapp.protocol.core.response.LooisTicker;
+import org.loois.dapp.protocol.core.response.TickersResult;
 import org.loois.dapp.protocol.core.response.Token;
 import org.web3j.protocol.http.HttpService;
 
@@ -69,5 +71,23 @@ public class LooisTest {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testLooisTickers() {
+        Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
+        try {
+            TickersResult.MarketTicker binanceMarketTicker = loois
+                    .looisTickers(new TickersParams("LRC-WETH")).sendAsync().get().getBinanceMarketTicker();
+            log("testLooisTickers ", binanceMarketTicker.change);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void log(String tag, String msg) {
+        System.out.println(tag + ":" + msg);
     }
 }
