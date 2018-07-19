@@ -17,6 +17,7 @@ import org.loois.dapp.protocol.core.params.TransactionParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.params.UnlockWalletParams;
 import org.loois.dapp.protocol.core.response.LooisCutoff;
+import org.loois.dapp.protocol.core.response.LooisEstimateGasPrice;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
 import org.loois.dapp.protocol.core.response.LooisPriceQuote;
@@ -190,6 +191,13 @@ public class LooisTest {
                 WALLET_ADDRESS)).sendAsync().get();
         log("testUnlockWallet", wallet.getResult());
 
+    }
+
+    @Test
+    public void testEstimateGasPrice() throws ExecutionException, InterruptedException {
+        Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
+        LooisEstimateGasPrice looisEstimateGasPrice = loois.looisEstimateGasPrice().sendAsync().get();
+        log("testEstimateGasPrice",looisEstimateGasPrice.getEstimateGasPrice());
     }
 
 

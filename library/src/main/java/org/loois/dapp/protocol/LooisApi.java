@@ -17,6 +17,7 @@ import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.params.UnlockWalletParams;
 import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisDepth;
+import org.loois.dapp.protocol.core.response.LooisEstimateGasPrice;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFills;
 import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
@@ -77,4 +78,6 @@ public interface LooisApi {
     Request<?, LooisUnlockWallet> looisUnlockWallet(UnlockWalletParams ...params);
 
     Request<?, LooisNotifyTransactionSubmitted> looisNotifyTransactionSubmitted(NotifyTransactionSubmittedParams ...params);
+
+    Request<?, LooisEstimateGasPrice> looisEstimateGasPrice();
 }

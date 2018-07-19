@@ -20,6 +20,7 @@ import org.loois.dapp.protocol.core.params.UnlockWalletParams;
 import org.loois.dapp.protocol.core.response.LooisBalance;
 import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisDepth;
+import org.loois.dapp.protocol.core.response.LooisEstimateGasPrice;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFills;
 import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
@@ -38,10 +39,12 @@ import org.loois.dapp.protocol.core.response.LooisUnlockWallet;
 import org.web3j.protocol.Web3jService;
 import org.web3j.protocol.core.Request;
 import org.web3j.protocol.core.Response;
+import org.web3j.protocol.core.methods.response.EthEstimateGas;
 import org.web3j.utils.Async;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -243,6 +246,16 @@ public class JsonRpc2_0Loois implements Loois {
                 Arrays.asList(params),
                 web3jService,
                 LooisNotifyTransactionSubmitted.class
+        );
+    }
+
+    @Override
+    public Request<?, LooisEstimateGasPrice> looisEstimateGasPrice() {
+        return new Request<>(
+                Method.getEstimateGasPrice,
+                Collections.emptyList(),
+                web3jService,
+                LooisEstimateGasPrice.class
         );
     }
 }
