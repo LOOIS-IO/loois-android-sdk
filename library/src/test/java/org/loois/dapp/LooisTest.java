@@ -5,10 +5,12 @@ import org.loois.dapp.protocol.Loois;
 import org.loois.dapp.protocol.LooisFactory;
 import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.params.DepthParams;
+import org.loois.dapp.protocol.core.params.RingMinedParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTrend;
+import org.loois.dapp.protocol.core.response.Ring;
 import org.loois.dapp.protocol.core.response.TickersResult;
 import org.loois.dapp.protocol.core.response.Token;
 import org.web3j.protocol.http.HttpService;
@@ -40,7 +42,7 @@ public class LooisTest {
             List<Token> tokens = loois.looisBalance(params).send().getTokens();
             System.out.println("testLoopringBalance " + tokens.size());
 
-        }  catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -95,6 +97,17 @@ public class LooisTest {
         Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
         LooisTrend looisTrend = loois.looisTrend(new TrendParams("LRC-WETH", "1Day")).sendAsync().get();
         log("testLooisTrend", looisTrend.getTrend().get(0).toString());
+    }
+
+    @Test
+    public void testRingMined() throws ExecutionException, InterruptedException {
+        Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
+        List<Ring> minedRings = loois.looisRingMined(new RingMinedParams(
+                LOOPRING_DELEGATE_ADDRESS,
+                "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238",
+                1, 20)).sendAsync().get().getMinedRings();
+        log("testRingMined", minedRings.get(0).toString());
+
     }
 
 
