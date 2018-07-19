@@ -11,6 +11,7 @@ import org.loois.dapp.protocol.core.params.RingMinedParams;
 import org.loois.dapp.protocol.core.params.SubmitOrderParams;
 import org.loois.dapp.protocol.core.params.SupportedTokensParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
+import org.loois.dapp.protocol.core.params.TransactionParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisDepth;
@@ -27,6 +28,7 @@ import org.loois.dapp.protocol.core.response.LooisSupportedMarket;
 import org.loois.dapp.protocol.core.response.LooisSupportedTokens;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTickers;
+import org.loois.dapp.protocol.core.response.LooisTransactions;
 import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.web3j.protocol.core.Request;
 
@@ -64,5 +66,7 @@ public interface LooisApi {
 
     Request<?, LooisSupportedMarket> looisSupportedMarket();
 
-    Request<?, LooisSupportedTokens> looisSupportedTokens(SupportedTokensParams params);
+    Request<?, LooisSupportedTokens> looisSupportedTokens(SupportedTokensParams ...params);
+
+    Request<?, LooisTransactions> looisTransactions(TransactionParams ...params);
 }

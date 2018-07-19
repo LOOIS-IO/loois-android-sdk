@@ -12,6 +12,7 @@ import org.loois.dapp.protocol.core.params.PriceQuoteParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
 import org.loois.dapp.protocol.core.params.SupportedTokensParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
+import org.loois.dapp.protocol.core.params.TransactionParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
@@ -20,6 +21,7 @@ import org.loois.dapp.protocol.core.response.LooisPriceQuote;
 import org.loois.dapp.protocol.core.response.LooisSupportedMarket;
 import org.loois.dapp.protocol.core.response.LooisSupportedTokens;
 import org.loois.dapp.protocol.core.response.LooisTicker;
+import org.loois.dapp.protocol.core.response.LooisTransactions;
 import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.loois.dapp.protocol.core.response.Ring;
 import org.loois.dapp.protocol.core.response.TickersResult;
@@ -168,8 +170,23 @@ public class LooisTest {
     }
 
 
+    @Test
+    public void testTransactions() throws ExecutionException, InterruptedException {
+        Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
+        LooisTransactions lrc = loois.looisTransactions(new TransactionParams(
+                WALLET_ADDRESS, null, "LRC", null, null, 1, 20))
+                .sendAsync().get();
+        log("testTransactions", lrc.getTotal());
+
+    }
+
+
     public static void log(String tag, String msg) {
         System.out.println(tag + " : " + msg);
+    }
+
+    public static void log(String tag, int msg) {
+        System.out.println(tag + " : " + String.valueOf(msg));
     }
 
     public static void log(String tag, List<String> result) {

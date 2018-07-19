@@ -13,6 +13,7 @@ import org.loois.dapp.protocol.Loois;
 import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.params.SupportedTokensParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
+import org.loois.dapp.protocol.core.params.TransactionParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.response.LooisBalance;
 import org.loois.dapp.protocol.core.response.LooisCutoff;
@@ -28,6 +29,7 @@ import org.loois.dapp.protocol.core.response.LooisSupportedMarket;
 import org.loois.dapp.protocol.core.response.LooisSupportedTokens;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTickers;
+import org.loois.dapp.protocol.core.response.LooisTransactions;
 import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.web3j.protocol.Web3jService;
 import org.web3j.protocol.core.Request;
@@ -199,12 +201,22 @@ public class JsonRpc2_0Loois implements Loois {
     }
 
     @Override
-    public Request<?, LooisSupportedTokens> looisSupportedTokens(SupportedTokensParams params) {
+    public Request<?, LooisSupportedTokens> looisSupportedTokens(SupportedTokensParams... params) {
         return new Request<>(
                 Method.getSupportedTokens,
                 Arrays.asList(params),
                 web3jService,
                 LooisSupportedTokens.class
+        );
+    }
+
+    @Override
+    public Request<?, LooisTransactions> looisTransactions(TransactionParams... params) {
+        return new Request<>(
+                Method.getTransactions,
+                Arrays.asList(params),
+                web3jService,
+                LooisTransactions.class
         );
     }
 }
