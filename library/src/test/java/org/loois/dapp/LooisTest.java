@@ -14,6 +14,7 @@ import org.loois.dapp.protocol.core.params.SupportedTokensParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
 import org.loois.dapp.protocol.core.params.TransactionParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
+import org.loois.dapp.protocol.core.params.UnlockWalletParams;
 import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
@@ -23,6 +24,7 @@ import org.loois.dapp.protocol.core.response.LooisSupportedTokens;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTransactions;
 import org.loois.dapp.protocol.core.response.LooisTrend;
+import org.loois.dapp.protocol.core.response.LooisUnlockWallet;
 import org.loois.dapp.protocol.core.response.Ring;
 import org.loois.dapp.protocol.core.response.TickersResult;
 import org.loois.dapp.protocol.core.response.Token;
@@ -177,6 +179,15 @@ public class LooisTest {
                 WALLET_ADDRESS, null, "LRC", null, null, 1, 20))
                 .sendAsync().get();
         log("testTransactions", lrc.getTotal());
+
+    }
+
+    @Test
+    public void testUnlockWallet() throws ExecutionException, InterruptedException {
+        Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
+        LooisUnlockWallet wallet = loois.looisUnlockWallet(new UnlockWalletParams(
+                WALLET_ADDRESS)).sendAsync().get();
+        log("testUnlockWallet", wallet.getResult());
 
     }
 

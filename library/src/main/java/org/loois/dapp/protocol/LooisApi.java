@@ -13,6 +13,7 @@ import org.loois.dapp.protocol.core.params.SupportedTokensParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
 import org.loois.dapp.protocol.core.params.TransactionParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
+import org.loois.dapp.protocol.core.params.UnlockWalletParams;
 import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisDepth;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
@@ -30,7 +31,9 @@ import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTickers;
 import org.loois.dapp.protocol.core.response.LooisTransactions;
 import org.loois.dapp.protocol.core.response.LooisTrend;
+import org.loois.dapp.protocol.core.response.LooisUnlockWallet;
 import org.web3j.protocol.core.Request;
+import org.web3j.protocol.core.Response;
 
 
 /**
@@ -69,4 +72,6 @@ public interface LooisApi {
     Request<?, LooisSupportedTokens> looisSupportedTokens(SupportedTokensParams ...params);
 
     Request<?, LooisTransactions> looisTransactions(TransactionParams ...params);
+
+    Request<?, LooisUnlockWallet> looisUnlockWallet(UnlockWalletParams ...params);
 }
