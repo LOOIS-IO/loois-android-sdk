@@ -16,6 +16,8 @@ public interface Method {
 
     String getTrend = "loopring_getTrend";
 
+    String getCutoff = "loopring_getCutoff";
+
     String getPriceQuote = "loopring_getPriceQuote";
     String submitP2p = "submitP2p";
 

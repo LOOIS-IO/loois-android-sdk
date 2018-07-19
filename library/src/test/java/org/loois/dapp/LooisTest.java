@@ -4,10 +4,12 @@ import org.junit.Test;
 import org.loois.dapp.protocol.Loois;
 import org.loois.dapp.protocol.LooisFactory;
 import org.loois.dapp.protocol.core.params.BalanceParams;
+import org.loois.dapp.protocol.core.params.CutoffParams;
 import org.loois.dapp.protocol.core.params.DepthParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
+import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.loois.dapp.protocol.core.response.Ring;
@@ -29,6 +31,7 @@ public class LooisTest {
 
     public static final String LOOPRING_URL = "https://relay1.loopring.io/rpc/v2/";
     public static final String LOOPRING_DELEGATE_ADDRESS = "0x17233e07c67d086464fD408148c3ABB56245FA64";
+    public static final String WALLET_ADDRESS = "0xd91a7cb8efc59f485e999f02019bf2947b15ee1d";
 
     public static final String LOOIS_URL = "https://api.loois.io/rpc/v2/";
     public static final String LOOIS_TEST_URL = "https://loois.tech/rpc/v2/";
@@ -103,11 +106,20 @@ public class LooisTest {
     public void testRingMined() throws ExecutionException, InterruptedException {
         Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
         List<Ring> minedRings = loois.looisRingMined(new RingMinedParams(
-                LOOPRING_DELEGATE_ADDRESS,
                 "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238",
+                LOOPRING_DELEGATE_ADDRESS,
                 1, 20)).sendAsync().get().getMinedRings();
         log("testRingMined", minedRings.get(0).toString());
 
+    }
+
+    @Test
+    public void testCutoff() throws ExecutionException, InterruptedException {
+        Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
+        LooisCutoff latest = loois.looisCutoff(new CutoffParams(WALLET_ADDRESS,
+                LOOPRING_DELEGATE_ADDRESS,
+                "latest")).sendAsync().get();
+        log("testCutoff", latest.getCutoffTimestamp());
     }
 
 
