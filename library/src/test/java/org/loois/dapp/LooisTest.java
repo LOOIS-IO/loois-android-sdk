@@ -5,13 +5,12 @@ import org.loois.dapp.protocol.Loois;
 import org.loois.dapp.protocol.LooisFactory;
 import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.params.DepthParams;
-import org.loois.dapp.protocol.core.response.LoopringDepth;
+import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.Token;
-import org.web3j.protocol.core.Request;
-import org.web3j.protocol.core.Response;
 import org.web3j.protocol.http.HttpService;
 
 import java.io.IOException;
+import java.security.PublicKey;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -25,13 +24,16 @@ public class LooisTest {
     public static final String LOOPRING_URL = "https://relay1.loopring.io/rpc/v2/";
     public static final String LOOPRING_DELEGATE_ADDRESS = "0x17233e07c67d086464fD408148c3ABB56245FA64";
 
+    public static final String LOOIS_URL = "https://api.loois.io/rpc/v2/";
+    public static final String LOOIS_TEST_URL = "https://loois.tech/rpc/v2/";
+
 
     @Test
-    public void testLoopringBalance() {
+    public void testLooisBalance() {
         Loois loois = LooisFactory.build(new HttpService(TEST_URL));
         try {
             BalanceParams params = new BalanceParams(TEST_WALLET_ADDRESS, TEST_DELEGATE_ADDRESS);
-            List<Token> tokens = loois.loopringBalance(params).send().getTokens();
+            List<Token> tokens = loois.looisBalance(params).send().getTokens();
             System.out.println("testLoopringBalance " + tokens.size());
 
         }  catch (IOException e) {
@@ -40,14 +42,28 @@ public class LooisTest {
     }
 
     @Test
-    public void testLoopringDepth() {
+    public void testLooisDepth() {
         Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
         DepthParams params = new DepthParams("LRC-WETH", 20, LOOPRING_DELEGATE_ADDRESS);
         try {
-            List<List<String>> sellList = loois.loopringDepth(params).sendAsync().get().getSellList();
-            String market = loois.loopringDepth(params).sendAsync().get().getMarket();
+            List<List<String>> sellList = loois.looisDepth(params).sendAsync().get().getSellList();
+            String market = loois.looisDepth(params).sendAsync().get().getMarket();
             System.out.println(market);
             System.out.println(sellList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testLooisTicker() {
+        Loois loois = LooisFactory.build(new HttpService(LOOIS_TEST_URL));
+        try {
+            LooisTicker looisTicker = loois.looisTicker().sendAsync().get();
+            System.out.println(looisTicker.getMarkets().size());
+            System.out.println(looisTicker.getMarkets().get(0));
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

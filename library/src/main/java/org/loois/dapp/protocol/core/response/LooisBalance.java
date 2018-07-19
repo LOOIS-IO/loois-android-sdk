@@ -4,7 +4,7 @@ import org.web3j.protocol.core.Response;
 
 import java.util.List;
 
-public class LoopringBalance extends Response<BalanceResult> {
+public class LooisBalance extends Response<BalanceResult> {
 
     public List<Token> getTokens() {
         return getResult().tokens;

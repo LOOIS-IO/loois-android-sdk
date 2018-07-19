@@ -4,7 +4,7 @@ import org.web3j.protocol.core.Response;
 
 import java.util.List;
 
-public class LoopringDepth extends Response<Depth> {
+public class LooisDepth extends Response<Depth> {
 
     public List<List<String>> getSellList() {
         return getResult().depth.sell;
