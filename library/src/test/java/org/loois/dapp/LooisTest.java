@@ -7,12 +7,14 @@ import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.params.CutoffParams;
 import org.loois.dapp.protocol.core.params.DepthParams;
 import org.loois.dapp.protocol.core.params.EstimatedAllocatedAllowanceParams;
+import org.loois.dapp.protocol.core.params.FrozenLRCFeeParams;
 import org.loois.dapp.protocol.core.params.PriceQuoteParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
+import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
 import org.loois.dapp.protocol.core.response.LooisPriceQuote;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTrend;
@@ -140,6 +142,13 @@ public class LooisTest {
         LooisEstimatedAllocatedAllowance lrc = loois.looisEstimatedAllocatedAllowance(
                 new EstimatedAllocatedAllowanceParams(WALLET_ADDRESS, "NEO", LOOPRING_DELEGATE_ADDRESS)).sendAsync().get();
         log("testEstimatedAllocatedAllowance", lrc.getEstimatedAllocatedAllowance());
+    }
+
+    @Test
+    public void testFrozenLRCFee() throws ExecutionException, InterruptedException {
+        Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
+        LooisFrozenLRCFee looisFrozenLRCFee = loois.LooisFrozenLRCFee(new FrozenLRCFeeParams(WALLET_ADDRESS)).sendAsync().get();
+        log("testFrozenLRCFee", looisFrozenLRCFee.getProzenLRCFee());
     }
 
 

@@ -4,6 +4,7 @@ import org.loois.dapp.protocol.core.params.CutoffParams;
 import org.loois.dapp.protocol.core.params.DepthParams;
 import org.loois.dapp.protocol.core.params.EstimatedAllocatedAllowanceParams;
 import org.loois.dapp.protocol.core.params.FillsParams;
+import org.loois.dapp.protocol.core.params.FrozenLRCFeeParams;
 import org.loois.dapp.protocol.core.params.OrderParams;
 import org.loois.dapp.protocol.core.params.PriceQuoteParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
@@ -17,6 +18,7 @@ import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisDepth;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFills;
+import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
 import org.loois.dapp.protocol.core.response.LooisOrders;
 import org.loois.dapp.protocol.core.response.LooisPriceQuote;
 import org.loois.dapp.protocol.core.response.LooisRingMined;
@@ -169,6 +171,17 @@ public class JsonRpc2_0Loois implements Loois {
                 Arrays.asList(params),
                 web3jService,
                 LooisEstimatedAllocatedAllowance.class
+        );
+    }
+
+
+    @Override
+    public Request<?, LooisFrozenLRCFee> LooisFrozenLRCFee(FrozenLRCFeeParams... params) {
+        return new Request<>(
+                Method.getFrozenLRCFEE,
+                Arrays.asList(params),
+                web3jService,
+                LooisFrozenLRCFee.class
         );
     }
 }

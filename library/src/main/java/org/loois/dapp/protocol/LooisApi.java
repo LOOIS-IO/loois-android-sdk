@@ -4,6 +4,7 @@ import org.loois.dapp.protocol.core.params.CutoffParams;
 import org.loois.dapp.protocol.core.params.DepthParams;
 import org.loois.dapp.protocol.core.params.EstimatedAllocatedAllowanceParams;
 import org.loois.dapp.protocol.core.params.FillsParams;
+import org.loois.dapp.protocol.core.params.FrozenLRCFeeParams;
 import org.loois.dapp.protocol.core.params.OrderParams;
 import org.loois.dapp.protocol.core.params.PriceQuoteParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
@@ -14,6 +15,7 @@ import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisDepth;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFills;
+import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
 import org.loois.dapp.protocol.core.response.LooisPriceQuote;
 import org.loois.dapp.protocol.core.response.LooisRingMined;
 import org.loois.dapp.protocol.core.response.LooisOrders;
@@ -54,4 +56,6 @@ public interface LooisApi {
     Request<?, LooisPriceQuote> looisPriceQuote(PriceQuoteParams ...params);
 
     Request<?, LooisEstimatedAllocatedAllowance> looisEstimatedAllocatedAllowance(EstimatedAllocatedAllowanceParams ...params);
+
+    Request<?, LooisFrozenLRCFee> LooisFrozenLRCFee(FrozenLRCFeeParams ...params);
 }
