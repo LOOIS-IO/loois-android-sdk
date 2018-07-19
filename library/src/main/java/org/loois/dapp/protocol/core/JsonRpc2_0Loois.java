@@ -5,6 +5,7 @@ import org.loois.dapp.protocol.core.params.DepthParams;
 import org.loois.dapp.protocol.core.params.EstimatedAllocatedAllowanceParams;
 import org.loois.dapp.protocol.core.params.FillsParams;
 import org.loois.dapp.protocol.core.params.FrozenLRCFeeParams;
+import org.loois.dapp.protocol.core.params.NotifyTransactionSubmittedParams;
 import org.loois.dapp.protocol.core.params.OrderParams;
 import org.loois.dapp.protocol.core.params.PriceQuoteParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
@@ -22,6 +23,7 @@ import org.loois.dapp.protocol.core.response.LooisDepth;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFills;
 import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
+import org.loois.dapp.protocol.core.response.LooisNotifyTransactionSubmitted;
 import org.loois.dapp.protocol.core.response.LooisOrders;
 import org.loois.dapp.protocol.core.response.LooisPriceQuote;
 import org.loois.dapp.protocol.core.response.LooisRingMined;
@@ -38,7 +40,8 @@ import org.web3j.protocol.core.Request;
 import org.web3j.protocol.core.Response;
 import org.web3j.utils.Async;
 
- import java.util.Arrays;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -230,6 +233,16 @@ public class JsonRpc2_0Loois implements Loois {
                 Arrays.asList(params),
                 web3jService,
                 LooisUnlockWallet.class
+        );
+    }
+
+    @Override
+    public Request<?, LooisNotifyTransactionSubmitted> looisNotifyTransactionSubmitted(NotifyTransactionSubmittedParams... params) {
+        return new Request<>(
+                Method.notifyTransactionSubmitted,
+                Arrays.asList(params),
+                web3jService,
+                LooisNotifyTransactionSubmitted.class
         );
     }
 }

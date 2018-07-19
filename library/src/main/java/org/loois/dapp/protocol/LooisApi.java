@@ -5,6 +5,7 @@ import org.loois.dapp.protocol.core.params.DepthParams;
 import org.loois.dapp.protocol.core.params.EstimatedAllocatedAllowanceParams;
 import org.loois.dapp.protocol.core.params.FillsParams;
 import org.loois.dapp.protocol.core.params.FrozenLRCFeeParams;
+import org.loois.dapp.protocol.core.params.NotifyTransactionSubmittedParams;
 import org.loois.dapp.protocol.core.params.OrderParams;
 import org.loois.dapp.protocol.core.params.PriceQuoteParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
@@ -19,6 +20,7 @@ import org.loois.dapp.protocol.core.response.LooisDepth;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFills;
 import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
+import org.loois.dapp.protocol.core.response.LooisNotifyTransactionSubmitted;
 import org.loois.dapp.protocol.core.response.LooisPriceQuote;
 import org.loois.dapp.protocol.core.response.LooisRingMined;
 import org.loois.dapp.protocol.core.response.LooisOrders;
@@ -33,7 +35,6 @@ import org.loois.dapp.protocol.core.response.LooisTransactions;
 import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.loois.dapp.protocol.core.response.LooisUnlockWallet;
 import org.web3j.protocol.core.Request;
-import org.web3j.protocol.core.Response;
 
 
 /**
@@ -74,4 +75,6 @@ public interface LooisApi {
     Request<?, LooisTransactions> looisTransactions(TransactionParams ...params);
 
     Request<?, LooisUnlockWallet> looisUnlockWallet(UnlockWalletParams ...params);
+
+    Request<?, LooisNotifyTransactionSubmitted> looisNotifyTransactionSubmitted(NotifyTransactionSubmittedParams ...params);
 }

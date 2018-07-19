@@ -19,6 +19,7 @@ public interface Method {
     String getCutoff = "loopring_getCutoff";
 
     String getPriceQuote = "loopring_getPriceQuote";
+
     String submitP2p = "submitP2p";
 
     String submitOrder = "loopring_submitOrder";
@@ -42,7 +43,10 @@ public interface Method {
     String getEstimateGasPrice = "loopring_getEstimateGasPrice";
 
     String loopring_submitRingForP2P = "loopring_submitRingForP2P";
+
     String getLRCSuggestCharge = "loopring_getLRCSuggestCharge";
+
     String searchLocalERC20Token = "loopring_searchLocalERC20Token";
+
     String registerERC20Token = "loopring_registerERC20Token";
 }
