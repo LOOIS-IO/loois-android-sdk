@@ -4,7 +4,7 @@ import org.web3j.protocol.core.Response;
 
 import java.util.List;
 
-public class LooisOrders extends Response<OrderPage<Order>>{
+public class LooisOrders extends Response<Page<Order>>{
 
     public List<Order> getOrders() {
         return getResult().data;

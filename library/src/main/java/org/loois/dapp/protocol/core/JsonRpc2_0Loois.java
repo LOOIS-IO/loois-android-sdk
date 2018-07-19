@@ -1,6 +1,7 @@
 package org.loois.dapp.protocol.core;
 
 import org.loois.dapp.protocol.core.params.DepthParams;
+import org.loois.dapp.protocol.core.params.FillsParams;
 import org.loois.dapp.protocol.core.params.OrderParams;
 import org.loois.dapp.protocol.core.params.SubmitOrderParams;
 import org.loois.dapp.protocol.Loois;
@@ -8,6 +9,7 @@ import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
 import org.loois.dapp.protocol.core.response.LooisBalance;
 import org.loois.dapp.protocol.core.response.LooisDepth;
+import org.loois.dapp.protocol.core.response.LooisFills;
 import org.loois.dapp.protocol.core.response.LooisOrders;
 import org.loois.dapp.protocol.core.response.LooisSubmitOrder;
 import org.loois.dapp.protocol.core.response.LooisTicker;
@@ -97,6 +99,16 @@ public class JsonRpc2_0Loois implements Loois {
                 Arrays.asList(params),
                 web3jService,
                 LooisTickers.class
+        );
+    }
+
+    @Override
+    public Request<?, LooisFills> looisFills(FillsParams... params) {
+        return new Request<>(
+                Method.getFills,
+                Arrays.asList(params),
+                web3jService,
+                LooisFills.class
         );
     }
 }
