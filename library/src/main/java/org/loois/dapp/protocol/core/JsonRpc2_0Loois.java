@@ -11,6 +11,7 @@ import org.loois.dapp.protocol.core.params.RingMinedParams;
 import org.loois.dapp.protocol.core.params.SubmitOrderParams;
 import org.loois.dapp.protocol.Loois;
 import org.loois.dapp.protocol.core.params.BalanceParams;
+import org.loois.dapp.protocol.core.params.SupportedTokensParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.response.LooisBalance;
@@ -24,6 +25,7 @@ import org.loois.dapp.protocol.core.response.LooisPriceQuote;
 import org.loois.dapp.protocol.core.response.LooisRingMined;
 import org.loois.dapp.protocol.core.response.LooisSubmitOrder;
 import org.loois.dapp.protocol.core.response.LooisSupportedMarket;
+import org.loois.dapp.protocol.core.response.LooisSupportedTokens;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTickers;
 import org.loois.dapp.protocol.core.response.LooisTrend;
@@ -193,6 +195,16 @@ public class JsonRpc2_0Loois implements Loois {
                 Collections.emptyList(),
                 web3jService,
                 LooisSupportedMarket.class
+        );
+    }
+
+    @Override
+    public Request<?, LooisSupportedTokens> looisSupportedTokens(SupportedTokensParams params) {
+        return new Request<>(
+                Method.getSupportedTokens,
+                Arrays.asList(params),
+                web3jService,
+                LooisSupportedTokens.class
         );
     }
 }

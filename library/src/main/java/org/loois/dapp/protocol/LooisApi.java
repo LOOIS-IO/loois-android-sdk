@@ -9,6 +9,7 @@ import org.loois.dapp.protocol.core.params.OrderParams;
 import org.loois.dapp.protocol.core.params.PriceQuoteParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
 import org.loois.dapp.protocol.core.params.SubmitOrderParams;
+import org.loois.dapp.protocol.core.params.SupportedTokensParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.response.LooisCutoff;
@@ -23,6 +24,7 @@ import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.response.LooisBalance;
 import org.loois.dapp.protocol.core.response.LooisSubmitOrder;
 import org.loois.dapp.protocol.core.response.LooisSupportedMarket;
+import org.loois.dapp.protocol.core.response.LooisSupportedTokens;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTickers;
 import org.loois.dapp.protocol.core.response.LooisTrend;
@@ -61,4 +63,6 @@ public interface LooisApi {
     Request<?, LooisFrozenLRCFee> looisFrozenLRCFee(FrozenLRCFeeParams ...params);
 
     Request<?, LooisSupportedMarket> looisSupportedMarket();
+
+    Request<?, LooisSupportedTokens> looisSupportedTokens(SupportedTokensParams params);
 }

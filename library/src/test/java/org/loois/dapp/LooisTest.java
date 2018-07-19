@@ -10,6 +10,7 @@ import org.loois.dapp.protocol.core.params.EstimatedAllocatedAllowanceParams;
 import org.loois.dapp.protocol.core.params.FrozenLRCFeeParams;
 import org.loois.dapp.protocol.core.params.PriceQuoteParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
+import org.loois.dapp.protocol.core.params.SupportedTokensParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.response.LooisCutoff;
@@ -17,6 +18,7 @@ import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
 import org.loois.dapp.protocol.core.response.LooisPriceQuote;
 import org.loois.dapp.protocol.core.response.LooisSupportedMarket;
+import org.loois.dapp.protocol.core.response.LooisSupportedTokens;
 import org.loois.dapp.protocol.core.response.LooisTicker;
 import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.loois.dapp.protocol.core.response.Ring;
@@ -156,6 +158,13 @@ public class LooisTest {
         Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
         LooisSupportedMarket looisSupportedMarket = loois.looisSupportedMarket().sendAsync().get();
         log("testSupportedMarket", looisSupportedMarket.getSupportedMarket());
+    }
+
+    @Test
+    public void testSupportedTokens() throws ExecutionException, InterruptedException {
+        Loois loois = LooisFactory.build(new HttpService(LOOPRING_URL));
+        LooisSupportedTokens looisSupportedTokens = loois.looisSupportedTokens(new SupportedTokensParams(WALLET_ADDRESS)).sendAsync().get();
+        log("testSupportedTokens", looisSupportedTokens.getSupportedTokens().get(0).symbol);
     }
 
 
