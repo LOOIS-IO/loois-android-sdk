@@ -1,5 +1,7 @@
 package org.loois.dapp.protocol.core;
 
+import org.loois.dapp.protocol.LooisApi;
+import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.params.CutoffParams;
 import org.loois.dapp.protocol.core.params.DepthParams;
 import org.loois.dapp.protocol.core.params.EstimatedAllocatedAllowanceParams;
@@ -13,8 +15,6 @@ import org.loois.dapp.protocol.core.params.RegisterERC20TokenParams;
 import org.loois.dapp.protocol.core.params.RingMinedParams;
 import org.loois.dapp.protocol.core.params.SearchLocalERC20TokenParams;
 import org.loois.dapp.protocol.core.params.SubmitOrderParams;
-import org.loois.dapp.protocol.Loois;
-import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.params.SubmitRingForP2PParams;
 import org.loois.dapp.protocol.core.params.SupportedTokensParams;
 import org.loois.dapp.protocol.core.params.TickersParams;
@@ -46,38 +46,21 @@ import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.loois.dapp.protocol.core.response.LooisUnlockWallet;
 import org.web3j.protocol.Web3jService;
 import org.web3j.protocol.core.Request;
-import org.web3j.protocol.core.Response;
-import org.web3j.protocol.core.methods.response.EthEstimateGas;
-import org.web3j.utils.Async;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.concurrent.ScheduledExecutorService;
 
-public class JsonRpc2_0Loois implements Loois {
 
-    public static final int DEFAULT_BLOCK_TIME = 15 * 1000;
+public final class LooisApiImpl implements LooisApi {
 
-    protected final Web3jService web3jService;
-    private final JsonRpc2_0LooisRx looisRx;
-    private final long blockTime;
+    private Web3jService web3jService;
 
-    public JsonRpc2_0Loois(Web3jService web3jService) {
-        this(web3jService, DEFAULT_BLOCK_TIME, Async.defaultExecutorService());
-    }
-
-    public JsonRpc2_0Loois(
-            Web3jService web3jService, long pollingInterval,
-            ScheduledExecutorService scheduledExecutorService) {
+    public LooisApiImpl(Web3jService web3jService) {
         this.web3jService = web3jService;
-        this.looisRx = new JsonRpc2_0LooisRx(this, scheduledExecutorService);
-        this.blockTime = pollingInterval;
     }
 
     @Override
-    public Request<? , LooisBalance> looisBalance(BalanceParams ... params) {
+    public Request<?, LooisBalance> looisBalance(BalanceParams... params) {
         return new Request<>(
                 Method.getBalance,
                 Arrays.asList(params),
@@ -127,7 +110,7 @@ public class JsonRpc2_0Loois implements Loois {
     }
 
     @Override
-    public Request<?, LooisTickers> looisTickers(TickersParams ...params) {
+    public Request<?, LooisTickers> looisTickers(TickersParams... params) {
         return new Request<>(
                 Method.getTickers,
                 Arrays.asList(params),
@@ -306,4 +289,5 @@ public class JsonRpc2_0Loois implements Loois {
                 LooisSearchLocalERC20Token.class
         );
     }
+
 }

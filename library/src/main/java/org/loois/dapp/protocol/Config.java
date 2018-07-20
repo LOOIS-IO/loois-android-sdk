@@ -18,5 +18,7 @@ public class Config {
     /**
      *
      */
-    public static String CONTRACT_VERSION = "v1.51";
+    public static final String CONTRACT_VERSION = "v1.51";
+
+    public static final String BASE_URL = "http://api.loois.org/";
 }
