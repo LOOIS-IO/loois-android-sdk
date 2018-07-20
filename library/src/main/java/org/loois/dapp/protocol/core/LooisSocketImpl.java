@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.loois.dapp.protocol.Config;
 import org.loois.dapp.protocol.LooisSocketApi;
+import org.loois.dapp.protocol.core.socket.DepthBody;
 import org.loois.dapp.protocol.core.socket.MarketCapBody;
 import org.loois.dapp.protocol.core.socket.OwnerBody;
 import org.loois.dapp.protocol.core.socket.SocketBalance;
 import org.loois.dapp.protocol.core.socket.SocketBalanceBody;
+import org.loois.dapp.protocol.core.socket.SocketDepth;
+import org.loois.dapp.protocol.core.socket.SocketMarketCap;
 import org.loois.dapp.protocol.core.socket.SocketPendingTx;
 import org.loois.dapp.protocol.secure.SSLSocketClient;
 import org.loois.dapp.protocol.secure.TrustAllManager;
@@ -180,11 +183,16 @@ public class LooisSocketImpl implements LooisSocketApi {
             }
             socket.on(SocketMethod.marketcap_res, args -> {
                 String jsonString = (String) args[0];
-                ArrayList<SocketListener> listeners = eventListeners.get(SocketMethod.marketcap_res);
-                if (listeners != null) {
-                    for (SocketListener listener: listeners) {
-                        listener.onMarketCap(jsonString);
+                try {
+                    SocketMarketCap socketMarketCap = objectMapper.readValue(jsonString, SocketMarketCap.class);
+                    ArrayList<SocketListener> listeners = eventListeners.get(SocketMethod.marketcap_res);
+                    if (listeners != null) {
+                        for (SocketListener listener: listeners) {
+                            listener.onMarketCap(socketMarketCap);
+                        }
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             });
         } catch (JsonProcessingException e) {
@@ -194,7 +202,8 @@ public class LooisSocketImpl implements LooisSocketApi {
 
     @Override
     public void offMarketCap() {
-
+        socket.off(SocketMethod.marketcap_res);
+        socket.emit(SocketMethod.marketcap_end);
     }
 
     public void registerMarketCapListener(SocketListener listener) {
@@ -203,6 +212,52 @@ public class LooisSocketImpl implements LooisSocketApi {
 
     public void removeMarketCapListener(SocketListener listener) {
         removeListener(SocketMethod.marketcap_res, listener);
+    }
+
+    @Override
+    public void onDepth(String market) {
+        DepthBody depthBody = new DepthBody(market);
+        try {
+            String json = objectMapper.writeValueAsString(depthBody);
+            if (!socket.connected()) {
+                socket.connect();
+                socket.on(Socket.EVENT_CONNECT, args -> {
+                    socket.emit(SocketMethod.depth_req, json);
+                });
+            } else {
+                socket.emit(SocketMethod.depth_req, json);
+            }
+            socket.on(SocketMethod.depth_res, args -> {
+                String jsonString = (String) args[0];
+                try {
+                    SocketDepth socketDepth = objectMapper.readValue(jsonString, SocketDepth.class);
+                    ArrayList<SocketListener> listeners = eventListeners.get(SocketMethod.depth_res);
+                    if (listeners != null) {
+                        for (SocketListener listener : listeners) {
+                            listener.onDepth(socketDepth);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void offDepth() {
+        socket.off(SocketMethod.depth_res);
+        socket.emit(SocketMethod.depth_end);
+    }
+
+    public void registerDepthListener(SocketListener listener) {
+        addListener(SocketMethod.depth_res, listener);
+    }
+
+    public void removeDepthListener(SocketListener listener) {
+        removeListener(SocketMethod.depth_res, listener);
     }
 
     private void addListener(String key, SocketListener listener) {

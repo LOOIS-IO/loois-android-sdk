@@ -7,6 +7,8 @@ import android.widget.Toast;
 import org.loois.dapp.protocol.core.LooisSocketImpl;
 import org.loois.dapp.protocol.core.SocketListener;
 import org.loois.dapp.protocol.core.socket.SocketBalance;
+import org.loois.dapp.protocol.core.socket.SocketDepth;
+import org.loois.dapp.protocol.core.socket.SocketMarketCap;
 import org.loois.dapp.protocol.core.socket.SocketPendingTx;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,7 +25,26 @@ public class MainActivity extends AppCompatActivity {
 
 //        testSocketBalance();
 
-        testSocketMarketcap();
+//        testSocketMarketcap();
+
+        testSocketDepth();
+    }
+
+    private void testSocketDepth() {
+        LooisSocketImpl socket = new LooisSocketImpl();
+
+        socket.onDepth("LRC-WETH");
+        socket.registerDepthListener(new SocketListener(){
+            @Override
+            public void onDepth(SocketDepth socketDepth) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, socketDepth.getDepth().buy.get(0).get(0), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     private void testSocketMarketcap() {
@@ -31,11 +52,11 @@ public class MainActivity extends AppCompatActivity {
         socket.onMarketCap("CNY");
         socket.registerMarketCapListener(new SocketListener(){
             @Override
-            public void onMarketCap(String result) {
+            public void onMarketCap(SocketMarketCap result) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, result.getMarketCap().get(0).symbol, Toast.LENGTH_SHORT).show();
                     }
                 });
             }

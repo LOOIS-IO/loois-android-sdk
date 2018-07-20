@@ -10,9 +10,9 @@ public interface LooisSocketApi {
 
     void onMarketCap(String currency);
     void offMarketCap();
-//
-//    void onDepth();
-//    void offDepth();
+
+    void onDepth(String market);
+    void offDepth();
 //
 //    void onTickers();
 //    void offTickers();
