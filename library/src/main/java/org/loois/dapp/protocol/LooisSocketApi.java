@@ -5,11 +5,11 @@ public interface LooisSocketApi {
     void onBalance(String owner);
     void offBalance();
 
-    void onTransaction(String owner);
-    void offTransaction();
-//
-//    void onMarketCap();
-//    void offMarketCap();
+    void onPendingTx(String owner);
+    void offPendingTx();
+
+    void onMarketCap(String currency);
+    void offMarketCap();
 //
 //    void onDepth();
 //    void offDepth();

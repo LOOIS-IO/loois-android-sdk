@@ -7,6 +7,7 @@ import android.widget.Toast;
 import org.loois.dapp.protocol.core.LooisSocketImpl;
 import org.loois.dapp.protocol.core.SocketListener;
 import org.loois.dapp.protocol.core.socket.SocketBalance;
+import org.loois.dapp.protocol.core.socket.SocketPendingTx;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,19 +22,37 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 //        testSocketBalance();
-        testSocketTransactions();
+
+        testSocketMarketcap();
     }
 
-    private void testSocketTransactions() {
-        LooisSocketImpl looisSocket = new LooisSocketImpl();
-        looisSocket.onTransaction(WALLET_ADDRESS);
-        looisSocket.registerTransactionListener(new SocketListener(){
+    private void testSocketMarketcap() {
+        LooisSocketImpl socket = new LooisSocketImpl();
+        socket.onMarketCap("CNY");
+        socket.registerMarketCapListener(new SocketListener(){
             @Override
-            public void onTransactions(String result) {
+            public void onMarketCap(String result) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+
+    private void testSockePendingTx() {
+        LooisSocketImpl looisSocket = new LooisSocketImpl();
+        looisSocket.onPendingTx(WALLET_ADDRESS);
+        looisSocket.registerTransactionListener(new SocketListener(){
+
+            @Override
+            public void onPendingTx(SocketPendingTx result) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this,result.code , Toast.LENGTH_SHORT).show();
                     }
                 });
             }

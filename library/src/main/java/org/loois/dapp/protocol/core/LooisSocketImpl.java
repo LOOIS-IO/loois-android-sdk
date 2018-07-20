@@ -5,10 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.loois.dapp.protocol.Config;
 import org.loois.dapp.protocol.LooisSocketApi;
+import org.loois.dapp.protocol.core.socket.MarketCapBody;
 import org.loois.dapp.protocol.core.socket.OwnerBody;
 import org.loois.dapp.protocol.core.socket.SocketBalance;
 import org.loois.dapp.protocol.core.socket.SocketBalanceBody;
-import org.loois.dapp.protocol.core.socket.SocketTransaction;
+import org.loois.dapp.protocol.core.socket.SocketPendingTx;
 import org.loois.dapp.protocol.secure.SSLSocketClient;
 import org.loois.dapp.protocol.secure.TrustAllManager;
 import org.web3j.protocol.ObjectMapperFactory;
@@ -117,7 +118,7 @@ public class LooisSocketImpl implements LooisSocketApi {
     }
 
     @Override
-    public void onTransaction(String owner) {
+    public void onPendingTx(String owner) {
         OwnerBody body = new OwnerBody(owner);
         try {
             String json = objectMapper.writeValueAsString(body);
@@ -132,11 +133,11 @@ public class LooisSocketImpl implements LooisSocketApi {
             socket.on(SocketMethod.pendingTx_res, args -> {
                 String jsonString = (String) args[0];
                 try {
-                    SocketTransaction socketTransaction = objectMapper.readValue(jsonString, SocketTransaction.class);
+                    SocketPendingTx socketTransaction = objectMapper.readValue(jsonString, SocketPendingTx.class);
                     ArrayList<SocketListener> listeners = eventListeners.get(SocketMethod.pendingTx_res);
                     if (listeners != null) {
                         for (SocketListener listener: listeners) {
-                            listener.onTransactions(socketTransaction);
+                            listener.onPendingTx(socketTransaction);
                         }
                     }
                 } catch (IOException e) {
@@ -150,7 +151,7 @@ public class LooisSocketImpl implements LooisSocketApi {
     }
 
     @Override
-    public void offTransaction() {
+    public void offPendingTx() {
         socket.off(SocketMethod.pendingTx_res);
         socket.emit(SocketMethod.pendingTx_end);
     }
@@ -164,7 +165,45 @@ public class LooisSocketImpl implements LooisSocketApi {
     }
 
 
+    @Override
+    public void onMarketCap(String currency) {
+        MarketCapBody marketCapBody = new MarketCapBody(currency);
+        try {
+            String json = objectMapper.writeValueAsString(marketCapBody);
+            if (!socket.connected()) {
+                socket.connect();
+                socket.on(Socket.EVENT_CONNECT, args -> {
+                    socket.emit(SocketMethod.marketcap_req, json);
+                });
+            } else {
+                socket.emit(SocketMethod.marketcap_req, json);
+            }
+            socket.on(SocketMethod.marketcap_res, args -> {
+                String jsonString = (String) args[0];
+                ArrayList<SocketListener> listeners = eventListeners.get(SocketMethod.marketcap_res);
+                if (listeners != null) {
+                    for (SocketListener listener: listeners) {
+                        listener.onMarketCap(jsonString);
+                    }
+                }
+            });
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
 
+    @Override
+    public void offMarketCap() {
+
+    }
+
+    public void registerMarketCapListener(SocketListener listener) {
+        addListener(SocketMethod.marketcap_res, listener);
+    }
+
+    public void removeMarketCapListener(SocketListener listener) {
+        removeListener(SocketMethod.marketcap_res, listener);
+    }
 
     private void addListener(String key, SocketListener listener) {
         ArrayList<SocketListener> listeners = eventListeners.get(key);

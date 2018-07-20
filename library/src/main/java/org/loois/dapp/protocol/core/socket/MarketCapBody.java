@@ -7,11 +7,11 @@ package org.loois.dapp.protocol.core.socket;
  * Brief Desc :
  * </pre>
  */
-public class MarketcapBody {
+public class MarketCapBody {
 
-    public String curreny;
+    public String currency;
 
-    public MarketcapBody(String curreny) {
-        this.curreny = curreny;
+    public MarketCapBody(String currency) {
+        this.currency = currency;
     }
 }
