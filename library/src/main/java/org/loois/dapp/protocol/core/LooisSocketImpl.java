@@ -1,17 +1,16 @@
 package org.loois.dapp.protocol.core;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.loois.dapp.protocol.Config;
 import org.loois.dapp.protocol.LooisSocketApi;
+import org.loois.dapp.protocol.core.socket.SocketBalance;
 import org.loois.dapp.protocol.core.socket.SocketBalanceBody;
 import org.loois.dapp.protocol.secure.SSLSocketClient;
 import org.loois.dapp.protocol.secure.TrustAllManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.web3j.protocol.ObjectMapperFactory;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,22 +24,23 @@ import okhttp3.OkHttpClient;
 
 public class LooisSocketImpl implements LooisSocketApi {
 
+    private static final String TAG = "LooisSocketImpl";
+
+
     private Socket socket;
 
     private ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
 
     private Map<String, ArrayList<SocketListener>> eventListeners = new HashMap<>();
 
-    private Logger logger;
+
 
     public LooisSocketImpl() {
         initDefaultSocket();
-        logger = LoggerFactory.getLogger(LooisSocketImpl.class);
     }
 
     public LooisSocketImpl(Socket socket) {
         this.socket = socket;
-        logger = LoggerFactory.getLogger(LooisSocketImpl.class);
     }
 
     private void initDefaultSocket() {
@@ -70,21 +70,29 @@ public class LooisSocketImpl implements LooisSocketApi {
             String json = objectMapper.writeValueAsString(body);
             if (!socket.connected()) {
                 socket.connect();
-                socket.on(Socket.EVENT_CONNECT, args -> socket.emit(SocketMethod.balance_req, json));
+                socket.on(Socket.EVENT_CONNECT, args -> {
+                    socket.emit(SocketMethod.balance_req, json);
+                });
             } else {
                 socket.emit(SocketMethod.balance_req, json);
             }
 
             socket.on(SocketMethod.balance_res, args -> {
-                String jsonString = (String) args[0];
-                ArrayList<SocketListener> socketListeners = eventListeners.get(SocketMethod.balance_res);
-                if (socketListeners != null) {
-                    for (SocketListener listener: socketListeners) {
-                        listener.onBalance(jsonString);
+                try {
+                    String jsonString = (String) args[0];
+                    SocketBalance socketBalance = objectMapper.readValue(jsonString, SocketBalance.class);
+                    ArrayList<SocketListener> socketListeners = eventListeners.get(SocketMethod.balance_res);
+                    if (socketListeners != null) {
+                        for (SocketListener listener: socketListeners) {
+                            listener.onBalance(socketBalance);
+                        }
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+
             });
-        } catch (JsonProcessingException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -94,7 +102,6 @@ public class LooisSocketImpl implements LooisSocketApi {
     public void offBalance() {
         socket.off(SocketMethod.balance_res);
         socket.emit(SocketMethod.balance_end, "", (Ack) args -> {
-            logger.debug("server got it");
         });
     }
 

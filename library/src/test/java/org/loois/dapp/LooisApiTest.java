@@ -61,7 +61,7 @@ public class LooisApiTest {
     public void testLooisBalance() {
         LooisApi loois = getLooisApi();
         try {
-            BalanceParams params = new BalanceParams(TEST_WALLET_ADDRESS, TEST_DELEGATE_ADDRESS);
+            BalanceParams params = new BalanceParams(TEST_WALLET_ADDRESS, LOOPRING_DELEGATE_ADDRESS);
             List<Token> tokens = loois.looisBalance(params).send().getTokens();
             System.out.println("testLoopringBalance " + tokens.size());
 

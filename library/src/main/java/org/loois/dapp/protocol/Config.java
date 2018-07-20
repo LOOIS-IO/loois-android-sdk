@@ -20,5 +20,7 @@ public class Config {
      */
     public static final String CONTRACT_VERSION = "v1.51";
 
-    public static final String BASE_URL = "http://api.loois.org/";
+    public static final String BASE_URL = "http://api.loois.io/";
+
+//    public static final String BASE_URL = "https://relay1.loopring.io/socket.io/";
 }
