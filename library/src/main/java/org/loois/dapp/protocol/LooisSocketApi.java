@@ -4,9 +4,9 @@ public interface LooisSocketApi {
 
     void onBalance(String owner);
     void offBalance();
-//
-//    void onPendingTx();
-//    void offPendingTx();
+
+    void onTransaction(String owner);
+    void offTransaction();
 //
 //    void onMarketCap();
 //    void offMarketCap();

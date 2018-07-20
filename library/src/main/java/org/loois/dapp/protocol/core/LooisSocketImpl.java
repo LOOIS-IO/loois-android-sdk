@@ -1,11 +1,14 @@
 package org.loois.dapp.protocol.core;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.loois.dapp.protocol.Config;
 import org.loois.dapp.protocol.LooisSocketApi;
+import org.loois.dapp.protocol.core.socket.OwnerBody;
 import org.loois.dapp.protocol.core.socket.SocketBalance;
 import org.loois.dapp.protocol.core.socket.SocketBalanceBody;
+import org.loois.dapp.protocol.core.socket.SocketTransaction;
 import org.loois.dapp.protocol.secure.SSLSocketClient;
 import org.loois.dapp.protocol.secure.TrustAllManager;
 import org.web3j.protocol.ObjectMapperFactory;
@@ -106,19 +109,75 @@ public class LooisSocketImpl implements LooisSocketApi {
     }
 
     public void registerBalanceListener(SocketListener socketListener) {
-        ArrayList<SocketListener> balanceListeners = eventListeners.get(SocketMethod.balance_res);
-        if (balanceListeners == null) {
-            eventListeners.put(SocketMethod.balance_res, new ArrayList<>());
-        }
-        eventListeners.get(SocketMethod.balance_res).add(socketListener);
+        addListener(SocketMethod.balance_res, socketListener);
     }
 
     public void removeBalanceListener(SocketListener socketListener) {
-        ArrayList<SocketListener> balanceListeners = eventListeners.get(SocketMethod.balance_res);
-        if (balanceListeners != null) {
-            balanceListeners.remove(socketListener);
+        removeListener(SocketMethod.balance_res, socketListener);
+    }
+
+    @Override
+    public void onTransaction(String owner) {
+        OwnerBody body = new OwnerBody(owner);
+        try {
+            String json = objectMapper.writeValueAsString(body);
+            if (!socket.connected()) {
+                socket.connect();
+                socket.on(Socket.EVENT_CONNECT, args -> {
+                    socket.emit(SocketMethod.pendingTx_req, json);
+                });
+            } else {
+                socket.emit(SocketMethod.pendingTx_req, json);
+            }
+            socket.on(SocketMethod.pendingTx_res, args -> {
+                String jsonString = (String) args[0];
+                try {
+                    SocketTransaction socketTransaction = objectMapper.readValue(jsonString, SocketTransaction.class);
+                    ArrayList<SocketListener> listeners = eventListeners.get(SocketMethod.pendingTx_res);
+                    if (listeners != null) {
+                        for (SocketListener listener: listeners) {
+                            listener.onTransactions(socketTransaction);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            });
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
     }
 
+    @Override
+    public void offTransaction() {
+        socket.off(SocketMethod.pendingTx_res);
+        socket.emit(SocketMethod.pendingTx_end);
+    }
 
+    public void registerTransactionListener(SocketListener listener) {
+        addListener(SocketMethod.pendingTx_res, listener);
+    }
+
+    public void removeTransactionListener(SocketListener listener) {
+        removeListener(SocketMethod.pendingTx_res, listener);
+    }
+
+
+
+
+    private void addListener(String key, SocketListener listener) {
+        ArrayList<SocketListener> listeners = eventListeners.get(key);
+        if (listeners == null) {
+            eventListeners.put(key, new ArrayList<>());
+        }
+        eventListeners.get(key).add(listener);
+    }
+
+    private void removeListener(String key, SocketListener listener) {
+        ArrayList<SocketListener> listeners = eventListeners.get(key);
+        if (listeners != null) {
+            listeners.remove(listener);
+        }
+    }
 }
