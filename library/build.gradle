@@ -38,6 +38,9 @@ dependencies {
     implementation 'com.lhalcyon:bip32:1.0.0'
     implementation 'com.lambdaworks:scrypt:1.4.0'
     implementation 'org.web3j:core:3.3.1-android'
+    implementation ('io.socket:socket.io-client:1.0.0') {
+        exclude group: 'org.json', module: 'json'
+    }
 
 }
 
