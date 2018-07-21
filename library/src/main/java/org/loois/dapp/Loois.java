@@ -2,6 +2,11 @@ package org.loois.dapp;
 
 import android.text.TextUtils;
 
+import org.loois.dapp.protocol.LooisApi;
+import org.loois.dapp.protocol.LooisSocketApi;
+import org.loois.dapp.protocol.core.LooisApiImpl;
+import org.loois.dapp.protocol.core.LooisSocketImpl;
+import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.ChainId;
 
 /**
@@ -17,6 +22,8 @@ public class Loois {
 
     public static byte chainId = ChainId.MAINNET;
 
+    private static LooisApi looisApi;
+    private static LooisSocketApi looisSocket;
 
 
     private static ILogger mLogger = (tag, msg) -> {
@@ -41,6 +48,27 @@ public class Loois {
             Loois.chainId = chainId;
             return this;
         }
+    }
 
+    public static LooisApi client() {
+        if (looisApi == null) {
+            synchronized (Loois.class) {
+                if (looisApi == null) {
+                    looisApi = new LooisApiImpl(new HttpService());
+                }
+            }
+        }
+        return looisApi;
+    }
+
+    public static LooisSocketApi socket() {
+        if (looisSocket == null) {
+            synchronized (Loois.class) {
+                if (looisSocket == null) {
+                    looisSocket = new LooisSocketImpl();
+                }
+            }
+        }
+        return looisSocket;
     }
 }

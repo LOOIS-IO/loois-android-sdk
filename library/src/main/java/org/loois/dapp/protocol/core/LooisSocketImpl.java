@@ -9,7 +9,7 @@ import org.loois.dapp.protocol.core.socket.DepthBody;
 import org.loois.dapp.protocol.core.socket.MarketCapBody;
 import org.loois.dapp.protocol.core.socket.OwnerBody;
 import org.loois.dapp.protocol.core.socket.SocketBalance;
-import org.loois.dapp.protocol.core.socket.SocketBalanceBody;
+import org.loois.dapp.protocol.core.socket.BalanceBody;
 import org.loois.dapp.protocol.core.socket.SocketDepth;
 import org.loois.dapp.protocol.core.socket.SocketLooisTickers;
 import org.loois.dapp.protocol.core.socket.SocketMarketCap;
@@ -74,7 +74,7 @@ public class LooisSocketImpl implements LooisSocketApi {
 
     @Override
     public void onBalance(String owner) {
-        SocketBalanceBody body = new SocketBalanceBody(owner);
+        BalanceBody body = new BalanceBody(owner);
         try {
             String json = objectMapper.writeValueAsString(body);
             if (!socket.connected()) {
@@ -114,10 +114,12 @@ public class LooisSocketImpl implements LooisSocketApi {
         });
     }
 
+    @Override
     public void registerBalanceListener(SocketListener socketListener) {
         addListener(SocketMethod.balance_res, socketListener);
     }
 
+    @Override
     public void removeBalanceListener(SocketListener socketListener) {
         removeListener(SocketMethod.balance_res, socketListener);
     }
@@ -161,10 +163,12 @@ public class LooisSocketImpl implements LooisSocketApi {
         socket.emit(SocketMethod.pendingTx_end);
     }
 
+    @Override
     public void registerTransactionListener(SocketListener listener) {
         addListener(SocketMethod.pendingTx_res, listener);
     }
 
+    @Override
     public void removeTransactionListener(SocketListener listener) {
         removeListener(SocketMethod.pendingTx_res, listener);
     }
@@ -208,10 +212,12 @@ public class LooisSocketImpl implements LooisSocketApi {
         socket.emit(SocketMethod.marketcap_end);
     }
 
+    @Override
     public void registerMarketCapListener(SocketListener listener) {
         addListener(SocketMethod.marketcap_res, listener);
     }
 
+    @Override
     public void removeMarketCapListener(SocketListener listener) {
         removeListener(SocketMethod.marketcap_res, listener);
     }
@@ -254,10 +260,13 @@ public class LooisSocketImpl implements LooisSocketApi {
         socket.emit(SocketMethod.depth_end);
     }
 
+
+    @Override
     public void registerDepthListener(SocketListener listener) {
         addListener(SocketMethod.depth_res, listener);
     }
 
+    @Override
     public void removeDepthListener(SocketListener listener) {
         removeListener(SocketMethod.depth_res, listener);
     }
@@ -302,10 +311,12 @@ public class LooisSocketImpl implements LooisSocketApi {
         socket.emit(SocketMethod.tickers_end);
     }
 
+    @Override
     public void registerTickersListener(SocketListener listener) {
        addListener(SocketMethod.tickers_res, listener);
     }
 
+    @Override
     public void removeTickersListener(SocketListener listener) {
         removeListener(SocketMethod.tickers_res, listener);
     }
@@ -340,10 +351,12 @@ public class LooisSocketImpl implements LooisSocketApi {
         socket.emit(SocketMethod.loopringTickers_end);
     }
 
+    @Override
     public void registerLooisTickersListener(SocketListener listener) {
         addListener(SocketMethod.loopringTickers_res, listener);
     }
 
+    @Override
     public void removeLooisTickersListener(SocketListener listener) {
         removeListener(SocketMethod.loopringTickers_res, listener);
     }
