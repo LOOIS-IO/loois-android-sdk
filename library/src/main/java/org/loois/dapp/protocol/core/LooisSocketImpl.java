@@ -13,6 +13,8 @@ import org.loois.dapp.protocol.core.socket.SocketBalanceBody;
 import org.loois.dapp.protocol.core.socket.SocketDepth;
 import org.loois.dapp.protocol.core.socket.SocketMarketCap;
 import org.loois.dapp.protocol.core.socket.SocketPendingTx;
+import org.loois.dapp.protocol.core.socket.SocketTickers;
+import org.loois.dapp.protocol.core.socket.TickersBody;
 import org.loois.dapp.protocol.secure.SSLSocketClient;
 import org.loois.dapp.protocol.secure.TrustAllManager;
 import org.web3j.protocol.ObjectMapperFactory;
@@ -39,7 +41,6 @@ public class LooisSocketImpl implements LooisSocketApi {
     private ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
 
     private Map<String, ArrayList<SocketListener>> eventListeners = new HashMap<>();
-
 
 
     public LooisSocketImpl() {
@@ -90,7 +91,7 @@ public class LooisSocketImpl implements LooisSocketApi {
                     SocketBalance socketBalance = objectMapper.readValue(jsonString, SocketBalance.class);
                     ArrayList<SocketListener> socketListeners = eventListeners.get(SocketMethod.balance_res);
                     if (socketListeners != null) {
-                        for (SocketListener listener: socketListeners) {
+                        for (SocketListener listener : socketListeners) {
                             listener.onBalance(socketBalance);
                         }
                     }
@@ -139,7 +140,7 @@ public class LooisSocketImpl implements LooisSocketApi {
                     SocketPendingTx socketTransaction = objectMapper.readValue(jsonString, SocketPendingTx.class);
                     ArrayList<SocketListener> listeners = eventListeners.get(SocketMethod.pendingTx_res);
                     if (listeners != null) {
-                        for (SocketListener listener: listeners) {
+                        for (SocketListener listener : listeners) {
                             listener.onPendingTx(socketTransaction);
                         }
                     }
@@ -187,7 +188,7 @@ public class LooisSocketImpl implements LooisSocketApi {
                     SocketMarketCap socketMarketCap = objectMapper.readValue(jsonString, SocketMarketCap.class);
                     ArrayList<SocketListener> listeners = eventListeners.get(SocketMethod.marketcap_res);
                     if (listeners != null) {
-                        for (SocketListener listener: listeners) {
+                        for (SocketListener listener : listeners) {
                             listener.onMarketCap(socketMarketCap);
                         }
                     }
@@ -258,6 +259,54 @@ public class LooisSocketImpl implements LooisSocketApi {
 
     public void removeDepthListener(SocketListener listener) {
         removeListener(SocketMethod.depth_res, listener);
+    }
+
+    @Override
+    public void onTickers(String market) {
+        TickersBody tickersBody = new TickersBody(market);
+        try {
+            String json = objectMapper.writeValueAsString(tickersBody);
+            if (!socket.connected()) {
+                socket.connect();
+                socket.on(Socket.EVENT_CONNECT, args -> {
+                    socket.emit(SocketMethod.tickers_req, json);
+                });
+            } else {
+                socket.emit(SocketMethod.tickers_req, json);
+            }
+            socket.on(SocketMethod.tickers_res, args -> {
+                try {
+                    String jsonString = (String) args[0];
+                    SocketTickers socketTickersResponse = objectMapper.readValue(jsonString, SocketTickers.class);
+                    ArrayList<SocketListener> listeners = eventListeners.get(SocketMethod.tickers_res);
+                    if (listeners != null) {
+                        for(SocketListener listener: listeners) {
+                            listener.onTickers(socketTickersResponse);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            });
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void offTickers() {
+        socket.off(SocketMethod.tickers_res);
+        socket.emit(SocketMethod.tickers_end);
+    }
+
+    public void registerTickersListener(SocketListener listener) {
+       addListener(SocketMethod.tickers_res, listener);
+    }
+
+    public void removeTickersListener(SocketListener listener) {
+        removeListener(SocketMethod.tickers_res, listener);
     }
 
     private void addListener(String key, SocketListener listener) {

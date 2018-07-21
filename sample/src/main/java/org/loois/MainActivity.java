@@ -10,6 +10,7 @@ import org.loois.dapp.protocol.core.socket.SocketBalance;
 import org.loois.dapp.protocol.core.socket.SocketDepth;
 import org.loois.dapp.protocol.core.socket.SocketMarketCap;
 import org.loois.dapp.protocol.core.socket.SocketPendingTx;
+import org.loois.dapp.protocol.core.socket.SocketTickers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,7 +28,26 @@ public class MainActivity extends AppCompatActivity {
 
 //        testSocketMarketcap();
 
-        testSocketDepth();
+//        testSocketDepth();
+
+        testSocketTickers();
+    }
+
+
+    private void testSocketTickers() {
+        LooisSocketImpl socket = new LooisSocketImpl();
+        socket.onTickers("LRC-WETH");
+        socket.registerTickersListener(new SocketListener(){
+            @Override
+            public void onTickers(SocketTickers socketTickers) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, socketTickers.getTickers().binance.change, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     private void testSocketDepth() {

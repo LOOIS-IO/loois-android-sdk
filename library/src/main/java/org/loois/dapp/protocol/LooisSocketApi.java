@@ -13,9 +13,9 @@ public interface LooisSocketApi {
 
     void onDepth(String market);
     void offDepth();
-//
-//    void onTickers();
-//    void offTickers();
+
+    void onTickers(String market);
+    void offTickers();
 //
 //    void onLoopringTickers();
 //    void offLoopringTickers();
