@@ -11,6 +11,7 @@ import org.loois.dapp.protocol.core.socket.OwnerBody;
 import org.loois.dapp.protocol.core.socket.SocketBalance;
 import org.loois.dapp.protocol.core.socket.SocketBalanceBody;
 import org.loois.dapp.protocol.core.socket.SocketDepth;
+import org.loois.dapp.protocol.core.socket.SocketLooisTickers;
 import org.loois.dapp.protocol.core.socket.SocketMarketCap;
 import org.loois.dapp.protocol.core.socket.SocketPendingTx;
 import org.loois.dapp.protocol.core.socket.SocketTickers;
@@ -307,6 +308,44 @@ public class LooisSocketImpl implements LooisSocketApi {
 
     public void removeTickersListener(SocketListener listener) {
         removeListener(SocketMethod.tickers_res, listener);
+    }
+
+    @Override
+    public void onLooisTickers() {
+        if (!socket.connected()) {
+            socket.connect();
+            socket.on(Socket.EVENT_CONNECT, args -> socket.emit(SocketMethod.loopringTickers_req, "{}"));
+        } else {
+            socket.emit(SocketMethod.loopringTickers_req, "{}");
+        }
+        socket.on(SocketMethod.loopringTickers_res, args -> {
+            String jsonString = (String) args[0];
+            try {
+                SocketLooisTickers socketLooisTickers = objectMapper.readValue(jsonString, SocketLooisTickers.class);
+                ArrayList<SocketListener> listeners = eventListeners.get(SocketMethod.loopringTickers_res);
+                if (listeners != null) {
+                    for (SocketListener listener: listeners) {
+                        listener.onLooisTickers(socketLooisTickers);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public void offLooisTickers() {
+        socket.off(SocketMethod.loopringTickers_res);
+        socket.emit(SocketMethod.loopringTickers_end);
+    }
+
+    public void registerLooisTickersListener(SocketListener listener) {
+        addListener(SocketMethod.loopringTickers_res, listener);
+    }
+
+    public void removeLooisTickersListener(SocketListener listener) {
+        removeListener(SocketMethod.loopringTickers_res, listener);
     }
 
     private void addListener(String key, SocketListener listener) {

@@ -8,6 +8,7 @@ import org.loois.dapp.protocol.core.LooisSocketImpl;
 import org.loois.dapp.protocol.core.SocketListener;
 import org.loois.dapp.protocol.core.socket.SocketBalance;
 import org.loois.dapp.protocol.core.socket.SocketDepth;
+import org.loois.dapp.protocol.core.socket.SocketLooisTickers;
 import org.loois.dapp.protocol.core.socket.SocketMarketCap;
 import org.loois.dapp.protocol.core.socket.SocketPendingTx;
 import org.loois.dapp.protocol.core.socket.SocketTickers;
@@ -30,7 +31,26 @@ public class MainActivity extends AppCompatActivity {
 
 //        testSocketDepth();
 
-        testSocketTickers();
+//        testSocketTickers();
+
+
+        testSocketLooisTickers();
+    }
+
+    private void testSocketLooisTickers() {
+        LooisSocketImpl socket = new LooisSocketImpl();
+        socket.onLooisTickers();
+        socket.registerLooisTickersListener(new SocketListener(){
+            @Override
+            public void onLooisTickers(SocketLooisTickers socketLoopringTickers) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, String.valueOf(socketLoopringTickers.getMarkets().size()), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
 
