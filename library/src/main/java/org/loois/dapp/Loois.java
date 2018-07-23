@@ -2,10 +2,13 @@ package org.loois.dapp;
 
 import android.text.TextUtils;
 
+import org.loois.dapp.protocol.Config;
 import org.loois.dapp.protocol.LooisApi;
 import org.loois.dapp.protocol.LooisSocketApi;
 import org.loois.dapp.protocol.core.LooisApiImpl;
 import org.loois.dapp.protocol.core.LooisSocketImpl;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.Web3jFactory;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.ChainId;
 
@@ -24,6 +27,9 @@ public class Loois {
 
     private static LooisApi looisApi;
     private static LooisSocketApi looisSocket;
+    private static Web3j web3j;
+
+    private static HttpService httpService = new HttpService(Config.BASE_URL);
 
 
     private static ILogger mLogger = (tag, msg) -> {
@@ -54,7 +60,7 @@ public class Loois {
         if (looisApi == null) {
             synchronized (Loois.class) {
                 if (looisApi == null) {
-                    looisApi = new LooisApiImpl(new HttpService());
+                    looisApi = new LooisApiImpl(httpService);
                 }
             }
         }
@@ -70,5 +76,16 @@ public class Loois {
             }
         }
         return looisSocket;
+    }
+
+    public static Web3j web3j() {
+        if (web3j == null) {
+            synchronized (Loois.class) {
+                if (web3j == null) {
+                    web3j = Web3jFactory.build(httpService);
+                }
+            }
+        }
+        return web3j;
     }
 }

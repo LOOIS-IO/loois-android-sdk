@@ -6,8 +6,8 @@ import org.loois.dapp.common.Constants;
 import org.loois.dapp.common.Params;
 import org.loois.dapp.model.HDWallet;
 import org.loois.dapp.model.OriginalOrder;
-import org.loois.dapp.protocol.core.params.SubmitOrderParams;
 import org.loois.dapp.protocol.Config;
+import org.loois.dapp.protocol.core.params.SubmitOrderParams;
 import org.loois.dapp.utils.IBan;
 import org.loois.dapp.utils.StringUtils;
 import org.web3j.abi.FunctionEncoder;
@@ -56,11 +56,8 @@ public class SignManager {
                                           BigDecimal decimal,
                                           HDWallet wallet,
                                           String password) throws IOException, CipherException {
-        BigDecimal realValue = amount.multiply(decimal);
-        Function function = new Function("transfer",
-                Arrays.asList(new Address(to), new Uint256(realValue.toBigInteger())),
-                Collections.emptyList());
-        String data = FunctionEncoder.encode(function);
+        BigInteger realValue = amount.multiply(decimal).toBigInteger();
+        String data = encodeTransferFunction(to, realValue);
         RawTransaction rawTransaction = RawTransaction.createTransaction(
                 nonce,
                 gasPrice,
@@ -70,15 +67,22 @@ public class SignManager {
         return signData(rawTransaction, wallet, password);
     }
 
+    public static String encodeTransferFunction(String to, BigInteger amountToken) {
+        Function function = new Function("transfer",
+                Arrays.asList(new Address(to), new Uint256(amountToken)),
+                        Collections.emptyList());
+       return  FunctionEncoder.encode(function);
+    }
+
     public String signETHTransaction(String to,
                                      BigInteger nonce,
                                      BigInteger gasPrice,
                                      BigInteger gasLimit,
-                                     BigDecimal amount,
+                                     BigDecimal amountEther,
                                      HDWallet wallet,
                                      String password) throws IOException, CipherException {
-        BigDecimal realValue = Convert.toWei(amount.toString(), Convert.Unit.ETHER);
-        RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, gasPrice, gasLimit, to, realValue.toBigInteger());
+        BigDecimal amountWei = Convert.toWei(amountEther.toString(), Convert.Unit.ETHER);
+        RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, gasPrice, gasLimit, to, amountWei.toBigInteger());
         return signData(rawTransaction, wallet, password);
     }
 
