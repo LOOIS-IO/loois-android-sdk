@@ -1,7 +1,9 @@
 package org.loois.dapp.manager;
 
 import org.loois.dapp.Loois;
+import org.loois.dapp.common.Params;
 import org.loois.dapp.model.HDWallet;
+import org.loois.dapp.protocol.Config;
 import org.loois.dapp.protocol.core.params.NotifyTransactionSubmittedParams;
 import org.loois.dapp.protocol.core.response.LooisNotifyTransactionSubmitted;
 import org.loois.dapp.rx.LooisSubscriber;
@@ -10,6 +12,7 @@ import org.loois.dapp.rx.ScheduleCompat;
 import org.web3j.protocol.core.Response;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.utils.Convert;
+import org.web3j.utils.Numeric;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -40,14 +43,18 @@ public class TransactionManager {
                 .subscribe(new LooisSubscriber<String>() {
                     @Override
                     public void onSuccess(String s) {
-                        listener.onSuccess(s);
+                        if (listener != null) {
+                            listener.onSuccess(s);
+                        }
                         notifyETHTransaction(s, nonce.intValue(), to, amountEther, gasPrice, gasLimit, wallet.address);
 
                     }
 
                     @Override
                     public void onFailed(Throwable throwable) {
-                        listener.onFailed(throwable);
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
                     }
                 });
     }
@@ -102,13 +109,17 @@ public class TransactionManager {
                 .subscribe(new LooisSubscriber<String>() {
                     @Override
                     public void onSuccess(String s) {
-                        listener.onSuccess(s);
+                        if (listener != null) {
+                            listener.onSuccess(s);
+                        }
                         notifyTokenTransaction(s, contractAddress, to, nonce.intValue(), gasPrice, gasLimit, wallet.address, amount, decimal);
                     }
 
                     @Override
                     public void onFailed(Throwable throwable) {
-                        listener.onFailed(throwable);
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
                     }
                 });
 
@@ -130,6 +141,97 @@ public class TransactionManager {
                 .subscribe(new LooisSubscriber<String>() {
                     @Override
                     public void onSuccess(String result) {
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+
+                    }
+                });
+    }
+
+
+    public void sendETHToWETHTransaction(BigInteger gasPrice,
+                                         BigInteger gasLimit,
+                                         BigInteger nonce,
+                                         HDWallet wallet,
+                                         String password,
+                                         BigInteger amount,
+                                         OnTransactionListener listener) {
+        Flowable.just(password)
+                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
+                    String signDeposit = SignManager.shared().signDeposit(gasPrice, gasLimit, nonce, wallet, password, amount);
+                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signDeposit).sendAsync().get();
+                    return Flowable.just(ethSendTransaction);
+                })
+                .compose(ScheduleCompat.apply())
+                .compose(RxResultHelper.handleResult())
+                .subscribe(new LooisSubscriber<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        if (listener != null) {
+                            listener.onSuccess(s);
+                        }
+                        String data = Params.Abi.deposit;
+                        notifyTokenExchangeSubmitted(s, nonce.intValue(), Config.PROTOCAL_ADDRESS, gasPrice, gasLimit, data, wallet.address);
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
+    }
+
+    public void sendWETHToETHTransaction(BigInteger gasPrice,
+                                         BigInteger gasLimit,
+                                         BigInteger nonce,
+                                         HDWallet wallet,
+                                         String password,
+                                         BigInteger amount,
+                                         OnTransactionListener listener) {
+        Flowable.just(password)
+                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
+                    String signWithdraw = SignManager.shared().signWithdraw(gasPrice, gasLimit, nonce, wallet, password, amount);
+                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signWithdraw).sendAsync().get();
+                    return Flowable.just(ethSendTransaction);
+                })
+                .compose(ScheduleCompat.apply())
+                .compose(RxResultHelper.handleResult())
+                .subscribe(new LooisSubscriber<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        if (listener != null) {
+                            listener.onSuccess(s);
+                        }
+                        String data = Params.Abi.withdraw + Numeric.toHexStringNoPrefixZeroPadded(amount, 64);
+                        notifyTokenExchangeSubmitted(s, nonce.intValue(), Config.PROTOCAL_ADDRESS, gasPrice, gasLimit, data, wallet.address);
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
+    }
+
+    private void notifyTokenExchangeSubmitted(String txHash, int nonce, String protocolAddress, BigInteger gasPrice, BigInteger gasLimit, String data, String address) {
+        Flowable.just(txHash)
+                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
+                    NotifyTransactionSubmittedParams params = new NotifyTransactionSubmittedParams(txHash, nonce, protocolAddress, BigInteger.ZERO, gasPrice, gasLimit, data, address);
+                    LooisNotifyTransactionSubmitted looisNotifyTransactionSubmitted = Loois.client().looisNotifyTransactionSubmitted(params).sendAsync().get();
+                    return Flowable.just(looisNotifyTransactionSubmitted);
+                })
+                .compose(ScheduleCompat.apply())
+                .compose(RxResultHelper.handleResult())
+                .subscribe(new LooisSubscriber<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+
                     }
 
                     @Override
