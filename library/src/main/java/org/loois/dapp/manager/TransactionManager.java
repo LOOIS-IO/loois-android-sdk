@@ -418,5 +418,38 @@ public class TransactionManager {
                 });
     }
 
+    public void sendCancelAllOrdersTransaction(BigInteger nonce, BigInteger gasPriceWei, BigInteger gasLimit,
+                                               HDWallet wallet, String password, LooisListener listener) {
+        Flowable.just(password)
+                .flatMap(new Function<String, Flowable<Response<String>>>() {
+                    @Override
+                    public Flowable<Response<String>> apply(String s) throws Exception {
+                        long timestamp = System.currentTimeMillis() / 1000;
+                        String signCancelAllOrders = SignManager.shared().signCancelAllOrders(timestamp, gasPriceWei, gasLimit, nonce, wallet, password);
+                        EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signCancelAllOrders).sendAsync().get();
+                        return Flowable.just(ethSendTransaction);
+                    }
+                })
+                .compose(RxResultHelper.handleResult())
+                .compose(ScheduleCompat.apply())
+                .subscribe(new LooisSubscriber<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        if (listener != null) {
+                            listener.onSuccess(s);
+                        }
+                        //TODO: notify submit
+
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
+    }
+
 
 }
