@@ -451,5 +451,39 @@ public class TransactionManager {
                 });
     }
 
+    public void sendCancelMarketOrdersTransaction(BigInteger nonce, String protocolB, String protocolS, String password, HDWallet wallet, LooisListener listener) {
+        BigInteger gasPriceWei = Convert.toWei(String.valueOf(BigInteger.valueOf(Params.DEFAULT_GAS)), Convert.Unit.GWEI).toBigInteger();
+        BigInteger gasLimit = Params.GasLimit.cancelOrderByTokenPair;
+        sendCancelMarketOrdersTransaction(nonce, gasPriceWei, gasLimit, protocolB, protocolS, password, wallet, listener);
+    }
+
+
+    public void sendCancelMarketOrdersTransaction(BigInteger nonce, BigInteger gasPriceWei, BigInteger gasLimit,
+                                                  String protocolB, String protocolS, String password, HDWallet wallet, LooisListener listener) {
+        Flowable.just(password)
+                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
+                    String signed = SignManager.shared().signCancelTokenPairOrders(protocolB, protocolS, gasPriceWei, gasLimit, nonce, wallet, password);
+                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signed).sendAsync().get();
+                    return Flowable.just(ethSendTransaction);
+                })
+                .compose(RxResultHelper.handleResult())
+                .compose(ScheduleCompat.apply())
+                .subscribe(new LooisSubscriber<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        if (listener != null) {
+                            listener.onSuccess(s);
+                        }
+                        //TODO: notify submit
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
+    }
 
 }

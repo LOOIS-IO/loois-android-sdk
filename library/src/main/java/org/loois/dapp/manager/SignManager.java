@@ -146,14 +146,14 @@ public class SignManager {
     }
 
 
-    public String signCancelTokenPairOrders(String tokenA,
-                                                   String tokenB,
+    public String signCancelTokenPairOrders(String protocolB,
+                                                   String protocolS,
                                                    BigInteger gasPrice,
                                                    BigInteger gasLimit,
                                                    BigInteger nonce,
                                                    HDWallet wallet,
                                                    String password) throws Exception {
-        String data = abiCancelTokenPairOrder(tokenA, tokenB);
+        String data = abiCancelTokenPairOrder(protocolB, protocolS);
         RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.PROTOCAL_ADDRESS, data);
         return signData(rawTransaction, wallet, password);
     }
