@@ -375,20 +375,51 @@ public class SignManager {
     }
 
 
-    public String signBind(BigInteger gasPrice,
+    private String signBind(BigInteger gasPrice,
                                BigInteger gasLimit,
                                BigInteger nonce,
                                HDWallet wallet,
                                String password,
-                               boolean isNeo,
+                               int param,
                                String address) throws Exception {
         Function function = new Function("bind",
-                Arrays.asList(new Uint8(isNeo ? 1 : 2), new Utf8String(address)),
+                Arrays.asList(new Uint8(param), new Utf8String(address)),
                 Collections.emptyList());
         String data = FunctionEncoder.encode(function);
 
         RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.BIND_CONTRACT_ADDRESS, data);
         return signData(rawTransaction, wallet, password);
+    }
+
+    public String signBindNeo(BigInteger gasPrice,
+                              BigInteger gasLimit,
+                              BigInteger nonce,
+                              HDWallet wallet,
+                              String password,
+                              String address) throws Exception{
+        return signBind(gasPrice,
+                        gasLimit,
+                        nonce,
+                        wallet,
+                        password,
+                        1,
+                        address);
+
+    }
+
+    public String signBindQutm(BigInteger gasPrice,
+                               BigInteger gasLimit,
+                               BigInteger nonce,
+                               HDWallet wallet,
+                               String password,
+                               String address) throws Exception{
+        return signBind(gasPrice,
+                gasLimit,
+                nonce,
+                wallet,
+                password,
+                2,
+                address);
     }
 
     private String signData(RawTransaction rawTransaction,

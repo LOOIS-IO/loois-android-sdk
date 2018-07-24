@@ -219,6 +219,62 @@ public class TransactionManager {
                 });
     }
 
+    public void sendBindNeoTransaction(String neoAddress, BigInteger nonce, HDWallet wallet, String password, OnTransactionListener listener) {
+        Flowable.just(neoAddress)
+                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
+                    BigInteger gasPriceWei = Convert.toWei(String.valueOf(Params.DEFAULT_GAS), Convert.Unit.GWEI).toBigInteger();
+                    String signBindNeo = SignManager.shared().signBindNeo(gasPriceWei, Params.GasLimit.bind, nonce, wallet, password, neoAddress);
+                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signBindNeo).sendAsync().get();
+                    return Flowable.just(ethSendTransaction);
+                })
+                .compose(ScheduleCompat.apply())
+                .compose(RxResultHelper.handleResult())
+                .subscribe(new LooisSubscriber<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        if (listener != null) {
+                            listener.onSuccess(s);
+                        }
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
+    }
+
+    public void sendBindQutmTransaction(String qutmAddress, BigInteger nonce, HDWallet wallet, String password, OnTransactionListener listener) {
+        Flowable.just(qutmAddress)
+                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
+                    BigInteger gasPriceWei = Convert.toWei(String.valueOf(Params.DEFAULT_GAS), Convert.Unit.GWEI).toBigInteger();
+                    String signBindNeo = SignManager.shared().signBindQutm(gasPriceWei, Params.GasLimit.bind, nonce, wallet, password, qutmAddress);
+                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signBindNeo).sendAsync().get();
+                    return Flowable.just(ethSendTransaction);
+                })
+                .compose(ScheduleCompat.apply())
+                .compose(RxResultHelper.handleResult())
+                .subscribe(new LooisSubscriber<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        if (listener != null) {
+                            listener.onSuccess(s);
+                        }
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
+    }
+
+
+
     private void notifyTokenExchangeSubmitted(String txHash, int nonce, String protocolAddress, BigInteger gasPrice, BigInteger gasLimit, String data, String address) {
         Flowable.just(txHash)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
