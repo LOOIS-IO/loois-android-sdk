@@ -3,6 +3,7 @@ package org.loois.dapp.manager;
 import org.loois.dapp.Loois;
 import org.loois.dapp.common.Params;
 import org.loois.dapp.model.HDWallet;
+import org.loois.dapp.model.OriginalOrder;
 import org.loois.dapp.protocol.Config;
 import org.loois.dapp.protocol.core.params.NotifyTransactionSubmittedParams;
 import org.loois.dapp.protocol.core.response.LooisNotifyTransactionSubmitted;
@@ -373,5 +374,49 @@ public class TransactionManager {
                     }
                 });
     }
+
+
+    public void sendCancelSingleOrderTransaction(OriginalOrder order, String sellTokenProtocol, String buyTokenProtocol, BigInteger nonce,
+                                                  HDWallet wallet, String password,
+                                                 LooisListener listener) {
+        BigInteger gasPriceWei = Convert.toWei(String.valueOf(BigInteger.valueOf(Params.DEFAULT_GAS)), Convert.Unit.GWEI).toBigInteger();
+        BigInteger gasLimit= Params.GasLimit.cancelOrder;
+        sendCancelSingleOrderTransaction(order, sellTokenProtocol, buyTokenProtocol, nonce, gasPriceWei, gasLimit, wallet, password, listener);
+    }
+
+
+    public void sendCancelSingleOrderTransaction(OriginalOrder order, String sellTokenProtocol, String buyTokenProtocol, BigInteger nonce,
+                                                 BigInteger gasPriceWei, BigInteger gasLimit, HDWallet wallet, String password,
+                                                 LooisListener listener) {
+        Flowable.just(order)
+                .flatMap(new Function<OriginalOrder, Flowable<Response<String>>>() {
+                    @Override
+                    public Flowable<Response<String>> apply(OriginalOrder originalOrder) throws Exception {
+                        String signedCancelOrder = SignManager.shared()
+                                .signedCancelOrder(sellTokenProtocol, buyTokenProtocol, order, nonce, gasPriceWei, gasLimit, wallet, password);
+                        EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signedCancelOrder).sendAsync().get();
+                        return Flowable.just(ethSendTransaction);
+                    }
+                })
+                .compose(RxResultHelper.handleResult())
+                .compose(ScheduleCompat.apply())
+                .subscribe(new LooisSubscriber<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        if (listener != null) {
+                            listener.onSuccess(s);
+                        }
+                        //TODO: notify submit
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
+    }
+
 
 }

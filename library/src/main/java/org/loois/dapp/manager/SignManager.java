@@ -196,7 +196,6 @@ public class SignManager {
 
 
     private String getCancelOrderMessage(
-
             String sellTokenProtocol,
             String buyTokenProtocol,
             OriginalOrder order) {

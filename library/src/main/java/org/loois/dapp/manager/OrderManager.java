@@ -156,20 +156,4 @@ public class OrderManager {
 
     }
 
-
-    /**
-     * Cancel an order
-     * @param orderInfo User order information
-     */
-    public void cancelOrder(OrderInfo orderInfo) {
-
-    }
-
-    /**
-     * Check if token is authenticated.
-     */
-    public void  authenticate() {
-
-    }
-
 }
