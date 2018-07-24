@@ -100,8 +100,8 @@ public class SignManager {
      * @throws IOException
      * @throws CipherException
      */
-    public String signApproveOnce(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPrice,
-                                  BigInteger gasLimit, String password) throws IOException, CipherException {
+    public String signApproveMax(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPrice,
+                                 BigInteger gasLimit, String password) throws IOException, CipherException {
         BigDecimal b1 = new BigDecimal(String.valueOf(Long.MAX_VALUE));
         BigDecimal b2 = new BigDecimal("1000000000000000000");
         BigInteger value = b1.multiply(b2).toBigIntegerExact();
@@ -110,8 +110,8 @@ public class SignManager {
 
     /**
      * If token's allowance is not 0, but still not cover order amount, we need to authenticate twice:
-     * 1. Call signApproveTwice to sign 0 and send the signed data.
-     * 2. Call signApproveOnce to sign a big value and send the signed data.
+     * 1. Call signApproveZero to sign 0 and send the signed data.
+     * 2. Call signApproveMax to sign a big value and send the signed data.
      *
      * @param tokenProtocol Sell token's protocol address
      * @param wallet        User wallet
@@ -123,8 +123,8 @@ public class SignManager {
      * @throws IOException
      * @throws CipherException
      */
-    public String signApproveTwice(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPrice,
-                                   BigInteger gasLimit, String password) throws IOException, CipherException {
+    public String signApproveZero(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPrice,
+                                  BigInteger gasLimit, String password) throws IOException, CipherException {
         BigInteger value = new BigInteger("0");
         return signApproveData(tokenProtocol, wallet, nonce, gasPrice, gasLimit, value, password);
     }

@@ -6,6 +6,7 @@ import org.loois.dapp.model.HDWallet;
 import org.loois.dapp.protocol.Config;
 import org.loois.dapp.protocol.core.params.NotifyTransactionSubmittedParams;
 import org.loois.dapp.protocol.core.response.LooisNotifyTransactionSubmitted;
+import org.loois.dapp.rx.LooisError;
 import org.loois.dapp.rx.LooisSubscriber;
 import org.loois.dapp.rx.RxResultHelper;
 import org.loois.dapp.rx.ScheduleCompat;
@@ -219,6 +220,28 @@ public class TransactionManager {
                 });
     }
 
+    private void notifyTokenExchangeSubmitted(String txHash, int nonce, String protocolAddress, BigInteger gasPrice, BigInteger gasLimit, String data, String address) {
+        Flowable.just(txHash)
+                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
+                    NotifyTransactionSubmittedParams params = new NotifyTransactionSubmittedParams(txHash, nonce, protocolAddress, BigInteger.ZERO, gasPrice, gasLimit, data, address);
+                    LooisNotifyTransactionSubmitted looisNotifyTransactionSubmitted = Loois.client().looisNotifyTransactionSubmitted(params).sendAsync().get();
+                    return Flowable.just(looisNotifyTransactionSubmitted);
+                })
+                .compose(ScheduleCompat.apply())
+                .compose(RxResultHelper.handleResult())
+                .subscribe(new LooisSubscriber<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+
+                    }
+                });
+    }
+
     public void sendBindNeoTransaction(String neoAddress, BigInteger nonce, HDWallet wallet, String password, OnTransactionListener listener) {
         Flowable.just(neoAddress)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
@@ -234,6 +257,7 @@ public class TransactionManager {
                     public void onSuccess(String s) {
                         if (listener != null) {
                             listener.onSuccess(s);
+                            //TODO: notify submit
                         }
                     }
 
@@ -262,6 +286,7 @@ public class TransactionManager {
                         if (listener != null) {
                             listener.onSuccess(s);
                         }
+                        //TODO: notify submit
                     }
 
                     @Override
@@ -273,26 +298,78 @@ public class TransactionManager {
                 });
     }
 
-
-
-    private void notifyTokenExchangeSubmitted(String txHash, int nonce, String protocolAddress, BigInteger gasPrice, BigInteger gasLimit, String data, String address) {
-        Flowable.just(txHash)
+    public void sendDoubleApproveTransaction(String tokenProtocal,
+                                             BigInteger gasPrice,
+                                             BigInteger gasLimit,
+                                             BigInteger nonce,
+                                             HDWallet wallet,
+                                             String password,
+                                             OnTransactionListener listener) {
+        Flowable.just(password)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
-                    NotifyTransactionSubmittedParams params = new NotifyTransactionSubmittedParams(txHash, nonce, protocolAddress, BigInteger.ZERO, gasPrice, gasLimit, data, address);
-                    LooisNotifyTransactionSubmitted looisNotifyTransactionSubmitted = Loois.client().looisNotifyTransactionSubmitted(params).sendAsync().get();
-                    return Flowable.just(looisNotifyTransactionSubmitted);
+                    String signApproveZero = SignManager.shared().signApproveZero(tokenProtocal, wallet, nonce, gasPrice, gasLimit, password);
+                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signApproveZero).sendAsync().get();
+                    return Flowable.just(ethSendTransaction);
+                })
+                .flatMap((Function<Response<String>, Flowable<Response<String>>>) stringResponse -> {
+                    if (stringResponse.hasError()) {
+                        return Flowable.error(new LooisError(stringResponse.getError().getMessage(), stringResponse.getError().getCode()));
+                    }
+                    //TODO: notify submit
+                    BigInteger newNonce = nonce.add(new BigInteger("1"));
+                    String signApproveMax = SignManager.shared().signApproveMax(tokenProtocal, wallet, newNonce, gasPrice, gasLimit, password);
+                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signApproveMax).sendAsync().get();
+                    return Flowable.just(ethSendTransaction);
                 })
                 .compose(ScheduleCompat.apply())
                 .compose(RxResultHelper.handleResult())
                 .subscribe(new LooisSubscriber<String>() {
                     @Override
                     public void onSuccess(String s) {
-
+                        if (listener != null) {
+                            listener.onSuccess(s);
+                        }
+                        //TODO: notify submit
                     }
 
                     @Override
                     public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
+    }
 
+    public void sendSingleApproveTransaction(String tokenProtocal,
+                                             BigInteger gasPrice,
+                                             BigInteger gasLimit,
+                                             BigInteger nonce,
+                                             HDWallet wallet,
+                                             String password,
+                                             OnTransactionListener listener) {
+        Flowable.just(password)
+                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
+                    String signApproveZero = SignManager.shared().signApproveMax(tokenProtocal, wallet, nonce, gasPrice, gasLimit, password);
+                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signApproveZero).sendAsync().get();
+                    return Flowable.just(ethSendTransaction);
+                })
+                .compose(ScheduleCompat.apply())
+                .compose(RxResultHelper.handleResult())
+                .subscribe(new LooisSubscriber<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        if (listener != null) {
+                            listener.onSuccess(s);
+                        }
+                        //TODO: notify submit
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
                     }
                 });
     }
