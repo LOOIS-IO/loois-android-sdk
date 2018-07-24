@@ -31,7 +31,7 @@ public class TransactionManager {
                                    BigDecimal amountEther,
                                    String password,
                                    HDWallet wallet,
-                                   OnTransactionListener listener) {
+                                   LooisListener listener) {
         Flowable.just(to)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
                     String data = SignManager.shared().signETHTransaction(to, nonce, gasPrice, gasLimit, amountEther, wallet, password);
@@ -95,7 +95,7 @@ public class TransactionManager {
                                      BigDecimal amount,
                                      String password,
                                      HDWallet wallet,
-                                     OnTransactionListener listener) {
+                                     LooisListener listener) {
 
         Flowable.just(to)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
@@ -158,7 +158,7 @@ public class TransactionManager {
                                          HDWallet wallet,
                                          String password,
                                          BigInteger amount,
-                                         OnTransactionListener listener) {
+                                         LooisListener listener) {
         Flowable.just(password)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
                     String signDeposit = SignManager.shared().signDeposit(gasPrice, gasLimit, nonce, wallet, password, amount);
@@ -192,7 +192,7 @@ public class TransactionManager {
                                          HDWallet wallet,
                                          String password,
                                          BigInteger amount,
-                                         OnTransactionListener listener) {
+                                         LooisListener listener) {
         Flowable.just(password)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
                     String signWithdraw = SignManager.shared().signWithdraw(gasPrice, gasLimit, nonce, wallet, password, amount);
@@ -242,7 +242,7 @@ public class TransactionManager {
                 });
     }
 
-    public void sendBindNeoTransaction(String neoAddress, BigInteger nonce, HDWallet wallet, String password, OnTransactionListener listener) {
+    public void sendBindNeoTransaction(String neoAddress, BigInteger nonce, HDWallet wallet, String password, LooisListener listener) {
         Flowable.just(neoAddress)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
                     BigInteger gasPriceWei = Convert.toWei(String.valueOf(Params.DEFAULT_GAS), Convert.Unit.GWEI).toBigInteger();
@@ -270,7 +270,7 @@ public class TransactionManager {
                 });
     }
 
-    public void sendBindQutmTransaction(String qutmAddress, BigInteger nonce, HDWallet wallet, String password, OnTransactionListener listener) {
+    public void sendBindQutmTransaction(String qutmAddress, BigInteger nonce, HDWallet wallet, String password, LooisListener listener) {
         Flowable.just(qutmAddress)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
                     BigInteger gasPriceWei = Convert.toWei(String.valueOf(Params.DEFAULT_GAS), Convert.Unit.GWEI).toBigInteger();
@@ -304,7 +304,7 @@ public class TransactionManager {
                                              BigInteger nonce,
                                              HDWallet wallet,
                                              String password,
-                                             OnTransactionListener listener) {
+                                             LooisListener listener) {
         Flowable.just(password)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
                     String signApproveZero = SignManager.shared().signApproveZero(tokenProtocal, wallet, nonce, gasPrice, gasLimit, password);
@@ -347,7 +347,7 @@ public class TransactionManager {
                                              BigInteger nonce,
                                              HDWallet wallet,
                                              String password,
-                                             OnTransactionListener listener) {
+                                             LooisListener listener) {
         Flowable.just(password)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
                     String signApproveZero = SignManager.shared().signApproveMax(tokenProtocal, wallet, nonce, gasPrice, gasLimit, password);
@@ -373,14 +373,5 @@ public class TransactionManager {
                     }
                 });
     }
-
-
-    public interface OnTransactionListener {
-
-        void onSuccess(String result);
-
-        void onFailed(Throwable throwable);
-    }
-
 
 }
