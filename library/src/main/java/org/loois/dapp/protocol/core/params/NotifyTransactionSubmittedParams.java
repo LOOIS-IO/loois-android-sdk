@@ -15,6 +15,11 @@ public class NotifyTransactionSubmittedParams {
     public String input;
     public String from;
 
+    public NotifyTransactionSubmittedParams(String txHash, Integer nonce, String to, BigInteger gasPrice, BigInteger gas, String input, String from) {
+        this(txHash, nonce, to, BigInteger.ZERO, gasPrice, gas, input, from);
+    }
+
+
     public NotifyTransactionSubmittedParams(String txHash, Integer nonce, String to, BigInteger value, BigInteger gasPrice, BigInteger gas, String input, String from) {
         this.hash = txHash;
         this.nonce = Numeric.encodeQuantity(BigInteger.valueOf(nonce));
