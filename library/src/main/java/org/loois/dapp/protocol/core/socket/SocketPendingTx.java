@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SocketPendingTx extends SocketResponse<List<Transaction>>{
 
-    public List<Transaction> getPendingTx() {
+    public List<Transaction> getPendingTxs() {
         return data;
     }
 }

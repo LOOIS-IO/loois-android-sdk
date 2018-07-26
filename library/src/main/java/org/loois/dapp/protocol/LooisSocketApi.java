@@ -25,8 +25,8 @@ public interface LooisSocketApi {
     void registerBalanceListener(SocketListener listener);
     void removeBalanceListener(SocketListener listener);
 
-    void registerTransactionListener(SocketListener listener);
-    void removeTransactionListener(SocketListener listener);
+    void registerPendingTxListener(SocketListener listener);
+    void removePendingTxListener(SocketListener listener);
 
     void registerMarketCapListener(SocketListener listener);
     void removeMarketCapListener(SocketListener listener);

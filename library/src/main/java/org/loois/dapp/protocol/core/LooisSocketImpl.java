@@ -164,12 +164,12 @@ public class LooisSocketImpl implements LooisSocketApi {
     }
 
     @Override
-    public void registerTransactionListener(SocketListener listener) {
+    public void registerPendingTxListener(SocketListener listener) {
         addListener(SocketMethod.pendingTx_res, listener);
     }
 
     @Override
-    public void removeTransactionListener(SocketListener listener) {
+    public void removePendingTxListener(SocketListener listener) {
         removeListener(SocketMethod.pendingTx_res, listener);
     }
 

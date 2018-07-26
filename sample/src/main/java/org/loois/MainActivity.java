@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
     private void testSockePendingTx() {
         LooisSocketImpl looisSocket = new LooisSocketImpl();
         looisSocket.onPendingTx(WALLET_ADDRESS);
-        looisSocket.registerTransactionListener(new SocketListener(){
+        looisSocket.registerPendingTxListener(new SocketListener(){
 
             @Override
             public void onPendingTx(SocketPendingTx result) {

@@ -47,6 +47,29 @@ public class TransactionManager {
         }
     }
 
+    public void sendETHTransaction(String to,
+                                   BigInteger gasPrice,
+                                   BigInteger gasLimit,
+                                   BigDecimal amountEther,
+                                   String password,
+                                   HDWallet wallet,
+                                   LooisListener listener) {
+        PendingTxManager.shared().getNonce(wallet.address)
+                .subscribe(new LooisSubscriber<BigInteger>() {
+                    @Override
+                    public void onSuccess(BigInteger nonce) {
+                        sendETHTransaction(to, nonce, gasPrice, gasLimit, amountEther, password, wallet, listener);
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
+    }
+
 
 
     public void sendETHTransaction(String to,
@@ -85,6 +108,30 @@ public class TransactionManager {
                 });
     }
 
+    public void sendTokenTransaction(String contractAddress,
+                                     BigDecimal decimal,
+                                     String to,
+                                     BigInteger gasPrice,
+                                     BigInteger gasLimit,
+                                     BigDecimal amount,
+                                     String password,
+                                     HDWallet wallet,
+                                     LooisListener listener) {
+        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+            @Override
+            public void onSuccess(BigInteger nonce) {
+                sendTokenTransaction(contractAddress, decimal, to, nonce, gasPrice, gasLimit, amount, password, wallet, listener);
+            }
+
+            @Override
+            public void onFailed(Throwable throwable) {
+                if (listener != null) {
+                    listener.onFailed(throwable);
+                }
+            }
+        });
+
+    }
 
     public void sendTokenTransaction(String contractAddress,
                                      BigDecimal decimal,
@@ -130,6 +177,27 @@ public class TransactionManager {
 
     public void sendETHToWETHTransaction(BigInteger gasPrice,
                                          BigInteger gasLimit,
+                                         HDWallet wallet,
+                                         String password,
+                                         BigInteger amount,
+                                         LooisListener listener) {
+        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+            @Override
+            public void onSuccess(BigInteger nonce) {
+                sendETHToWETHTransaction(gasPrice, gasLimit, nonce, wallet, password, amount, listener);
+            }
+
+            @Override
+            public void onFailed(Throwable throwable) {
+                if (listener != null) {
+                    listener.onFailed(throwable);
+                }
+            }
+        });
+    }
+
+    public void sendETHToWETHTransaction(BigInteger gasPrice,
+                                         BigInteger gasLimit,
                                          BigInteger nonce,
                                          HDWallet wallet,
                                          String password,
@@ -160,6 +228,27 @@ public class TransactionManager {
                         }
                     }
                 });
+    }
+
+    public void sendWETHToETHTransaction(BigInteger gasPrice,
+                                         BigInteger gasLimit,
+                                         HDWallet wallet,
+                                         String password,
+                                         BigInteger amount,
+                                         LooisListener listener) {
+        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+            @Override
+            public void onSuccess(BigInteger nonce) {
+                sendWETHToETHTransaction(gasPrice, gasLimit, nonce, wallet, password, amount, listener);
+            }
+
+            @Override
+            public void onFailed(Throwable throwable) {
+                if (listener != null) {
+                    listener.onFailed(throwable);
+                }
+            }
+        });
     }
 
     public void sendWETHToETHTransaction(BigInteger gasPrice,
@@ -196,6 +285,21 @@ public class TransactionManager {
                 });
     }
 
+    public void sendBindNeoTransaction(String neoAddress, HDWallet wallet, String password, LooisListener listener) {
+        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+            @Override
+            public void onSuccess(BigInteger nonce) {
+                sendBindNeoTransaction(neoAddress, nonce, wallet, password, listener);
+            }
+
+            @Override
+            public void onFailed(Throwable throwable) {
+                if (listener != null) {
+                    listener.onFailed(throwable);
+                }
+            }
+        });
+    }
 
     public void sendBindNeoTransaction(String neoAddress, BigInteger nonce, HDWallet wallet, String password, LooisListener listener) {
         Flowable.just(neoAddress)
@@ -226,6 +330,22 @@ public class TransactionManager {
                 });
     }
 
+    public void sendBindQutmTransaction(String qutmAddress, HDWallet wallet, String password, LooisListener listener) {
+        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+            @Override
+            public void onSuccess(BigInteger nonce) {
+                sendBindQutmTransaction(qutmAddress, nonce, wallet, password, listener);
+            }
+
+            @Override
+            public void onFailed(Throwable throwable) {
+                if (listener != null) {
+                    listener.onFailed(throwable);
+                }
+            }
+        });
+    }
+
     public void sendBindQutmTransaction(String qutmAddress, BigInteger nonce, HDWallet wallet, String password, LooisListener listener) {
         Flowable.just(qutmAddress)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
@@ -254,6 +374,29 @@ public class TransactionManager {
                     }
                 });
     }
+
+
+    public void sendDoubleApproveTransaction(String tokenProtocal,
+                                             BigInteger gasPrice,
+                                             BigInteger gasLimit,
+                                             HDWallet wallet,
+                                             String password,
+                                             LooisListener listener){
+        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+            @Override
+            public void onSuccess(BigInteger nonce) {
+                sendDoubleApproveTransaction(tokenProtocal, gasPrice, gasLimit, nonce, wallet, password, listener);
+            }
+
+            @Override
+            public void onFailed(Throwable throwable) {
+                if (listener != null) {
+                    listener.onFailed(throwable);
+                }
+            }
+        });
+    }
+
 
     public void sendDoubleApproveTransaction(String tokenProtocal,
                                              BigInteger gasPrice,
@@ -303,6 +446,27 @@ public class TransactionManager {
     public void sendSingleApproveTransaction(String tokenProtocal,
                                              BigInteger gasPrice,
                                              BigInteger gasLimit,
+                                             HDWallet wallet,
+                                             String password,
+                                             LooisListener listener) {
+        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+            @Override
+            public void onSuccess(BigInteger nonce) {
+                sendSingleApproveTransaction(tokenProtocal, gasPrice, gasLimit, nonce, wallet, password, listener);
+            }
+
+            @Override
+            public void onFailed(Throwable throwable) {
+                if (listener != null) {
+                    listener.onFailed(throwable);
+                }
+            }
+        });
+    }
+
+    public void sendSingleApproveTransaction(String tokenProtocal,
+                                             BigInteger gasPrice,
+                                             BigInteger gasLimit,
                                              BigInteger nonce,
                                              HDWallet wallet,
                                              String password,
@@ -332,6 +496,25 @@ public class TransactionManager {
                         }
                     }
                 });
+    }
+
+
+    public void sendCancelSingleOrderTransaction(OriginalOrder order, String sellTokenProtocol, String buyTokenProtocol,
+                                                 HDWallet wallet, String password,
+                                                 LooisListener listener) {
+        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+            @Override
+            public void onSuccess(BigInteger nonce) {
+                sendCancelSingleOrderTransaction(order, sellTokenProtocol, buyTokenProtocol, nonce, wallet, password, listener);
+            }
+
+            @Override
+            public void onFailed(Throwable throwable) {
+                if (listener != null) {
+                    listener.onFailed(throwable);
+                }
+            }
+        });
     }
 
 
@@ -375,6 +558,24 @@ public class TransactionManager {
                 });
     }
 
+    public void sendCancelAllOrdersTransaction(BigInteger gasPriceWei, BigInteger gasLimit,
+                                               HDWallet wallet, String password, LooisListener listener) {
+        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+            @Override
+            public void onSuccess(BigInteger nonce) {
+                sendCancelAllOrdersTransaction(nonce, gasPriceWei, gasLimit, wallet, password, listener);
+            }
+
+            @Override
+            public void onFailed(Throwable throwable) {
+                if (listener != null) {
+                    listener.onFailed(throwable);
+                }
+            }
+        });
+
+    }
+
     public void sendCancelAllOrdersTransaction(BigInteger nonce, BigInteger gasPriceWei, BigInteger gasLimit,
                                                HDWallet wallet, String password, LooisListener listener) {
         Flowable.just(password)
@@ -405,10 +606,20 @@ public class TransactionManager {
                 });
     }
 
-    public void sendCancelMarketOrdersTransaction(BigInteger nonce, String protocolB, String protocolS, String password, HDWallet wallet, LooisListener listener) {
-        BigInteger gasPriceWei = Convert.toWei(String.valueOf(BigInteger.valueOf(Params.DEFAULT_GAS)), Convert.Unit.GWEI).toBigInteger();
-        BigInteger gasLimit = Params.GasLimit.cancelOrderByTokenPair;
-        sendCancelMarketOrdersTransaction(nonce, gasPriceWei, gasLimit, protocolB, protocolS, password, wallet, listener);
+    public void sendCancelMarketOrdersTransaction(BigInteger gasPriceWei, BigInteger gasLimit, String protocolB,
+                                                  String protocolS, String password, HDWallet wallet, LooisListener listener) {
+        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+            @Override
+            public void onSuccess(BigInteger nonce) {
+                sendCancelMarketOrdersTransaction(nonce, gasPriceWei, gasLimit, protocolB, protocolS, password, wallet, listener);
+            }
+
+            @Override
+            public void onFailed(Throwable throwable) {
+                listener.onFailed(throwable);
+            }
+        });
+
     }
 
 
