@@ -99,10 +99,9 @@ public class PendingTxManager {
     }
 
 
-    public Flowable<BigInteger> getNonce(String address) {
-        return Flowable.just(address)
-                .map((Function<String, Response<String>>) s ->
-                        Loois.web3j().ethGetTransactionCount(address, DefaultBlockParameterName.PENDING).sendAsync().get())
+    public Flowable<BigInteger> getNonce(Flowable<String> flowable) throws NumberFormatException {
+        return flowable.map((Function<String, Response<String>>) s ->
+                Loois.web3j().ethGetTransactionCount(s, DefaultBlockParameterName.PENDING).sendAsync().get())
                 .compose(RxResultHelper.handleResult())
                 .flatMap((Function<String, Flowable<BigInteger>>) nonceString -> {
                     Integer nonceValue;
@@ -113,12 +112,8 @@ public class PendingTxManager {
                     }
                     int actualNonce = nonceValue;
                     if (pendingTxs.size() > 0) {
-                        try {
-                            int smallestNonceInPending = Integer.parseInt(getPositivePendingTx().get(0).nonce);
-                            actualNonce = smallestNonceInPending > nonceValue ? nonceValue : nonceValue + pendingTxs.size();
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                        }
+                        int smallestNonceInPending = Integer.parseInt(getPositivePendingTx().get(0).nonce);
+                        actualNonce = smallestNonceInPending > nonceValue ? nonceValue : nonceValue + pendingTxs.size();
                     }
                     return Flowable.just(BigInteger.valueOf(actualNonce));
                 });
@@ -133,7 +128,7 @@ public class PendingTxManager {
 
     private static class Holder {
 
-        private static final  PendingTxManager singleton = new PendingTxManager();
+        private static final PendingTxManager singleton = new PendingTxManager();
 
     }
 }

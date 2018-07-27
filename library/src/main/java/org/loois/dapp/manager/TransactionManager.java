@@ -2,6 +2,7 @@ package org.loois.dapp.manager;
 
 import android.util.SparseArray;
 
+import org.loois.dapp.LWallet;
 import org.loois.dapp.Loois;
 import org.loois.dapp.common.Params;
 import org.loois.dapp.model.HDWallet;
@@ -11,6 +12,10 @@ import org.loois.dapp.rx.LooisError;
 import org.loois.dapp.rx.LooisSubscriber;
 import org.loois.dapp.rx.RxResultHelper;
 import org.loois.dapp.rx.ScheduleCompat;
+import org.web3j.crypto.CipherException;
+import org.web3j.crypto.ECKeyPair;
+import org.web3j.crypto.Wallet;
+import org.web3j.crypto.WalletFile;
 import org.web3j.protocol.core.Response;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.utils.Convert;
@@ -54,7 +59,7 @@ public class TransactionManager {
                                    String password,
                                    HDWallet wallet,
                                    LooisListener listener) {
-        PendingTxManager.shared().getNonce(wallet.address)
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password))
                 .subscribe(new LooisSubscriber<BigInteger>() {
                     @Override
                     public void onSuccess(BigInteger nonce) {
@@ -117,7 +122,7 @@ public class TransactionManager {
                                      String password,
                                      HDWallet wallet,
                                      LooisListener listener) {
-        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
             @Override
             public void onSuccess(BigInteger nonce) {
                 sendTokenTransaction(contractAddress, decimal, to, nonce, gasPrice, gasLimit, amount, password, wallet, listener);
@@ -181,7 +186,7 @@ public class TransactionManager {
                                          String password,
                                          BigInteger amount,
                                          LooisListener listener) {
-        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
             @Override
             public void onSuccess(BigInteger nonce) {
                 sendETHToWETHTransaction(gasPrice, gasLimit, nonce, wallet, password, amount, listener);
@@ -236,7 +241,7 @@ public class TransactionManager {
                                          String password,
                                          BigInteger amount,
                                          LooisListener listener) {
-        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
             @Override
             public void onSuccess(BigInteger nonce) {
                 sendWETHToETHTransaction(gasPrice, gasLimit, nonce, wallet, password, amount, listener);
@@ -286,7 +291,7 @@ public class TransactionManager {
     }
 
     public void sendBindNeoTransaction(String neoAddress, HDWallet wallet, String password, LooisListener listener) {
-        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
             @Override
             public void onSuccess(BigInteger nonce) {
                 sendBindNeoTransaction(neoAddress, nonce, wallet, password, listener);
@@ -331,7 +336,7 @@ public class TransactionManager {
     }
 
     public void sendBindQutmTransaction(String qutmAddress, HDWallet wallet, String password, LooisListener listener) {
-        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
             @Override
             public void onSuccess(BigInteger nonce) {
                 sendBindQutmTransaction(qutmAddress, nonce, wallet, password, listener);
@@ -382,7 +387,7 @@ public class TransactionManager {
                                              HDWallet wallet,
                                              String password,
                                              LooisListener listener){
-        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
             @Override
             public void onSuccess(BigInteger nonce) {
                 sendDoubleApproveTransaction(tokenProtocal, gasPrice, gasLimit, nonce, wallet, password, listener);
@@ -449,7 +454,7 @@ public class TransactionManager {
                                              HDWallet wallet,
                                              String password,
                                              LooisListener listener) {
-        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
             @Override
             public void onSuccess(BigInteger nonce) {
                 sendSingleApproveTransaction(tokenProtocal, gasPrice, gasLimit, nonce, wallet, password, listener);
@@ -502,7 +507,7 @@ public class TransactionManager {
     public void sendCancelSingleOrderTransaction(OriginalOrder order, String sellTokenProtocol, String buyTokenProtocol,
                                                  HDWallet wallet, String password,
                                                  LooisListener listener) {
-        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
             @Override
             public void onSuccess(BigInteger nonce) {
                 sendCancelSingleOrderTransaction(order, sellTokenProtocol, buyTokenProtocol, nonce, wallet, password, listener);
@@ -560,7 +565,7 @@ public class TransactionManager {
 
     public void sendCancelAllOrdersTransaction(BigInteger gasPriceWei, BigInteger gasLimit,
                                                HDWallet wallet, String password, LooisListener listener) {
-        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
             @Override
             public void onSuccess(BigInteger nonce) {
                 sendCancelAllOrdersTransaction(nonce, gasPriceWei, gasLimit, wallet, password, listener);
@@ -608,7 +613,7 @@ public class TransactionManager {
 
     public void sendCancelMarketOrdersTransaction(BigInteger gasPriceWei, BigInteger gasLimit, String protocolB,
                                                   String protocolS, String password, HDWallet wallet, LooisListener listener) {
-        PendingTxManager.shared().getNonce(wallet.address).subscribe(new LooisSubscriber<BigInteger>() {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
             @Override
             public void onSuccess(BigInteger nonce) {
                 sendCancelMarketOrdersTransaction(nonce, gasPriceWei, gasLimit, protocolB, protocolS, password, wallet, listener);
@@ -650,5 +655,20 @@ public class TransactionManager {
                         }
                     }
                 });
+    }
+
+    public boolean validatePassword(HDWallet wallet, String password) throws CipherException {
+        if (wallet.getWalletFile() != null) {
+            ECKeyPair keyPair = LWallet.decrypt(password, wallet.getWalletFile());
+            WalletFile generateWalletFile = Wallet.createLight(password, keyPair);
+            return wallet.getWalletFile().getAddress().equalsIgnoreCase(generateWalletFile.getAddress());
+        }
+        return false;
+    }
+
+    public Flowable<String> getValidatePasswordFlowable(HDWallet wallet, String password) {
+        return Flowable.just(wallet.address)
+                .filter(s -> validatePassword(wallet, password))
+                .map(s -> s);
     }
 }

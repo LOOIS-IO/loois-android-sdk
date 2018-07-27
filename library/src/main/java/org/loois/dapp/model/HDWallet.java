@@ -38,6 +38,5 @@ public class HDWallet {
             }
         }
         return null;
-
     }
 }
