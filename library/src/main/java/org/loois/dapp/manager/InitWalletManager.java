@@ -1,6 +1,5 @@
 package org.loois.dapp.manager;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.loois.dapp.LWallet;
@@ -94,17 +93,15 @@ public class InitWalletManager {
      */
     public HDWallet generateWallet(String mnemonic,
                                    String password,
-                                   AddressIndex addressIndex) throws CipherException, JsonProcessingException {
+                                   AddressIndex addressIndex) throws CipherException {
         ECKeyPair keyPair = generateKeyPair(mnemonic,addressIndex);
         WalletFile walletFile = Wallet.createLight(password, keyPair);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String keystore = objectMapper.writeValueAsString(walletFile);
-        return new HDWallet(walletFile.getAddress(),keystore);
+        return new HDWallet(walletFile.getAddress(),walletFile);
     }
 
     public HDWallet importMnemonic(String mnemonic,
                                    String password,
-                                   AddressIndex addressIndex) throws CipherException, JsonProcessingException {
+                                   AddressIndex addressIndex) throws CipherException {
         return generateWallet(mnemonic,password,addressIndex);
     }
 
@@ -118,19 +115,17 @@ public class InitWalletManager {
             // not the same one
             return null;
         }
-        return new HDWallet(walletFile.getAddress(),keystore);
+        return new HDWallet(walletFile.getAddress(),walletFile);
     }
 
-    public HDWallet importPrivateKey(String privateKey, String password) throws CipherException, JsonProcessingException {
+    public HDWallet importPrivateKey(String privateKey, String password) throws CipherException {
         if (privateKey.startsWith("0x")) {
             privateKey = privateKey.substring(2);
         }
         byte[] privateBytes = Hex.decode(privateKey);
         ECKeyPair ecKeyPair = ECKeyPair.create(privateBytes);
         WalletFile walletFile = Wallet.createLight(password, ecKeyPair);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String keystore = objectMapper.writeValueAsString(walletFile);
-        return new HDWallet(walletFile.getAddress(),keystore);
+        return new HDWallet(walletFile.getAddress(), walletFile);
     }
 
 

@@ -1,10 +1,9 @@
 package org.loois.dapp.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.web3j.crypto.WalletFile;
-
-import java.io.IOException;
 
 /**
  * <pre>
@@ -17,15 +16,28 @@ public class HDWallet {
 
     public String address;
 
-    public String keystore;
+    private WalletFile walletFile;
 
-    public HDWallet(String address, String keystore) {
+
+    public HDWallet(String address, WalletFile walletFile) {
         this.address = address != null && address.startsWith("0x") ? address : "0x"+address;
-        this.keystore = keystore;
+        this.walletFile = walletFile;
     }
 
-    public WalletFile getWalletFile() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(keystore,WalletFile.class);
+    public WalletFile getWalletFile() {
+        return walletFile;
+    }
+
+    public String getWalletFileString() {
+        if (walletFile != null) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                return objectMapper.writeValueAsString(walletFile);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+
     }
 }
