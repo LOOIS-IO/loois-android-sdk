@@ -376,7 +376,7 @@ public class SignManager {
                             String password) throws IOException, CipherException {
 
         Credentials credentials = Credentials.create(LWallet.decrypt(password, wallet.getWalletFile()));
-        byte[] signMessage = TransactionEncoder.signMessage(rawTransaction, Loois.chainId, credentials);
+        byte[] signMessage = TransactionEncoder.signMessage(rawTransaction, Loois.getChainId(), credentials);
         return Numeric.toHexString(signMessage);
     }
 

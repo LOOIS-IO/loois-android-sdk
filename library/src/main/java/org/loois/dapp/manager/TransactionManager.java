@@ -42,11 +42,12 @@ public class TransactionManager {
                     .subscribe(new LooisSubscriber<String>() {
                         @Override
                         public void onSuccess(String s) {
+                            Loois.log("notifyTransactionSubmitted success:" +  s);
                         }
 
                         @Override
                         public void onFailed(Throwable throwable) {
-
+                            Loois.log("notifyTransactionSubmitted failed:" + throwable.getLocalizedMessage());
                         }
                     });
         }

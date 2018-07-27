@@ -1,6 +1,6 @@
 package org.loois.dapp;
 
-import android.text.TextUtils;
+import android.util.Log;
 
 import org.loois.dapp.protocol.Config;
 import org.loois.dapp.protocol.LooisApi;
@@ -21,40 +21,27 @@ import org.web3j.tx.ChainId;
  */
 public class Loois {
 
-    private static String tag = "Loois";
-
-    public static byte chainId = ChainId.MAINNET;
+    private static final String TAG = "Loois";
 
     private static LooisApi looisApi;
     private static LooisSocketApi looisSocket;
     private static Web3j web3j;
+    private static HttpService httpService;
 
-    private static HttpService httpService = new HttpService(Config.BASE_URL);
+    private static boolean enableDebugLog = true;
+    private static byte sChainId = ChainId.MAINNET;
 
 
-    private static ILogger mLogger = (tag, msg) -> {
-        // do nothing by default
-    };
 
-    public static void log(String msg){
-        if (mLogger != null){
-            mLogger.log(tag,msg);
-        }
+    public static void initialize() {
+        initialize(Config.BASE_URL, ChainId.MAINNET);
     }
 
-    public static class Builder{
-
-        public Builder initLogger(ILogger logger,String tag){
-            mLogger = logger;
-            Loois.tag = TextUtils.isEmpty(tag)?Loois.tag:tag;
-            return this;
-        }
-
-        public Builder chainId(byte chainId){
-            Loois.chainId = chainId;
-            return this;
-        }
+    public static void initialize(String url, byte chainId) {
+        httpService = new HttpService(url);
+        sChainId = chainId;
     }
+
 
     public static LooisApi client() {
         if (looisApi == null) {
@@ -87,5 +74,19 @@ public class Loois {
             }
         }
         return web3j;
+    }
+
+    public static void setDebugLogEnabled(boolean enabled) {
+        enableDebugLog = enabled;
+    }
+
+    public static void log(String msg) {
+        if (enableDebugLog) {
+            Log.d(TAG, msg);
+        }
+    }
+
+    public static byte getChainId() {
+        return sChainId;
     }
 }
