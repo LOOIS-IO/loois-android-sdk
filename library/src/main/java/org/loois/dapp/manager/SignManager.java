@@ -95,16 +95,17 @@ public class SignManager {
 
     public SignModel signETHTransaction(String to,
                                      BigInteger nonce,
-                                     BigInteger gasPrice,
+                                     BigInteger gasPriceGwei,
                                      BigInteger gasLimit,
                                      BigDecimal amountEther,
                                      HDWallet wallet,
                                      String password) throws IOException, CipherException {
         BigDecimal amountWei = Convert.toWei(amountEther.toString(), Convert.Unit.ETHER);
-        RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, gasPrice, gasLimit, to, amountWei.toBigInteger());
+        BigDecimal gasPriceWei = Convert.toWei(gasPriceGwei.toString(), Convert.Unit.GWEI);
+        RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, gasPriceWei.toBigInteger(), gasLimit, to, amountWei.toBigInteger());
         String signData = signData(rawTransaction, wallet, password);
         NotifyTransactionSubmittedParams params =
-                new NotifyTransactionSubmittedParams(null, nonce.intValue(), to, amountEther.toBigInteger(), gasPrice, gasLimit, "0x", wallet.address);
+                new NotifyTransactionSubmittedParams(null, nonce.intValue(), to, amountEther.toBigInteger(), gasPriceWei.toBigInteger(), gasLimit, "0x", wallet.address);
         return new SignModel(params, signData);
     }
 

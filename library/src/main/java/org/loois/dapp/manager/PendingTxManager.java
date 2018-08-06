@@ -115,6 +115,7 @@ public class PendingTxManager {
                         int smallestNonceInPending = Integer.parseInt(getPositivePendingTx().get(0).nonce);
                         actualNonce = smallestNonceInPending > nonceValue ? nonceValue : nonceValue + pendingTxs.size();
                     }
+                    Loois.log("getNonce: " + actualNonce);
                     return Flowable.just(BigInteger.valueOf(actualNonce));
                 });
     }
