@@ -51,6 +51,7 @@ public class TransactionTestActivity extends AppCompatActivity {
     private LooisListener<HDWallet> mHDWalletLooisListener = new LooisListener<HDWallet>() {
         @Override
         public void onSuccess(HDWallet result) {
+            mHDWallet = result;
             mAddressText.setText(result.address);
             Loois.token().fetchSupportedTokens(result.address);
         }
@@ -86,7 +87,7 @@ public class TransactionTestActivity extends AppCompatActivity {
         if (mHDWallet != null && lrc != null) {
             BigInteger gasPriceGwei = new BigInteger("4");
             BigInteger gasLimit = new BigInteger("200000");
-            BigDecimal amount = new BigDecimal("100");
+            BigDecimal amount = new BigDecimal("10");
             Loois.transaction().sendTokenTransaction(lrc.protocol, lrc.decimals, TO, gasPriceGwei,
                     gasLimit, amount, PASSWORD, mHDWallet, mTokenTransactionListener);
         }

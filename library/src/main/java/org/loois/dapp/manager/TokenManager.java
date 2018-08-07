@@ -24,10 +24,10 @@ public class TokenManager {
                 .compose(ScheduleCompat.apply())
                 .subscribe(new LooisSubscriber<List<SupportedToken>>() {
                     @Override
-                    public void onSuccess(List<SupportedToken> supportedTokens) {
-                        Loois.log("fetch supported tokens success: " + supportedTokens.size());
+                    public void onSuccess(List<SupportedToken> tokens) {
+                        Loois.log("fetch supported tokens success: " + tokens.size());
                         supportedTokens.clear();
-                        supportedTokens.addAll(supportedTokens);
+                        supportedTokens.addAll(tokens);
                     }
 
                     @Override

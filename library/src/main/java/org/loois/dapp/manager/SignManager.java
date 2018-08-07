@@ -75,7 +75,7 @@ public class SignManager {
         Loois.log("signContractTransaction");
         BigInteger realValue = amount.multiply(decimal).toBigInteger();
         String data = encodeTransferFunction(to, realValue);
-        BigInteger gasPriceWei = Convert.toWei(gasPriceGwei.toString(), Convert.Unit.GETHER).toBigInteger();
+        BigInteger gasPriceWei = Convert.toWei(gasPriceGwei.toString(), Convert.Unit.GWEI).toBigInteger();
         RawTransaction rawTransaction = RawTransaction.createTransaction(
                 nonce,
                 gasPriceWei,
