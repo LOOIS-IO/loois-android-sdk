@@ -20,6 +20,12 @@
         android:layout_height="wrap_content"
         android:text="sendTokenTransaction"
         android:onClick="onSendTokenTransaction"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="sendETHToWETHTransaction"
+        android:onClick="onSendETHToWETHTransaction"/>
+
 
 
 </LinearLayout>

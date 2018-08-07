@@ -68,17 +68,7 @@ public class TransactionTestActivity extends AppCompatActivity {
             BigInteger gasPriceGwei = new BigInteger("4");
             BigInteger gasLimit = new BigInteger("200000");
             BigDecimal amountEther = new BigDecimal("0.001");
-            Loois.transaction().sendETHTransaction(TO, gasPriceGwei, gasLimit, amountEther, PASSWORD, mHDWallet, new LooisListener<String>() {
-                @Override
-                public void onSuccess(String result) {
-                    Toast.makeText(TransactionTestActivity.this, result, Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailed(Throwable throwable) {
-                    Toast.makeText(TransactionTestActivity.this, throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+            Loois.transaction().sendETHTransaction(TO, gasPriceGwei, gasLimit, amountEther, PASSWORD, mHDWallet, mTransactionListener);
         }
     }
 
@@ -89,11 +79,24 @@ public class TransactionTestActivity extends AppCompatActivity {
             BigInteger gasLimit = new BigInteger("200000");
             BigDecimal amount = new BigDecimal("10");
             Loois.transaction().sendTokenTransaction(lrc.protocol, lrc.decimals, TO, gasPriceGwei,
-                    gasLimit, amount, PASSWORD, mHDWallet, mTokenTransactionListener);
+                    gasLimit, amount, PASSWORD, mHDWallet, mTransactionListener);
         }
     }
 
-    private LooisListener<String> mTokenTransactionListener = new LooisListener<String>() {
+    public void onSendETHToWETHTransaction(View view) {
+        BigInteger gasPriceGwei = new BigInteger("4");
+        BigInteger gasLimit = new BigInteger("200000");
+        BigDecimal amountEther = new BigDecimal("0.1");
+        SupportedToken weth = Loois.token().getSupportedTokenBySymbol("WETH");
+        if (mHDWallet != null && weth != null) {
+            Loois.transaction().sendETHToWETHTransaction(weth.protocol,
+                    gasPriceGwei, gasLimit, mHDWallet, PASSWORD, amountEther, mTransactionListener);
+        }
+
+    }
+
+
+    private LooisListener<String> mTransactionListener = new LooisListener<String>() {
         @Override
         public void onSuccess(String result) {
             Toast.makeText(TransactionTestActivity.this, result, Toast.LENGTH_SHORT).show();

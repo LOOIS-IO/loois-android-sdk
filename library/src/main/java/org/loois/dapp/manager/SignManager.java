@@ -62,16 +62,15 @@ public class SignManager {
     }
 
 
-
     public SignModel signContractTransaction(String contractAddress,
-                                          String to,
-                                          BigInteger nonce,
-                                          BigInteger gasPriceGwei,
-                                          BigInteger gasLimit,
-                                          BigDecimal amount,
-                                          BigDecimal decimal,
-                                          HDWallet wallet,
-                                          String password) throws IOException, CipherException {
+                                             String to,
+                                             BigInteger nonce,
+                                             BigInteger gasPriceGwei,
+                                             BigInteger gasLimit,
+                                             BigDecimal amount,
+                                             BigDecimal decimal,
+                                             HDWallet wallet,
+                                             String password) throws IOException, CipherException {
         Loois.log("signContractTransaction");
         BigInteger realValue = amount.multiply(decimal).toBigInteger();
         String data = encodeTransferFunction(to, realValue);
@@ -91,17 +90,17 @@ public class SignManager {
     public static String encodeTransferFunction(String to, BigInteger amountToken) {
         Function function = new Function("transfer",
                 Arrays.asList(new Address(to), new Uint256(amountToken)),
-                        Collections.emptyList());
-       return  FunctionEncoder.encode(function);
+                Collections.emptyList());
+        return FunctionEncoder.encode(function);
     }
 
     public SignModel signETHTransaction(String to,
-                                     BigInteger nonce,
-                                     BigInteger gasPriceGwei,
-                                     BigInteger gasLimit,
-                                     BigDecimal amountEther,
-                                     HDWallet wallet,
-                                     String password) throws IOException, CipherException {
+                                        BigInteger nonce,
+                                        BigInteger gasPriceGwei,
+                                        BigInteger gasLimit,
+                                        BigDecimal amountEther,
+                                        HDWallet wallet,
+                                        String password) throws IOException, CipherException {
         BigDecimal amountWei = Convert.toWei(amountEther.toString(), Convert.Unit.ETHER);
         BigDecimal gasPriceWei = Convert.toWei(gasPriceGwei.toString(), Convert.Unit.GWEI);
         RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, gasPriceWei.toBigInteger(), gasLimit, to, amountWei.toBigInteger());
@@ -126,7 +125,7 @@ public class SignManager {
      * @throws CipherException
      */
     public SignModel signApproveMax(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPrice,
-                                 BigInteger gasLimit, String password) throws IOException, CipherException {
+                                    BigInteger gasLimit, String password) throws IOException, CipherException {
         BigDecimal b1 = new BigDecimal(String.valueOf(Long.MAX_VALUE));
         BigDecimal b2 = new BigDecimal("1000000000000000000");
         BigInteger value = b1.multiply(b2).toBigIntegerExact();
@@ -149,13 +148,13 @@ public class SignManager {
      * @throws CipherException
      */
     public SignModel signApproveZero(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPrice,
-                                  BigInteger gasLimit, String password) throws IOException, CipherException {
+                                     BigInteger gasLimit, String password) throws IOException, CipherException {
         BigInteger value = new BigInteger("0");
         return signApproveData(tokenProtocol, wallet, nonce, gasPrice, gasLimit, value, password);
     }
 
     private SignModel signApproveData(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPrice,
-                                  BigInteger gasLimit, BigInteger value, String password) throws IOException, CipherException {
+                                      BigInteger gasLimit, BigInteger value, String password) throws IOException, CipherException {
         Function function = new Function("approve",
                 Arrays.asList(new Address(Config.DELEGATE_ADDRESS), new Uint(value)),
                 Collections.emptyList());
@@ -164,41 +163,41 @@ public class SignManager {
         RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, tokenProtocol, data);
         NotifyTransactionSubmittedParams params =
                 new NotifyTransactionSubmittedParams(null, nonce.intValue(), tokenProtocol, gasPrice, gasLimit, data, wallet.address);
-        String signData =  signData(rawTransaction, wallet, password);
+        String signData = signData(rawTransaction, wallet, password);
         return new SignModel(params, signData);
     }
 
 
     public SignModel signedCancelOrder(String sellTokenProtocol,
-                                        String buyTokenProtocol,
-                                        OriginalOrder order,
-                                        BigInteger nonce,
-                                        BigInteger gasPrice,
-                                        BigInteger gasLimit,
-                                        HDWallet wallet,
-                                        String password) throws Exception {
+                                       String buyTokenProtocol,
+                                       OriginalOrder order,
+                                       BigInteger nonce,
+                                       BigInteger gasPrice,
+                                       BigInteger gasLimit,
+                                       HDWallet wallet,
+                                       String password) throws Exception {
         String data = getCancelOrderMessage(sellTokenProtocol, buyTokenProtocol, order);
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.PROTOCAL_ADDRESS, data);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.PROTOCOL_ADDRESS, data);
         String signData = signData(rawTransaction, wallet, password);
         NotifyTransactionSubmittedParams params =
-                new NotifyTransactionSubmittedParams(null, nonce.intValue(), Config.PROTOCAL_ADDRESS, gasPrice, gasLimit, data, wallet.address);
+                new NotifyTransactionSubmittedParams(null, nonce.intValue(), Config.PROTOCOL_ADDRESS, gasPrice, gasLimit, data, wallet.address);
         return new SignModel(params, signData);
 
     }
 
 
     public SignModel signCancelTokenPairOrders(String protocolB,
-                                                   String protocolS,
-                                                   BigInteger gasPrice,
-                                                   BigInteger gasLimit,
-                                                   BigInteger nonce,
-                                                   HDWallet wallet,
-                                                   String password) throws Exception {
+                                               String protocolS,
+                                               BigInteger gasPrice,
+                                               BigInteger gasLimit,
+                                               BigInteger nonce,
+                                               HDWallet wallet,
+                                               String password) throws Exception {
         String data = abiCancelTokenPairOrder(protocolB, protocolS);
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.PROTOCAL_ADDRESS, data);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.PROTOCOL_ADDRESS, data);
         String signData = signData(rawTransaction, wallet, password);
         NotifyTransactionSubmittedParams params =
-                new NotifyTransactionSubmittedParams(null, nonce.intValue(), Config.PROTOCAL_ADDRESS, gasPrice, gasLimit, data, wallet.address);
+                new NotifyTransactionSubmittedParams(null, nonce.intValue(), Config.PROTOCOL_ADDRESS, gasPrice, gasLimit, data, wallet.address);
         return new SignModel(params, signData);
     }
 
@@ -214,32 +213,30 @@ public class SignManager {
     }
 
 
-
     public String abiCancelAllOrders(long timestamp) {
         return Params.Abi.cancelAllOrders +
                 Numeric.toHexStringNoPrefixZeroPadded(BigInteger.valueOf(timestamp), 64);
     }
 
     public SignModel signCancelAllOrders(long timestamp,
-                                             BigInteger gasPrice,
-                                             BigInteger gasLimit,
-                                             BigInteger nonce,
-                                             HDWallet wallet,
-                                             String password) throws Exception {
+                                         BigInteger gasPrice,
+                                         BigInteger gasLimit,
+                                         BigInteger nonce,
+                                         HDWallet wallet,
+                                         String password) throws Exception {
         String data = abiCancelAllOrders(timestamp);
 
         RawTransaction rawTransaction = RawTransaction.createTransaction(
                 nonce,
                 gasPrice,
                 gasLimit,
-                Config.PROTOCAL_ADDRESS,
+                Config.PROTOCOL_ADDRESS,
                 data);
         String signData = signData(rawTransaction, wallet, password);
         NotifyTransactionSubmittedParams params =
-                new NotifyTransactionSubmittedParams(null, nonce.intValue(), Config.PROTOCAL_ADDRESS, gasPrice, gasLimit, data, wallet.address);
+                new NotifyTransactionSubmittedParams(null, nonce.intValue(), Config.PROTOCOL_ADDRESS, gasPrice, gasLimit, data, wallet.address);
         return new SignModel(params, signData);
     }
-
 
 
     private String getCancelOrderMessage(
@@ -271,56 +268,37 @@ public class SignManager {
         return Params.Abi.cancelOrder + builder.toString();
     }
 
-
-    /**
-     * Used for exchange ETH to WETH
-     * @param gasPrice
-     * @param gasLimit
-     * @param nonce
-     * @param wallet
-     * @param password
-     * @param amount
-     * @return
-     * @throws Exception
-     */
-    public SignModel signDeposit(BigInteger gasPrice,
-                                     BigInteger gasLimit,
-                                     BigInteger nonce,
-                                     HDWallet wallet,
-                                     String password,
-                                     BigInteger amount) throws Exception {
+    public SignModel signDeposit(String protocolAddress,
+                                 BigInteger gasPriceGwei,
+                                 BigInteger gasLimit,
+                                 BigInteger nonce,
+                                 HDWallet wallet,
+                                 String password,
+                                 BigDecimal amountEther) throws Exception {
+        Loois.log("signDeposit");
         String data = Params.Abi.deposit;
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.WETH_ADDRESS, amount, data);
+        BigInteger gasPriceWei = Convert.toWei(gasPriceGwei.toString(), Convert.Unit.GWEI).toBigInteger();
+        BigInteger amountWei = Convert.toWei(amountEther, Convert.Unit.ETHER).toBigInteger();
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPriceWei, gasLimit, protocolAddress, amountWei, data);
         String signData = signData(rawTransaction, wallet, password);
         NotifyTransactionSubmittedParams params =
-                new NotifyTransactionSubmittedParams(null, nonce.intValue(),
-                        Config.PROTOCAL_ADDRESS, BigInteger.ZERO, gasPrice, gasLimit, data, wallet.address);
+                new NotifyTransactionSubmittedParams(null, nonce.intValue(), protocolAddress, BigInteger.ZERO, gasPriceWei, gasLimit, data, wallet.address);
         return new SignModel(params, signData);
     }
 
-    /**
-     * Used for exchange WETH to ETH
-     * @param gasPrice
-     * @param gasLimit
-     * @param nonce
-     * @param wallet
-     * @param password
-     * @param amount
-     * @return
-     * @throws Exception
-     */
+
     public SignModel signWithdraw(BigInteger gasPrice,
-                                      BigInteger gasLimit,
-                                      BigInteger nonce,
-                                      HDWallet wallet,
-                                      String password,
-                                      BigInteger amount) throws Exception {
+                                  BigInteger gasLimit,
+                                  BigInteger nonce,
+                                  HDWallet wallet,
+                                  String password,
+                                  BigInteger amount) throws Exception {
         String data = Params.Abi.withdraw + Numeric.toHexStringNoPrefixZeroPadded(amount, 64);
         RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.WETH_ADDRESS, data);
         String signData = signData(rawTransaction, wallet, password);
         NotifyTransactionSubmittedParams params =
                 new NotifyTransactionSubmittedParams(null, nonce.intValue(),
-                        Config.PROTOCAL_ADDRESS, BigInteger.ZERO, gasPrice, gasLimit, data, wallet.address);
+                        Config.PROTOCOL_ADDRESS, BigInteger.ZERO, gasPrice, gasLimit, data, wallet.address);
         return new SignModel(params, signData);
     }
 
@@ -344,27 +322,27 @@ public class SignManager {
     }
 
     public SignModel signBindNeo(BigInteger gasPrice,
-                              BigInteger gasLimit,
-                              BigInteger nonce,
-                              HDWallet wallet,
-                              String password,
-                              String address) throws Exception{
+                                 BigInteger gasLimit,
+                                 BigInteger nonce,
+                                 HDWallet wallet,
+                                 String password,
+                                 String address) throws Exception {
         return signBind(gasPrice,
-                        gasLimit,
-                        nonce,
-                        wallet,
-                        password,
-                        1,
-                        address);
+                gasLimit,
+                nonce,
+                wallet,
+                password,
+                1,
+                address);
 
     }
 
     public SignModel signBindQutm(BigInteger gasPrice,
-                               BigInteger gasLimit,
-                               BigInteger nonce,
-                               HDWallet wallet,
-                               String password,
-                               String address) throws Exception{
+                                  BigInteger gasLimit,
+                                  BigInteger nonce,
+                                  HDWallet wallet,
+                                  String password,
+                                  String address) throws Exception {
         return signBind(gasPrice,
                 gasLimit,
                 nonce,
@@ -388,10 +366,10 @@ public class SignManager {
                             RawTransaction rawTransaction,
                             HDWallet wallet,
                             String password) throws Exception {
-            Credentials credentials;
-            credentials = Credentials.create(Wallet.decrypt(password, wallet.getWalletFile()));
-            byte[] signMessage = TransactionEncoder.signMessage(rawTransaction, chainId, credentials);
-            return Numeric.toHexString(signMessage);
+        Credentials credentials;
+        credentials = Credentials.create(Wallet.decrypt(password, wallet.getWalletFile()));
+        byte[] signMessage = TransactionEncoder.signMessage(rawTransaction, chainId, credentials);
+        return Numeric.toHexString(signMessage);
     }
 
 
