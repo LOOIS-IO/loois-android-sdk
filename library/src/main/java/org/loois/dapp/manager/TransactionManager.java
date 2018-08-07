@@ -32,7 +32,7 @@ public class TransactionManager {
 
     private void notifyTransactionSubmitted(String txHash, int nonce) {
         NotifyTransactionSubmittedParams pendingNotificationParams = pendingNotifications.get(nonce);
-         if (pendingNotificationParams != null) {
+        if (pendingNotificationParams != null) {
             pendingNotificationParams.hash = txHash;
             Flowable.just(pendingNotificationParams)
                     .map((Function<NotifyTransactionSubmittedParams, Response<String>>) params ->
@@ -42,7 +42,7 @@ public class TransactionManager {
                     .subscribe(new LooisSubscriber<String>() {
                         @Override
                         public void onSuccess(String s) {
-                            Loois.log("notifyTransactionSubmitted success:" +  s);
+                            Loois.log("notifyTransactionSubmitted success:" + s);
                         }
 
                         @Override
@@ -78,7 +78,6 @@ public class TransactionManager {
     }
 
 
-
     public void sendETHTransaction(String to,
                                    BigInteger nonce,
                                    BigInteger gasPriceGwei,
@@ -101,7 +100,7 @@ public class TransactionManager {
                 .subscribe(new LooisSubscriber<String>() {
                     @Override
                     public void onSuccess(String s) {
-                        Loois.log("sendETHTransaction success " + s);
+                        Loois.log("sendETHTransaction success: " + s);
                         if (listener != null) {
                             listener.onSuccess(s);
                         }
@@ -121,25 +120,27 @@ public class TransactionManager {
     public void sendTokenTransaction(String contractAddress,
                                      BigDecimal decimal,
                                      String to,
-                                     BigInteger gasPrice,
+                                     BigInteger gasPriceGwei,
                                      BigInteger gasLimit,
                                      BigDecimal amount,
                                      String password,
                                      HDWallet wallet,
-                                     LooisListener listener) {
-        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
-            @Override
-            public void onSuccess(BigInteger nonce) {
-                sendTokenTransaction(contractAddress, decimal, to, nonce, gasPrice, gasLimit, amount, password, wallet, listener);
-            }
+                                     LooisListener<String> listener) {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password))
+                .compose(ScheduleCompat.apply())
+                .subscribe(new LooisSubscriber<BigInteger>() {
+                    @Override
+                    public void onSuccess(BigInteger nonce) {
+                        sendTokenTransaction(contractAddress, decimal, to, nonce, gasPriceGwei, gasLimit, amount, password, wallet, listener);
+                    }
 
-            @Override
-            public void onFailed(Throwable throwable) {
-                if (listener != null) {
-                    listener.onFailed(throwable);
-                }
-            }
-        });
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
 
     }
 
@@ -147,16 +148,16 @@ public class TransactionManager {
                                      BigDecimal decimal,
                                      String to,
                                      BigInteger nonce,
-                                     BigInteger gasPrice,
+                                     BigInteger gasPriceGwei,
                                      BigInteger gasLimit,
                                      BigDecimal amount,
                                      String password,
                                      HDWallet wallet,
-                                     LooisListener listener) {
+                                     LooisListener<String> listener) {
 
         Flowable.just(to)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
-                    SignManager.SignModel signModel = SignManager.shared().signContractTransaction(contractAddress, to, nonce, gasPrice,
+                    SignManager.SignModel signModel = SignManager.shared().signContractTransaction(contractAddress, to, nonce, gasPriceGwei,
                             gasLimit, amount, decimal, wallet, password);
                     EthSendTransaction ethSendTransaction =
                             Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
@@ -168,6 +169,7 @@ public class TransactionManager {
                 .subscribe(new LooisSubscriber<String>() {
                     @Override
                     public void onSuccess(String s) {
+                        Loois.log("sendTokenTransaction success:" + s);
                         if (listener != null) {
                             listener.onSuccess(s);
                         }
@@ -177,6 +179,7 @@ public class TransactionManager {
 
                     @Override
                     public void onFailed(Throwable throwable) {
+                        Loois.log("sendTokenTransaction failed: " + throwable.getLocalizedMessage());
                         if (listener != null) {
                             listener.onFailed(throwable);
                         }
@@ -391,7 +394,7 @@ public class TransactionManager {
                                              BigInteger gasLimit,
                                              HDWallet wallet,
                                              String password,
-                                             LooisListener listener){
+                                             LooisListener listener) {
         PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
             @Override
             public void onSuccess(BigInteger nonce) {

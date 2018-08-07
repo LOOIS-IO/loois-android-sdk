@@ -2,6 +2,7 @@ package org.loois.dapp;
 
 import android.util.Log;
 
+import org.loois.dapp.manager.TokenManager;
 import org.loois.dapp.manager.TransactionManager;
 import org.loois.dapp.protocol.Config;
 import org.loois.dapp.protocol.LooisApi;
@@ -29,6 +30,7 @@ public class Loois {
     private static Web3j web3j;
     private static HttpService httpService;
     private static TransactionManager transactionManager;
+    private static TokenManager tokenManager;
 
     private static boolean enableDebugLog = true;
     private static byte sChainId = ChainId.MAINNET;
@@ -78,7 +80,7 @@ public class Loois {
         return web3j;
     }
 
-    public static TransactionManager transactionManager() {
+    public static TransactionManager transaction() {
         if (transactionManager == null) {
             synchronized (TransactionManager.class) {
                 if (transactionManager == null) {
@@ -87,6 +89,17 @@ public class Loois {
             }
         }
         return transactionManager;
+    }
+
+    public static TokenManager token() {
+        if (tokenManager == null) {
+            synchronized (TokenManager.class) {
+                if (tokenManager == null) {
+                    tokenManager = new TokenManager();
+                }
+            }
+        }
+        return tokenManager;
     }
 
     public static void setDebugLogEnabled(boolean enabled) {

@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.loois.dapp.LWallet;
 import org.loois.dapp.Loois;
 import org.loois.dapp.model.HDWallet;
+import org.loois.dapp.rx.LooisSubscriber;
+import org.loois.dapp.rx.ScheduleCompat;
+import org.reactivestreams.Publisher;
 import org.spongycastle.util.encoders.Hex;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.ECKeyPair;
@@ -22,6 +25,8 @@ import io.github.novacrypto.bip39.SeedCalculator;
 import io.github.novacrypto.bip39.WordList;
 import io.github.novacrypto.bip39.Words;
 import io.github.novacrypto.bip44.AddressIndex;
+import io.reactivex.Flowable;
+import io.reactivex.functions.Function;
 
 /**
  * <pre>
@@ -128,6 +133,26 @@ public class InitWalletManager {
         return new HDWallet(walletFile.getAddress(), walletFile);
     }
 
+    public void importPrivateKey(String privateKey, String password, LooisListener<HDWallet> listener) {
+        Flowable.just(password)
+                .map(s -> importPrivateKey(privateKey, s))
+                .compose(ScheduleCompat.apply())
+                .subscribe(new LooisSubscriber<HDWallet>() {
+                    @Override
+                    public void onSuccess(HDWallet wallet) {
+                        if (listener != null) {
+                            listener.onSuccess(wallet);
+                        }
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
+    }
 
     // ---------------- singleton stuff --------------------------
     public static InitWalletManager shared() {

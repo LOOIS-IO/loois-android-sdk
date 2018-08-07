@@ -1,8 +1,8 @@
 package org.loois.dapp.manager;
 
-public interface LooisListener {
+public interface LooisListener<T> {
 
-        void onSuccess(String result);
+        void onSuccess(T result);
 
         void onFailed(Throwable throwable);
     }

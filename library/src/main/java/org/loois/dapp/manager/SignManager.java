@@ -66,23 +66,25 @@ public class SignManager {
     public SignModel signContractTransaction(String contractAddress,
                                           String to,
                                           BigInteger nonce,
-                                          BigInteger gasPrice,
+                                          BigInteger gasPriceGwei,
                                           BigInteger gasLimit,
                                           BigDecimal amount,
                                           BigDecimal decimal,
                                           HDWallet wallet,
                                           String password) throws IOException, CipherException {
+        Loois.log("signContractTransaction");
         BigInteger realValue = amount.multiply(decimal).toBigInteger();
         String data = encodeTransferFunction(to, realValue);
+        BigInteger gasPriceWei = Convert.toWei(gasPriceGwei.toString(), Convert.Unit.GETHER).toBigInteger();
         RawTransaction rawTransaction = RawTransaction.createTransaction(
                 nonce,
-                gasPrice,
+                gasPriceWei,
                 gasLimit,
                 contractAddress,
                 data);
         String signData = signData(rawTransaction, wallet, password);
         NotifyTransactionSubmittedParams params = new NotifyTransactionSubmittedParams(null, nonce.intValue(), to,
-                realValue, gasPrice, gasLimit, data, wallet.address);
+                realValue, gasPriceWei, gasLimit, data, wallet.address);
         return new SignModel(params, signData);
     }
 
