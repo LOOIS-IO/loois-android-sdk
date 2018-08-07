@@ -137,32 +137,23 @@ public class SignManager {
      * 1. Call signApproveZero to sign 0 and send the signed data.
      * 2. Call signApproveMax to sign a big value and send the signed data.
      *
-     * @param tokenProtocol Sell token's protocol address
-     * @param wallet        User wallet
-     * @param nonce         Transaction nonce
-     * @param gasPrice      Gas price
-     * @param gasLimit      Gas limit
-     * @param password      Wallet password
-     * @return Signed data
-     * @throws IOException
-     * @throws CipherException
      */
-    public SignModel signApproveZero(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPrice,
+    public SignModel signApproveZero(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPriceGwei,
                                      BigInteger gasLimit, String password) throws IOException, CipherException {
         BigInteger value = new BigInteger("0");
-        return signApproveData(tokenProtocol, wallet, nonce, gasPrice, gasLimit, value, password);
+        return signApproveData(tokenProtocol, wallet, nonce, gasPriceGwei, gasLimit, value, password);
     }
 
-    private SignModel signApproveData(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPrice,
+    private SignModel signApproveData(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPriceGwei,
                                       BigInteger gasLimit, BigInteger value, String password) throws IOException, CipherException {
         Function function = new Function("approve",
                 Arrays.asList(new Address(Config.DELEGATE_ADDRESS), new Uint(value)),
                 Collections.emptyList());
         String data = FunctionEncoder.encode(function);
-
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, tokenProtocol, data);
+        BigInteger gasPriceWei = Convert.toWei(gasPriceGwei.toString(), Convert.Unit.GWEI).toBigInteger();
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPriceWei, gasLimit, tokenProtocol, data);
         NotifyTransactionSubmittedParams params =
-                new NotifyTransactionSubmittedParams(null, nonce.intValue(), tokenProtocol, gasPrice, gasLimit, data, wallet.address);
+                new NotifyTransactionSubmittedParams(null, nonce.intValue(), tokenProtocol, gasPriceWei, gasLimit, data, wallet.address);
         String signData = signData(rawTransaction, wallet, password);
         return new SignModel(params, signData);
     }
@@ -324,13 +315,14 @@ public class SignManager {
         return new SignModel(params, sign);
     }
 
-    public SignModel signBindNeo(BigInteger gasPrice,
+    public SignModel signBindNeo(BigInteger gasPriceGwei,
                                  BigInteger gasLimit,
                                  BigInteger nonce,
                                  HDWallet wallet,
                                  String password,
                                  String address) throws Exception {
-        return signBind(gasPrice,
+        BigInteger gasPriceWei = Convert.toWei(gasPriceGwei.toString(), Convert.Unit.GWEI).toBigInteger();
+        return signBind(gasPriceWei,
                 gasLimit,
                 nonce,
                 wallet,
@@ -340,13 +332,14 @@ public class SignManager {
 
     }
 
-    public SignModel signBindQutm(BigInteger gasPrice,
+    public SignModel signBindQutm(BigInteger gasPriceGwei,
                                   BigInteger gasLimit,
                                   BigInteger nonce,
                                   HDWallet wallet,
                                   String password,
                                   String address) throws Exception {
-        return signBind(gasPrice,
+        BigInteger gasPriceWei = Convert.toWei(gasPriceGwei.toString(), Convert.Unit.GWEI).toBigInteger();
+        return signBind(gasPriceWei,
                 gasLimit,
                 nonce,
                 wallet,

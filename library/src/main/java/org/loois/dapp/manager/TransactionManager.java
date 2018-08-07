@@ -13,6 +13,7 @@ import org.loois.dapp.rx.LooisError;
 import org.loois.dapp.rx.LooisSubscriber;
 import org.loois.dapp.rx.RxResultHelper;
 import org.loois.dapp.rx.ScheduleCompat;
+import org.reactivestreams.Publisher;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Wallet;
@@ -88,13 +89,12 @@ public class TransactionManager {
                                    HDWallet wallet,
                                    LooisListener listener) {
         Flowable.just(to)
-                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
-                    SignManager.SignModel signModel = SignManager.shared().signETHTransaction(to, nonce, gasPriceGwei, gasLimit, amountEther, wallet, password);
-                    EthSendTransaction ethSendTransaction =
-                            Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
+                .map((Function<String, Response<String>>) s -> {
+                    SignManager.SignModel signModel = SignManager.shared()
+                            .signETHTransaction(to, nonce, gasPriceGwei, gasLimit, amountEther, wallet, password);
                     Loois.log("sign sendETHTransaction");
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
-                    return Flowable.just(ethSendTransaction);
+                    return Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
                 })
                 .compose(ScheduleCompat.apply())
                 .compose(RxResultHelper.handleResult())
@@ -157,13 +157,11 @@ public class TransactionManager {
                                      LooisListener<String> listener) {
 
         Flowable.just(to)
-                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
+                .map((Function<String, Response<String>>) s -> {
                     SignManager.SignModel signModel = SignManager.shared().signContractTransaction(contractAddress, to, nonce, gasPriceGwei,
                             gasLimit, amount, decimal, wallet, password);
-                    EthSendTransaction ethSendTransaction =
-                            Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
-                    return Flowable.just(ethSendTransaction);
+                    return Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
                 })
                 .compose(ScheduleCompat.apply())
                 .compose(RxResultHelper.handleResult())
@@ -223,11 +221,11 @@ public class TransactionManager {
                                           BigDecimal amountEther,
                                           LooisListener listener) {
         Flowable.just(password)
-                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
+                .map((Function<String, Response<String>>) s -> {
                     SignManager.SignModel signModel = SignManager.shared().signDeposit(protocolAddress, gasPriceGwei, gasLimit, nonce, wallet, password, amountEther);
-                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
-                    return Flowable.just(ethSendTransaction);
+                    return Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
+
                 })
                 .compose(ScheduleCompat.apply())
                 .compose(RxResultHelper.handleResult())
@@ -284,11 +282,11 @@ public class TransactionManager {
                                          BigDecimal amountEther,
                                          LooisListener<String> listener) {
         Flowable.just(password)
-                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
+                .map((Function<String, Response<String>>) s -> {
                     SignManager.SignModel signModel = SignManager.shared().signWithdraw(wethProtocal, gasPriceGwei, gasLimit, nonce, wallet, password, amountEther);
-                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
-                    return Flowable.just(ethSendTransaction);
+                    return Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
+
                 })
                 .compose(ScheduleCompat.apply())
                 .compose(RxResultHelper.handleResult())
@@ -312,30 +310,33 @@ public class TransactionManager {
                 });
     }
 
-    public void sendBindNeoTransaction(String neoAddress, HDWallet wallet, String password, LooisListener listener) {
-        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
-            @Override
-            public void onSuccess(BigInteger nonce) {
-                sendBindNeoTransaction(neoAddress, nonce, wallet, password, listener);
-            }
+    public void sendBindNeoTransaction(String neoAddress, BigInteger gasPriceGwei, BigInteger gasLimit,
+                                       HDWallet wallet, String password, LooisListener listener) {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password))
+                .compose(ScheduleCompat.apply())
+                .subscribe(new LooisSubscriber<BigInteger>() {
+                    @Override
+                    public void onSuccess(BigInteger nonce) {
+                        sendBindNeoTransaction(neoAddress, gasPriceGwei, gasLimit, nonce, wallet, password, listener);
+                    }
 
-            @Override
-            public void onFailed(Throwable throwable) {
-                if (listener != null) {
-                    listener.onFailed(throwable);
-                }
-            }
-        });
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
     }
 
-    public void sendBindNeoTransaction(String neoAddress, BigInteger nonce, HDWallet wallet, String password, LooisListener listener) {
+    public void sendBindNeoTransaction(String neoAddress, BigInteger gasPriceGwei, BigInteger gasLimit,
+                                       BigInteger nonce, HDWallet wallet, String password, LooisListener<String> listener) {
         Flowable.just(neoAddress)
-                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
-                    BigInteger gasPriceWei = Convert.toWei(String.valueOf(Params.DEFAULT_GAS), Convert.Unit.GWEI).toBigInteger();
-                    SignManager.SignModel signModel = SignManager.shared().signBindNeo(gasPriceWei, Params.GasLimit.bind, nonce, wallet, password, neoAddress);
-                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
+                .map((Function<String, Response<String>>) s -> {
+                    SignManager.SignModel signModel = SignManager.shared().signBindNeo(gasPriceGwei, gasLimit, nonce, wallet, password, neoAddress);
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
-                    return Flowable.just(ethSendTransaction);
+                    return Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
+
                 })
                 .compose(ScheduleCompat.apply())
                 .compose(RxResultHelper.handleResult())
@@ -357,30 +358,33 @@ public class TransactionManager {
                 });
     }
 
-    public void sendBindQutmTransaction(String qutmAddress, HDWallet wallet, String password, LooisListener listener) {
-        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
-            @Override
-            public void onSuccess(BigInteger nonce) {
-                sendBindQutmTransaction(qutmAddress, nonce, wallet, password, listener);
-            }
+    public void sendBindQutmTransaction(String qutmAddress, BigInteger gasPriceGwei, BigInteger gasLimit,
+                                        HDWallet wallet, String password, LooisListener<String> listener) {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password))
+                .compose(ScheduleCompat.apply())
+                .subscribe(new LooisSubscriber<BigInteger>() {
+                    @Override
+                    public void onSuccess(BigInteger nonce) {
+                        sendBindQutmTransaction(qutmAddress, gasPriceGwei, gasLimit, nonce, wallet, password, listener);
+                    }
 
-            @Override
-            public void onFailed(Throwable throwable) {
-                if (listener != null) {
-                    listener.onFailed(throwable);
-                }
-            }
-        });
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
     }
 
-    public void sendBindQutmTransaction(String qutmAddress, BigInteger nonce, HDWallet wallet, String password, LooisListener listener) {
+    public void sendBindQutmTransaction(String qutmAddress, BigInteger gasPriceGwei, BigInteger gasLimit,
+                                        BigInteger nonce, HDWallet wallet, String password, LooisListener<String> listener) {
         Flowable.just(qutmAddress)
-                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
-                    BigInteger gasPriceWei = Convert.toWei(String.valueOf(Params.DEFAULT_GAS), Convert.Unit.GWEI).toBigInteger();
-                    SignManager.SignModel signModel = SignManager.shared().signBindQutm(gasPriceWei, Params.GasLimit.bind, nonce, wallet, password, qutmAddress);
-                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
+                .map((Function<String, Response<String>>) s -> {
+                    SignManager.SignModel signModel = SignManager.shared().signBindQutm(gasPriceGwei, gasLimit, nonce, wallet, password, qutmAddress);
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
-                    return Flowable.just(ethSendTransaction);
+                    return Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
+
                 })
                 .compose(ScheduleCompat.apply())
                 .compose(RxResultHelper.handleResult())
@@ -403,51 +407,51 @@ public class TransactionManager {
     }
 
 
-    public void sendDoubleApproveTransaction(String tokenProtocal,
-                                             BigInteger gasPrice,
+    public void sendDoubleApproveTransaction(String tokenProtocol,
+                                             BigInteger gasPriceGwei,
                                              BigInteger gasLimit,
                                              HDWallet wallet,
                                              String password,
-                                             LooisListener listener) {
-        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
-            @Override
-            public void onSuccess(BigInteger nonce) {
-                sendDoubleApproveTransaction(tokenProtocal, gasPrice, gasLimit, nonce, wallet, password, listener);
-            }
+                                             LooisListener<String> listener) {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password))
+                .compose(ScheduleCompat.apply())
+                .subscribe(new LooisSubscriber<BigInteger>() {
+                    @Override
+                    public void onSuccess(BigInteger nonce) {
+                        sendDoubleApproveTransaction(tokenProtocol, gasPriceGwei, gasLimit, nonce, wallet, password, listener);
+                    }
 
-            @Override
-            public void onFailed(Throwable throwable) {
-                if (listener != null) {
-                    listener.onFailed(throwable);
-                }
-            }
-        });
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
     }
 
 
-    public void sendDoubleApproveTransaction(String tokenProtocal,
-                                             BigInteger gasPrice,
+    public void sendDoubleApproveTransaction(String tokenProtocol,
+                                             BigInteger gasPriceGwei,
                                              BigInteger gasLimit,
                                              BigInteger nonce,
                                              HDWallet wallet,
                                              String password,
-                                             LooisListener listener) {
+                                             LooisListener<String> listener) {
         Flowable.just(password)
-                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
-                    SignManager.SignModel signModel = SignManager.shared().signApproveZero(tokenProtocal, wallet, nonce, gasPrice, gasLimit, password);
-                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
+                .map((Function<String, Response<String>>) s -> {
+                    SignManager.SignModel signModel = SignManager.shared()
+                            .signApproveZero(tokenProtocol, wallet, nonce, gasPriceGwei, gasLimit, password);
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
-                    return Flowable.just(ethSendTransaction);
+                    return Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
                 })
-                .flatMap((Function<Response<String>, Flowable<Response<String>>>) stringResponse -> {
-                    if (stringResponse.hasError()) {
-                        return Flowable.error(new LooisError(stringResponse.getError().getMessage(), stringResponse.getError().getCode()));
-                    }
+                .compose(RxResultHelper.handleResult())
+                .map(s -> {
                     BigInteger newNonce = nonce.add(new BigInteger("1"));
-                    SignManager.SignModel signModel = SignManager.shared().signApproveMax(tokenProtocal, wallet, newNonce, gasPrice, gasLimit, password);
-                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
+                    SignManager.SignModel signModel = SignManager.shared()
+                            .signApproveMax(tokenProtocol, wallet, newNonce, gasPriceGwei, gasLimit, password);
                     pendingNotifications.put(newNonce.intValue(), signModel.notifyTransactionSubmittedParams);
-                    return Flowable.just(ethSendTransaction);
+                    return Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
                 })
                 .compose(ScheduleCompat.apply())
                 .compose(RxResultHelper.handleResult())
@@ -471,39 +475,42 @@ public class TransactionManager {
     }
 
     public void sendSingleApproveTransaction(String tokenProtocal,
-                                             BigInteger gasPrice,
+                                             BigInteger gasPriceGwei,
                                              BigInteger gasLimit,
                                              HDWallet wallet,
                                              String password,
-                                             LooisListener listener) {
-        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
-            @Override
-            public void onSuccess(BigInteger nonce) {
-                sendSingleApproveTransaction(tokenProtocal, gasPrice, gasLimit, nonce, wallet, password, listener);
-            }
+                                             LooisListener<String> listener) {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password))
+                .compose(ScheduleCompat.apply())
+                .subscribe(new LooisSubscriber<BigInteger>() {
+                    @Override
+                    public void onSuccess(BigInteger nonce) {
+                        sendSingleApproveTransaction(tokenProtocal, gasPriceGwei, gasLimit, nonce, wallet, password, listener);
+                    }
 
-            @Override
-            public void onFailed(Throwable throwable) {
-                if (listener != null) {
-                    listener.onFailed(throwable);
-                }
-            }
-        });
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
     }
 
-    public void sendSingleApproveTransaction(String tokenProtocal,
-                                             BigInteger gasPrice,
+    public void sendSingleApproveTransaction(String tokenProtocol,
+                                             BigInteger gasPriceGwei,
                                              BigInteger gasLimit,
                                              BigInteger nonce,
                                              HDWallet wallet,
                                              String password,
-                                             LooisListener listener) {
+                                             LooisListener<String> listener) {
         Flowable.just(password)
-                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
-                    SignManager.SignModel signModel = SignManager.shared().signApproveMax(tokenProtocal, wallet, nonce, gasPrice, gasLimit, password);
+                .map((Function<String, Response<String>>) s -> {
+                    SignManager.SignModel signModel = SignManager.shared()
+                            .signApproveMax(tokenProtocol, wallet, nonce, gasPriceGwei, gasLimit, password);
                     EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
-                    return Flowable.just(ethSendTransaction);
+                    return ethSendTransaction;
                 })
                 .compose(ScheduleCompat.apply())
                 .compose(RxResultHelper.handleResult())
@@ -528,20 +535,22 @@ public class TransactionManager {
 
     public void sendCancelSingleOrderTransaction(OriginalOrder order, String sellTokenProtocol, String buyTokenProtocol,
                                                  HDWallet wallet, String password,
-                                                 LooisListener listener) {
-        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
-            @Override
-            public void onSuccess(BigInteger nonce) {
-                sendCancelSingleOrderTransaction(order, sellTokenProtocol, buyTokenProtocol, nonce, wallet, password, listener);
-            }
+                                                 LooisListener<String> listener) {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password))
+                .compose(ScheduleCompat.apply())
+                .subscribe(new LooisSubscriber<BigInteger>() {
+                    @Override
+                    public void onSuccess(BigInteger nonce) {
+                        sendCancelSingleOrderTransaction(order, sellTokenProtocol, buyTokenProtocol, nonce, wallet, password, listener);
+                    }
 
-            @Override
-            public void onFailed(Throwable throwable) {
-                if (listener != null) {
-                    listener.onFailed(throwable);
-                }
-            }
-        });
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
     }
 
 
@@ -556,14 +565,14 @@ public class TransactionManager {
 
     public void sendCancelSingleOrderTransaction(OriginalOrder order, String sellTokenProtocol, String buyTokenProtocol, BigInteger nonce,
                                                  BigInteger gasPriceWei, BigInteger gasLimit, HDWallet wallet, String password,
-                                                 LooisListener listener) {
+                                                 LooisListener<String> listener) {
         Flowable.just(order)
-                .flatMap((Function<OriginalOrder, Flowable<Response<String>>>) originalOrder -> {
+                .map((Function<OriginalOrder, Response<String>>) originalOrder -> {
                     SignManager.SignModel signModel = SignManager.shared()
                             .signedCancelOrder(sellTokenProtocol, buyTokenProtocol, order, nonce, gasPriceWei, gasLimit, wallet, password);
-                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
-                    return Flowable.just(ethSendTransaction);
+                    return Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
+
                 })
                 .compose(RxResultHelper.handleResult())
                 .compose(ScheduleCompat.apply())
@@ -586,32 +595,34 @@ public class TransactionManager {
     }
 
     public void sendCancelAllOrdersTransaction(BigInteger gasPriceWei, BigInteger gasLimit,
-                                               HDWallet wallet, String password, LooisListener listener) {
-        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
-            @Override
-            public void onSuccess(BigInteger nonce) {
-                sendCancelAllOrdersTransaction(nonce, gasPriceWei, gasLimit, wallet, password, listener);
-            }
+                                               HDWallet wallet, String password, LooisListener<String> listener) {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password))
+                .compose(ScheduleCompat.apply())
+                .subscribe(new LooisSubscriber<BigInteger>() {
+                    @Override
+                    public void onSuccess(BigInteger nonce) {
+                        sendCancelAllOrdersTransaction(nonce, gasPriceWei, gasLimit, wallet, password, listener);
+                    }
 
-            @Override
-            public void onFailed(Throwable throwable) {
-                if (listener != null) {
-                    listener.onFailed(throwable);
-                }
-            }
-        });
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
 
     }
 
     public void sendCancelAllOrdersTransaction(BigInteger nonce, BigInteger gasPriceWei, BigInteger gasLimit,
-                                               HDWallet wallet, String password, LooisListener listener) {
+                                               HDWallet wallet, String password, LooisListener<String> listener) {
         Flowable.just(password)
-                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
+                .map((Function<String, Response<String>>) s -> {
                     long timestamp = System.currentTimeMillis() / 1000;
                     SignManager.SignModel signModel = SignManager.shared().signCancelAllOrders(timestamp, gasPriceWei, gasLimit, nonce, wallet, password);
-                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
-                    return Flowable.just(ethSendTransaction);
+                    return Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
+
                 })
                 .compose(RxResultHelper.handleResult())
                 .compose(ScheduleCompat.apply())
@@ -634,30 +645,32 @@ public class TransactionManager {
     }
 
     public void sendCancelMarketOrdersTransaction(BigInteger gasPriceWei, BigInteger gasLimit, String protocolB,
-                                                  String protocolS, String password, HDWallet wallet, LooisListener listener) {
-        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
-            @Override
-            public void onSuccess(BigInteger nonce) {
-                sendCancelMarketOrdersTransaction(nonce, gasPriceWei, gasLimit, protocolB, protocolS, password, wallet, listener);
-            }
+                                                  String protocolS, String password, HDWallet wallet, LooisListener<String> listener) {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password))
+                .compose(ScheduleCompat.apply())
+                .subscribe(new LooisSubscriber<BigInteger>() {
+                    @Override
+                    public void onSuccess(BigInteger nonce) {
+                        sendCancelMarketOrdersTransaction(nonce, gasPriceWei, gasLimit, protocolB, protocolS, password, wallet, listener);
+                    }
 
-            @Override
-            public void onFailed(Throwable throwable) {
-                listener.onFailed(throwable);
-            }
-        });
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        listener.onFailed(throwable);
+                    }
+                });
 
     }
 
 
     public void sendCancelMarketOrdersTransaction(BigInteger nonce, BigInteger gasPriceWei, BigInteger gasLimit,
-                                                  String protocolB, String protocolS, String password, HDWallet wallet, LooisListener listener) {
+                                                  String protocolB, String protocolS, String password, HDWallet wallet, LooisListener<String> listener) {
         Flowable.just(password)
-                .flatMap((Function<String, Flowable<Response<String>>>) s -> {
-                    SignManager.SignModel signModel = SignManager.shared().signCancelTokenPairOrders(protocolB, protocolS, gasPriceWei, gasLimit, nonce, wallet, password);
-                    EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
+                .map((Function<String, Response<String>>) s -> {
+                    SignManager.SignModel signModel = SignManager.shared()
+                            .signCancelTokenPairOrders(protocolB, protocolS, gasPriceWei, gasLimit, nonce, wallet, password);
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
-                    return Flowable.just(ethSendTransaction);
+                    return Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
                 })
                 .compose(RxResultHelper.handleResult())
                 .compose(ScheduleCompat.apply())
