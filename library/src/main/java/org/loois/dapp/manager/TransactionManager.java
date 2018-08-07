@@ -190,7 +190,7 @@ public class TransactionManager {
     }
 
     public void sendETHToWETHTransaction(String wethProtocol,
-                                         BigInteger gasPrice,
+                                         BigInteger gasPriceGwei,
                                          BigInteger gasLimit,
                                          HDWallet wallet,
                                          String password,
@@ -201,7 +201,7 @@ public class TransactionManager {
                 .subscribe(new LooisSubscriber<BigInteger>() {
                     @Override
                     public void onSuccess(BigInteger nonce) {
-                        sendETHToWETHTransaction(wethProtocol, gasPrice, gasLimit, nonce, wallet, password, amountEther, listener);
+                        sendETHToWETHTransaction(wethProtocol, gasPriceGwei, gasLimit, nonce, wallet, password, amountEther, listener);
                     }
 
                     @Override
@@ -251,37 +251,41 @@ public class TransactionManager {
                 });
     }
 
-    public void sendWETHToETHTransaction(BigInteger gasPrice,
+    public void sendWETHToETHTransaction(String wethProtocol,
+                                         BigInteger gasPriceGwei,
                                          BigInteger gasLimit,
                                          HDWallet wallet,
                                          String password,
-                                         BigInteger amount,
-                                         LooisListener listener) {
-        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password)).subscribe(new LooisSubscriber<BigInteger>() {
-            @Override
-            public void onSuccess(BigInteger nonce) {
-                sendWETHToETHTransaction(gasPrice, gasLimit, nonce, wallet, password, amount, listener);
-            }
+                                         BigDecimal amountEther,
+                                         LooisListener<String> listener) {
+        PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password))
+                .compose(ScheduleCompat.apply())
+                .subscribe(new LooisSubscriber<BigInteger>() {
+                    @Override
+                    public void onSuccess(BigInteger nonce) {
+                        sendWETHToETHTransaction(wethProtocol, gasPriceGwei, gasLimit, nonce, wallet, password, amountEther, listener);
+                    }
 
-            @Override
-            public void onFailed(Throwable throwable) {
-                if (listener != null) {
-                    listener.onFailed(throwable);
-                }
-            }
-        });
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        if (listener != null) {
+                            listener.onFailed(throwable);
+                        }
+                    }
+                });
     }
 
-    public void sendWETHToETHTransaction(BigInteger gasPrice,
+    public void sendWETHToETHTransaction(String wethProtocal,
+                                         BigInteger gasPriceGwei,
                                          BigInteger gasLimit,
                                          BigInteger nonce,
                                          HDWallet wallet,
                                          String password,
-                                         BigInteger amount,
-                                         LooisListener listener) {
+                                         BigDecimal amountEther,
+                                         LooisListener<String> listener) {
         Flowable.just(password)
                 .flatMap((Function<String, Flowable<Response<String>>>) s -> {
-                    SignManager.SignModel signModel = SignManager.shared().signWithdraw(gasPrice, gasLimit, nonce, wallet, password, amount);
+                    SignManager.SignModel signModel = SignManager.shared().signWithdraw(wethProtocal, gasPriceGwei, gasLimit, nonce, wallet, password, amountEther);
                     EthSendTransaction ethSendTransaction = Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
                     return Flowable.just(ethSendTransaction);

@@ -13,19 +13,23 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="sendETHTransaction"
+        android:text="ETH转账"
         android:onClick="onSendETHTransaction"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="sendTokenTransaction"
+        android:text="Token转账"
         android:onClick="onSendTokenTransaction"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="sendETHToWETHTransaction"
+        android:text="ETH兑换WETH"
         android:onClick="onSendETHToWETHTransaction"/>
-
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="WETH兑换ETH"
+        android:onClick="onSendWETHToETHTransaction"/>
 
 
 </LinearLayout>

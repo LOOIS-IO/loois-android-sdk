@@ -95,6 +95,18 @@ public class TransactionTestActivity extends AppCompatActivity {
 
     }
 
+    public void onSendWETHToETHTransaction(View view) {
+        BigInteger gasPriceGwei = new BigInteger("4");
+        BigInteger gasLimit = new BigInteger("200000");
+        BigDecimal amountEther = new BigDecimal("0.1");
+        SupportedToken weth = Loois.token().getSupportedTokenBySymbol("WETH");
+        if (mHDWallet != null && weth != null) {
+            Loois.transaction().sendWETHToETHTransaction(weth.protocol,
+                    gasPriceGwei, gasLimit, mHDWallet, PASSWORD, amountEther, mTransactionListener);
+        }
+    }
+
+
 
     private LooisListener<String> mTransactionListener = new LooisListener<String>() {
         @Override
@@ -107,6 +119,4 @@ public class TransactionTestActivity extends AppCompatActivity {
             Toast.makeText(TransactionTestActivity.this, throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     };
-
-
 }

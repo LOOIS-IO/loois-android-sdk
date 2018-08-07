@@ -287,18 +287,21 @@ public class SignManager {
     }
 
 
-    public SignModel signWithdraw(BigInteger gasPrice,
+    public SignModel signWithdraw(String wethProtocol,
+                                  BigInteger gasPriceGwei,
                                   BigInteger gasLimit,
                                   BigInteger nonce,
                                   HDWallet wallet,
                                   String password,
-                                  BigInteger amount) throws Exception {
-        String data = Params.Abi.withdraw + Numeric.toHexStringNoPrefixZeroPadded(amount, 64);
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.WETH_ADDRESS, data);
+                                  BigDecimal amountEther) throws Exception {
+        BigInteger gasPriceWei = Convert.toWei(gasPriceGwei.toString(), Convert.Unit.GWEI).toBigInteger();
+        BigInteger amountWei = Convert.toWei(amountEther, Convert.Unit.ETHER).toBigInteger();
+        String data = Params.Abi.withdraw + Numeric.toHexStringNoPrefixZeroPadded(amountWei, 64);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPriceWei, gasLimit, wethProtocol, data);
         String signData = signData(rawTransaction, wallet, password);
         NotifyTransactionSubmittedParams params =
                 new NotifyTransactionSubmittedParams(null, nonce.intValue(),
-                        Config.PROTOCOL_ADDRESS, BigInteger.ZERO, gasPrice, gasLimit, data, wallet.address);
+                        wethProtocol, BigInteger.ZERO, gasPriceWei, gasLimit, data, wallet.address);
         return new SignModel(params, signData);
     }
 
