@@ -310,14 +310,14 @@ public class TransactionManager {
                 });
     }
 
-    public void sendBindNeoTransaction(String neoAddress, BigInteger gasPriceGwei, BigInteger gasLimit,
+    public void sendBindNeoTransaction(String bindContractAddress, String neoAddress, BigInteger gasPriceGwei, BigInteger gasLimit,
                                        HDWallet wallet, String password, LooisListener listener) {
         PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password))
                 .compose(ScheduleCompat.apply())
                 .subscribe(new LooisSubscriber<BigInteger>() {
                     @Override
                     public void onSuccess(BigInteger nonce) {
-                        sendBindNeoTransaction(neoAddress, gasPriceGwei, gasLimit, nonce, wallet, password, listener);
+                        sendBindNeoTransaction(bindContractAddress, neoAddress, gasPriceGwei, gasLimit, nonce, wallet, password, listener);
                     }
 
                     @Override
@@ -329,11 +329,11 @@ public class TransactionManager {
                 });
     }
 
-    public void sendBindNeoTransaction(String neoAddress, BigInteger gasPriceGwei, BigInteger gasLimit,
+    public void sendBindNeoTransaction(String bindContractAddress, String neoAddress, BigInteger gasPriceGwei, BigInteger gasLimit,
                                        BigInteger nonce, HDWallet wallet, String password, LooisListener<String> listener) {
         Flowable.just(neoAddress)
                 .map((Function<String, Response<String>>) s -> {
-                    SignManager.SignModel signModel = SignManager.shared().signBindNeo(gasPriceGwei, gasLimit, nonce, wallet, password, neoAddress);
+                    SignManager.SignModel signModel = SignManager.shared().signBindNeo(bindContractAddress, gasPriceGwei, gasLimit, nonce, wallet, password, neoAddress);
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
                     return Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
 
@@ -358,14 +358,14 @@ public class TransactionManager {
                 });
     }
 
-    public void sendBindQutmTransaction(String qutmAddress, BigInteger gasPriceGwei, BigInteger gasLimit,
+    public void sendBindQutmTransaction(String bindContractAddress, String qutmAddress, BigInteger gasPriceGwei, BigInteger gasLimit,
                                         HDWallet wallet, String password, LooisListener<String> listener) {
         PendingTxManager.shared().getNonce(getValidatePasswordFlowable(wallet, password))
                 .compose(ScheduleCompat.apply())
                 .subscribe(new LooisSubscriber<BigInteger>() {
                     @Override
                     public void onSuccess(BigInteger nonce) {
-                        sendBindQutmTransaction(qutmAddress, gasPriceGwei, gasLimit, nonce, wallet, password, listener);
+                        sendBindQutmTransaction(bindContractAddress, qutmAddress, gasPriceGwei, gasLimit, nonce, wallet, password, listener);
                     }
 
                     @Override
@@ -377,11 +377,11 @@ public class TransactionManager {
                 });
     }
 
-    public void sendBindQutmTransaction(String qutmAddress, BigInteger gasPriceGwei, BigInteger gasLimit,
+    public void sendBindQutmTransaction(String bindContractAddress, String qutmAddress, BigInteger gasPriceGwei, BigInteger gasLimit,
                                         BigInteger nonce, HDWallet wallet, String password, LooisListener<String> listener) {
         Flowable.just(qutmAddress)
                 .map((Function<String, Response<String>>) s -> {
-                    SignManager.SignModel signModel = SignManager.shared().signBindQutm(gasPriceGwei, gasLimit, nonce, wallet, password, qutmAddress);
+                    SignManager.SignModel signModel = SignManager.shared().signBindQutm(bindContractAddress, gasPriceGwei, gasLimit, nonce, wallet, password, qutmAddress);
                     pendingNotifications.put(nonce.intValue(), signModel.notifyTransactionSubmittedParams);
                     return Loois.web3j().ethSendRawTransaction(signModel.sign).sendAsync().get();
 

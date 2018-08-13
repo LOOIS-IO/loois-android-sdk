@@ -31,5 +31,17 @@
         android:text="WETH兑换ETH"
         android:onClick="onSendWETHToETHTransaction"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="绑定NEO"
+        android:onClick="onSendBindNeoTransaction"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="绑定Qutm"
+        android:onClick="onSendBindQutmTransaction"/>
+
+
 
 </LinearLayout>

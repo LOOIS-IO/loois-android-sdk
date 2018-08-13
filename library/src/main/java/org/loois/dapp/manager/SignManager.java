@@ -136,7 +136,6 @@ public class SignManager {
      * If token's allowance is not 0, but still not cover order amount, we need to authenticate twice:
      * 1. Call signApproveZero to sign 0 and send the signed data.
      * 2. Call signApproveMax to sign a big value and send the signed data.
-     *
      */
     public SignModel signApproveZero(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPriceGwei,
                                      BigInteger gasLimit, String password) throws IOException, CipherException {
@@ -297,13 +296,15 @@ public class SignManager {
     }
 
 
-    private SignModel signBind(BigInteger gasPrice,
-                               BigInteger gasLimit,
-                               BigInteger nonce,
-                               HDWallet wallet,
-                               String password,
-                               int param,
-                               String address) throws Exception {
+    private SignModel signBind(
+            String bindContractAddress,
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            BigInteger nonce,
+            HDWallet wallet,
+            String password,
+            int param,
+            String address) throws Exception {
         Function function = new Function("bind",
                 Arrays.asList(new Uint8(param), new Utf8String(address)),
                 Collections.emptyList());
@@ -311,18 +312,22 @@ public class SignManager {
         RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.BIND_CONTRACT_ADDRESS, data);
         String sign = signData(rawTransaction, wallet, password);
         NotifyTransactionSubmittedParams params =
-                new NotifyTransactionSubmittedParams(null, nonce.intValue(), Config.BIND_CONTRACT_ADDRESS, gasPrice, gasLimit, data, wallet.address);
+                new NotifyTransactionSubmittedParams(null, nonce.intValue(), bindContractAddress, gasPrice, gasLimit, data, wallet.address);
         return new SignModel(params, sign);
     }
 
-    public SignModel signBindNeo(BigInteger gasPriceGwei,
-                                 BigInteger gasLimit,
-                                 BigInteger nonce,
-                                 HDWallet wallet,
-                                 String password,
-                                 String address) throws Exception {
+    public SignModel signBindNeo(
+            String bindContractAddress,
+            BigInteger gasPriceGwei,
+            BigInteger gasLimit,
+            BigInteger nonce,
+            HDWallet wallet,
+            String password,
+            String address) throws Exception {
         BigInteger gasPriceWei = Convert.toWei(gasPriceGwei.toString(), Convert.Unit.GWEI).toBigInteger();
-        return signBind(gasPriceWei,
+        return signBind(
+                bindContractAddress,
+                gasPriceWei,
                 gasLimit,
                 nonce,
                 wallet,
@@ -332,14 +337,18 @@ public class SignManager {
 
     }
 
-    public SignModel signBindQutm(BigInteger gasPriceGwei,
-                                  BigInteger gasLimit,
-                                  BigInteger nonce,
-                                  HDWallet wallet,
-                                  String password,
-                                  String address) throws Exception {
+    public SignModel signBindQutm(
+            String bindContractAddress,
+            BigInteger gasPriceGwei,
+            BigInteger gasLimit,
+            BigInteger nonce,
+            HDWallet wallet,
+            String password,
+            String address) throws Exception {
         BigInteger gasPriceWei = Convert.toWei(gasPriceGwei.toString(), Convert.Unit.GWEI).toBigInteger();
-        return signBind(gasPriceWei,
+        return signBind(
+                bindContractAddress,
+                gasPriceWei,
                 gasLimit,
                 nonce,
                 wallet,
