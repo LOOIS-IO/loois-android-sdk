@@ -114,7 +114,7 @@ public class SignManager {
     /**
      * If token's allowance is 0, it means token never authenticated before, we need to sign a big value.
      *
-     * @param tokenProtocol Sell token's protocol address
+     * @param tokenProtocol Sell token's protocol owner
      * @param wallet        User wallet
      * @param nonce         Transaction nonce
      * @param gasPrice      Gas price

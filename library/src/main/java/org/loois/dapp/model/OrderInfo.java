@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 public class OrderInfo {
 
-    public String address;
+    public String owner;
 
     public String lrcFee;
     public BigDecimal lrcDecimals;
@@ -20,4 +20,7 @@ public class OrderInfo {
     public String decimalB;
 
     public long validateDuration;
+
+    public String tokenB;
+    public String tokenS;
 }

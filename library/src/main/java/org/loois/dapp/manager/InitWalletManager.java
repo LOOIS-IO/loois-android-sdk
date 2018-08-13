@@ -55,7 +55,7 @@ public class InitWalletManager {
     /**
      *
      * @param mnemonic mnemonic 助记词
-     * @param addressIndex derive address 派生路径 eg: m/44'/60'/0'/0/0
+     * @param addressIndex derive owner 派生路径 eg: m/44'/60'/0'/0/0
      * @return {@link ECKeyPair} public/private key pair 公私钥对象
      */
     private ECKeyPair generateKeyPair(String mnemonic,
@@ -84,7 +84,7 @@ public class InitWalletManager {
 
         Loois.log("privateKey:" + privateKey);
         Loois.log("publicKey:" + publicKey);
-        Loois.log("address:" + "0x" + address);
+        Loois.log("owner:" + "0x" + address);
 
         return keyPair;
     }
@@ -93,7 +93,7 @@ public class InitWalletManager {
      * generate HD wallet 创建钱包
      * @param mnemonic mnemonic 助记词
      * @param password the password user input  用户输入的密码
-     * @param addressIndex {@link AddressIndex} derive address 派生地址
+     * @param addressIndex {@link AddressIndex} derive owner 派生地址
      * @return wallet 钱包
      */
     public HDWallet generateWallet(String mnemonic,

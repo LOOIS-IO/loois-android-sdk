@@ -6,7 +6,7 @@ public class OriginalOrder implements Serializable {
     /**
      * protocol : 0x8d8812b72d1e4ffCeC158D25f56748b7d67c1e78
      * delegateAddress : 0x17233e07c67d086464fD408148c3ABB56245FA64
-     * address : 0x2915A80711C808723a188C61b3C27F9e0387e9A2
+     * owner : 0x2915A80711C808723a188C61b3C27F9e0387e9A2
      * hash : 0x9e73ff615d0d0898dd91cdc9505fb7d90d5fa99e67cad625e0fc1e1c9f5e7369
      * tokenS : WETH
      * tokenB : VITE

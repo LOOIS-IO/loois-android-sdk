@@ -2,6 +2,7 @@ package org.loois.dapp;
 
 import android.util.Log;
 
+import org.loois.dapp.manager.OrderManager;
 import org.loois.dapp.manager.TokenManager;
 import org.loois.dapp.manager.TransactionManager;
 import org.loois.dapp.protocol.Config;
@@ -31,6 +32,7 @@ public class Loois {
     private static HttpService httpService;
     private static TransactionManager transactionManager;
     private static TokenManager tokenManager;
+    private static OrderManager orderManager;
 
     private static boolean enableDebugLog = true;
     private static byte sChainId = ChainId.MAINNET;
@@ -82,7 +84,7 @@ public class Loois {
 
     public static TransactionManager transaction() {
         if (transactionManager == null) {
-            synchronized (TransactionManager.class) {
+            synchronized (Loois.class) {
                 if (transactionManager == null) {
                     transactionManager = new TransactionManager();
                 }
@@ -93,13 +95,24 @@ public class Loois {
 
     public static TokenManager token() {
         if (tokenManager == null) {
-            synchronized (TokenManager.class) {
+            synchronized (Loois.class) {
                 if (tokenManager == null) {
                     tokenManager = new TokenManager();
                 }
             }
         }
         return tokenManager;
+    }
+
+    public static OrderManager order() {
+        if (orderManager == null) {
+            synchronized (Loois.class) {
+                if (orderManager == null) {
+                    orderManager = new OrderManager();
+                }
+            }
+        }
+        return orderManager;
     }
 
     public static void setDebugLogEnabled(boolean enabled) {

@@ -5,10 +5,10 @@ import org.loois.dapp.protocol.Config;
 
 import java.math.BigDecimal;
 
-public  class SubmitOrderParams {
+public class SubmitOrderParams {
 
     /**
-     * Loopring contract address
+     * Loopring contract owner
      */
     public String protocol;
     /**
@@ -16,11 +16,11 @@ public  class SubmitOrderParams {
      */
     public String delegateAddress;
     /**
-     * user's wallet address
+     * user's wallet owner
      */
     public String owner;
     /**
-     * The wallet margin address.
+     * The wallet margin owner.
      */
     public String walletAddress;
     /**
@@ -81,30 +81,35 @@ public  class SubmitOrderParams {
 
     public String authPrivateKey;
 
-    public SubmitOrderParams(String owner,
-                             String tokenS,
-                             String tokenB,
-                             String amountS,
-                             String amountB,
-                             long validSince,
-                             long validUntil,
-                             String lrcFee,
-                             boolean buyNoMoreThanAmountB,
-                             int marginSplitPercentage,
-                             String orderWalletAddress,
-                             int v,
-                             String r,
-                             String s,
-                             int powNonce,
-                             String authAddr,
-                             String authPrivateKey) {
+    public SubmitOrderParams(
+            String protocolAddress,
+            String delegateAddress,
+            String owner,
+            String tokenS,
+            String tokenB,
+            String amountS,
+            String amountB,
+            long validSince,
+            long validUntil,
+            String lrcFee,
+            boolean buyNoMoreThanAmountB,
+            int marginSplitPercentage,
+            String orderWalletAddress,
+            int v,
+            String r,
+            String s,
+            int powNonce,
+            String authAddr,
+            String authPrivateKey) {
+        this.protocol = protocolAddress;
+        this.delegateAddress = delegateAddress;
         this.owner = owner;
         this.tokenS = tokenS;
         this.tokenB = tokenB;
         this.amountS = amountS;
         this.amountB = amountB;
         this.validSince = Constants.PREFIX_16 + BigDecimal.valueOf(validSince).toBigInteger().toString(16);
-        this.validUntil = Constants.PREFIX_16 + BigDecimal.valueOf(validSince+validUntil).toBigInteger().toString(16);
+        this.validUntil = Constants.PREFIX_16 + BigDecimal.valueOf(validSince + validUntil).toBigInteger().toString(16);
         this.lrcFee = lrcFee;
         this.buyNoMoreThanAmountB = buyNoMoreThanAmountB;
         this.marginSplitPercentage = marginSplitPercentage;
