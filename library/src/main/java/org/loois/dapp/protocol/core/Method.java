@@ -49,4 +49,6 @@ public interface Method {
     String searchLocalERC20Token = "loopring_searchLocalERC20Token";
 
     String registerERC20Token = "loopring_registerERC20Token";
+
+    String flexCancelOrder = "loopring_flexCancelOrder";
 }

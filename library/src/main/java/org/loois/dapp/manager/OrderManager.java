@@ -98,10 +98,10 @@ public class OrderManager {
             String delegateAddress,
             String authAddress,
             String owner,
-            String tokenS,
-            String tokenB,
-            String amountS,
-            String amountB,
+            String protocolS,
+            String protocolB,
+            String amountHexS,
+            String amountHexB,
             String lrcFee,
             long validSince,
             long validUntil,
@@ -112,12 +112,12 @@ public class OrderManager {
         char zero = '0';
         return Numeric.cleanHexPrefix(delegateAddress) +
                 Numeric.cleanHexPrefix(owner) +
-                Numeric.cleanHexPrefix(tokenS) +
-                Numeric.cleanHexPrefix(tokenB) +
+                Numeric.cleanHexPrefix(protocolS) +
+                Numeric.cleanHexPrefix(protocolB) +
                 Numeric.cleanHexPrefix(orderWalletAddress) +
                 Numeric.cleanHexPrefix(authAddress) +
-                IBan.padLeft(Numeric.cleanHexPrefix(amountS), length, zero) +
-                IBan.padLeft(Numeric.cleanHexPrefix(amountB), length, zero) +
+                IBan.padLeft(Numeric.cleanHexPrefix(amountHexS), length, zero) +
+                IBan.padLeft(Numeric.cleanHexPrefix(amountHexB), length, zero) +
                 IBan.padLeft(Numeric.cleanHexPrefix(BigDecimal.valueOf(validSince).toBigInteger().toString(16)), length, zero) +
                 IBan.padLeft(Numeric.cleanHexPrefix(BigDecimal.valueOf(validUntil).toBigInteger().toString(16)), length, zero) +
                 IBan.padLeft(Numeric.cleanHexPrefix(lrcFee), length, zero) +

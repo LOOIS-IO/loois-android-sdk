@@ -83,7 +83,7 @@ public class OrderTest {
         Flowable.just(PRIVATE_KEY)
                 .map(s -> {
                     SubmitOrderParams submitOrderParams = Loois.order().createSubmitOrderParams(
-                            BABY_LPR_PROTOCAL_ADDRESS, BABY_LPR_DELEGATE_ADDRESS, s, orderInfo,
+                            BABY_LPR_PROTOCAL_ADDRESS, BABY_LPR_DELEGATE_ADDRESS, s.toLowerCase(), orderInfo,
                             true, 50, BABY_ORDER_WALLET_ADDRESS);
                     return Loois.client().looisSubmitOrder(submitOrderParams).sendAsync().get();
                 })

@@ -27,6 +27,7 @@ import org.loois.dapp.protocol.core.response.LooisDepth;
 import org.loois.dapp.protocol.core.response.LooisEstimateGasPrice;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFills;
+import org.loois.dapp.protocol.core.response.LooisFlexCancelOrder;
 import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
 import org.loois.dapp.protocol.core.response.LooisLRCSuggestCharge;
 import org.loois.dapp.protocol.core.response.LooisNotifyTransactionSubmitted;
@@ -290,4 +291,13 @@ public final class LooisApiImpl implements LooisApi {
         );
     }
 
+    @Override
+    public Request<?, LooisFlexCancelOrder> looisFlexCancelOrder(LooisFlexCancelOrder... params) {
+        return new Request<>(
+                Method.flexCancelOrder,
+                Arrays.asList(params),
+                web3jService,
+                LooisFlexCancelOrder.class
+        );
+    }
 }

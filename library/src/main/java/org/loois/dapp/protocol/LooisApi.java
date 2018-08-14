@@ -1,5 +1,6 @@
 package org.loois.dapp.protocol;
 
+import org.loois.dapp.Loois;
 import org.loois.dapp.protocol.core.params.CutoffParams;
 import org.loois.dapp.protocol.core.params.DepthParams;
 import org.loois.dapp.protocol.core.params.EstimatedAllocatedAllowanceParams;
@@ -24,6 +25,7 @@ import org.loois.dapp.protocol.core.response.LooisDepth;
 import org.loois.dapp.protocol.core.response.LooisEstimateGasPrice;
 import org.loois.dapp.protocol.core.response.LooisEstimatedAllocatedAllowance;
 import org.loois.dapp.protocol.core.response.LooisFills;
+import org.loois.dapp.protocol.core.response.LooisFlexCancelOrder;
 import org.loois.dapp.protocol.core.response.LooisFrozenLRCFee;
 import org.loois.dapp.protocol.core.response.LooisLRCSuggestCharge;
 import org.loois.dapp.protocol.core.response.LooisNotifyTransactionSubmitted;
@@ -44,6 +46,7 @@ import org.loois.dapp.protocol.core.response.LooisTransactions;
 import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.loois.dapp.protocol.core.response.LooisUnlockWallet;
 import org.web3j.protocol.core.Request;
+import org.web3j.protocol.core.Response;
 
 
 /**
@@ -96,4 +99,6 @@ public interface LooisApi {
     Request<?, LooisLRCSuggestCharge> looisLRCSuggestCharge(LRCSuggestChargeParams ...params);
 
     Request<?, LooisSearchLocalERC20Token> looisSearchLocalERC20Token(SearchLocalERC20TokenParams...params);
+
+    Request<?, LooisFlexCancelOrder> looisFlexCancelOrder(LooisFlexCancelOrder ...params);
 }
