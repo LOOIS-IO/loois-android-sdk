@@ -112,7 +112,7 @@ public class OrderTest {
         orderInfo.owner = mHDWallet.address;
         orderInfo.amountB = "100";
         orderInfo.amountS = String.valueOf(100 *  0.0002);
-        orderInfo.validateDuration = 86400 * 7;
+        orderInfo.validateDuration = 24 * 60 * 60;
         orderInfo.decimalB = supportedTokenB.decimals.toPlainString();
         orderInfo.decimalS = supportedTokenS.decimals.toPlainString();
         orderInfo.lrcDecimals = new BigDecimal("1000000000000000000");

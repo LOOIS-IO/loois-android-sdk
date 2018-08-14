@@ -90,7 +90,7 @@ public class OrderManager {
                 protocolAddress, delegateAddress,
                 orderInfo.owner, orderInfo.protocolS, orderInfo.protocolB, amountHexS, amountHexB,
                 validSince, orderInfo.validateDuration,
-                lrcFee, buyNoMoreThanAmountB, marginSplitPercentage,orderWalletAddress, v, r, s, powNonce, authAddress, finalPrivate
+                finalLrcFee, buyNoMoreThanAmountB, marginSplitPercentage,orderWalletAddress, v, r, s, powNonce, authAddress, finalPrivate
         );
     }
 
