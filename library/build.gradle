@@ -54,7 +54,7 @@ publish {
     userOrg = 'lhalcyon'//bintray.com用户名
     groupId = 'org.loois'//jcenter上的路径
     artifactId = 'android-sdk'//项目名称
-    publishVersion = '0.1.0-SNAPSHOT'//版本号
+    publishVersion = '0.1.0'//版本号
     desc = 'Android SDK for Ethereum Wallet & Loois Relay'
     website = 'http://loois.org'
 }
