@@ -33,7 +33,7 @@ import io.reactivex.Flowable;
  * Brief Desc : wallet manager
  * </pre>
  */
-public class InitWalletManager {
+public class WalletManager {
 
 
     /**
@@ -151,20 +151,5 @@ public class InitWalletManager {
                         }
                     }
                 });
-    }
-
-    // ---------------- singleton stuff --------------------------
-    public static InitWalletManager shared() {
-        return InitWalletManager.Holder.singleton;
-    }
-
-    private InitWalletManager() {
-
-    }
-
-    private static class Holder {
-
-        private static final InitWalletManager singleton = new InitWalletManager();
-
     }
 }

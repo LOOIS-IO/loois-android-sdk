@@ -5,6 +5,7 @@ import android.util.Log;
 import org.loois.dapp.manager.OrderManager;
 import org.loois.dapp.manager.TokenManager;
 import org.loois.dapp.manager.TransactionManager;
+import org.loois.dapp.manager.WalletManager;
 import org.loois.dapp.protocol.LooisConfig;
 import org.loois.dapp.protocol.LooisApi;
 import org.loois.dapp.protocol.LooisSocketApi;
@@ -34,6 +35,7 @@ public class Loois {
     private static TransactionManager transactionManager;
     private static TokenManager tokenManager;
     private static OrderManager orderManager;
+    private static WalletManager walletManager;
     private static Options options;
 
     private static boolean enableDebugLog = true;
@@ -113,6 +115,17 @@ public class Loois {
             }
         }
         return orderManager;
+    }
+
+    public static WalletManager wallet() {
+        if (walletManager == null) {
+            synchronized (Loois.class) {
+                if (walletManager == null) {
+                    walletManager = new WalletManager();
+                }
+            }
+        }
+        return walletManager;
     }
 
     public static void setDebugLogEnabled(boolean enabled) {

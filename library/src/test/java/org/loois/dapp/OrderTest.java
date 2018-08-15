@@ -2,7 +2,7 @@ package org.loois.dapp;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.loois.dapp.manager.InitWalletManager;
+import org.loois.dapp.manager.WalletManager;
 import org.loois.dapp.model.HDWallet;
 import org.loois.dapp.model.OrderInfo;
 import org.loois.dapp.protocol.Options;
@@ -47,7 +47,7 @@ public class OrderTest {
         options.setChainId(BABY_CHAIN_ID);
         Loois.initialize(options);
         try {
-            mHDWallet = InitWalletManager.shared().importPrivateKey(PRIVATE_KEY, PASSWORD);
+            mHDWallet = Loois.wallet().importPrivateKey(PRIVATE_KEY, PASSWORD);
             getSupportToken();
         } catch (CipherException e) {
             e.printStackTrace();

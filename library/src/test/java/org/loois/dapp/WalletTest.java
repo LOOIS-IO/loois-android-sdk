@@ -3,7 +3,7 @@ package org.loois.dapp;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.loois.dapp.manager.InitWalletManager;
+import org.loois.dapp.manager.WalletManager;
 import org.loois.dapp.utils.HDValidUtils;
 import org.loois.dapp.validation.MnemonicValidation;
 import org.web3j.utils.Numeric;
@@ -30,7 +30,7 @@ public class WalletTest {
 
     @Test
     public void testCreateMnemonic(){
-        String mnemonic = InitWalletManager.shared().generateMnemonic(Words.TWELVE, English.INSTANCE);
+        String mnemonic = Loois.wallet().generateMnemonic(Words.TWELVE, English.INSTANCE);
         System.out.println(mnemonic);
         Assert.assertEquals(MnemonicValidation.QUALIFIED,HDValidUtils.isValidMnemonic(mnemonic,English.INSTANCE));
     }

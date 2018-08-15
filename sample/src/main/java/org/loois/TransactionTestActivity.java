@@ -1,6 +1,5 @@
 package org.loois;
 
-import android.graphics.Path;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.loois.dapp.Loois;
-import org.loois.dapp.manager.InitWalletManager;
+import org.loois.dapp.manager.WalletManager;
 import org.loois.dapp.manager.LooisListener;
 import org.loois.dapp.model.HDWallet;
 import org.loois.dapp.protocol.Options;
@@ -51,7 +50,7 @@ public class TransactionTestActivity extends AppCompatActivity {
         options.setBaseUrl(BABY_BASE_URL);
         options.setChainId(BABY_CHAIN_ID);
         Loois.initialize(options);
-        InitWalletManager.shared().importPrivateKey(PRIVATE_KEY, PASSWORD, mHDWalletLooisListener);
+        WalletManager.shared().importPrivateKey(PRIVATE_KEY, PASSWORD, mHDWalletLooisListener);
     }
 
     private LooisListener<HDWallet> mHDWalletLooisListener = new LooisListener<HDWallet>() {
