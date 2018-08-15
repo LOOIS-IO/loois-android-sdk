@@ -201,3 +201,69 @@ Loois SDK实现了所有Loopring的[JSON_RPC](https://github.com/Loopring/relay/
     }
 
 ### SOCKET
+Loois SDK实现Loopring的所有[SocketIO-Events](https://github.com/Loopring/relay/blob/wallet_v2/LOOPRING_RELAY_API_SPEC_V2.md#socketio-events)。
+
+    public interface LooisSocketApi {
+
+        //Balance
+        void onBalance(String owner);
+        void offBalance();
+
+        //Pending中的Transaction
+        void onPendingTx(String owner);
+        void offPendingTx();
+
+        //市场价格
+        void onMarketCap(String currency);
+        void offMarketCap();
+
+        //市场深度
+        void onDepth(String market);
+        void offDepth();
+
+        //各大交易所某个市场数据
+        void onTickers(String market);
+        void offTickers();
+
+        //所有市场数据
+        void onLooisTickers();
+        void offLooisTickers();
+
+        //注册监听与取消监听
+        void registerBalanceListener(SocketListener listener);
+        void removeBalanceListener(SocketListener listener);
+
+        void registerPendingTxListener(SocketListener listener);
+        void removePendingTxListener(SocketListener listener);
+
+        void registerMarketCapListener(SocketListener listener);
+        void removeMarketCapListener(SocketListener listener);
+
+        void registerDepthListener(SocketListener listener);
+        void removeDepthListener(SocketListener listener);
+
+        void registerTickersListener(SocketListener listener);
+        void removeTickersListener(SocketListener listener);
+
+        void registerLooisTickersListener(SocketListener listener);
+        void removeLooisTickersListener(SocketListener listener);
+
+    }
+
+#### Socket使用示例
+    private void testSocketDepth() {
+        Loois.socket().onDepth("LRC-WETH");
+        Loois.socket().registerDepthListener(new SocketListener(){
+            @Override
+            public void onDepth(SocketDepth socketDepth) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(SocketTestActivity.this, socketDepth.getDepth().buy.get(0).get(0), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+
+### 高级功能
