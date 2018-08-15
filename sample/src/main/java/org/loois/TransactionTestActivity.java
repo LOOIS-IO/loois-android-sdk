@@ -50,7 +50,7 @@ public class TransactionTestActivity extends AppCompatActivity {
         options.setBaseUrl(BABY_BASE_URL);
         options.setChainId(BABY_CHAIN_ID);
         Loois.initialize(options);
-        WalletManager.shared().importPrivateKey(PRIVATE_KEY, PASSWORD, mHDWalletLooisListener);
+        Loois.wallet().importPrivateKey(PRIVATE_KEY, PASSWORD, mHDWalletLooisListener);
     }
 
     private LooisListener<HDWallet> mHDWalletLooisListener = new LooisListener<HDWallet>() {
