@@ -1,7 +1,6 @@
 package org.loois.dapp.protocol.core.params;
 
 import org.loois.dapp.common.Constants;
-import org.loois.dapp.protocol.Config;
 
 import java.math.BigDecimal;
 

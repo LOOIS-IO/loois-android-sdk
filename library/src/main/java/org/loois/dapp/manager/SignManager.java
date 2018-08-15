@@ -5,7 +5,7 @@ import org.loois.dapp.Loois;
 import org.loois.dapp.common.Params;
 import org.loois.dapp.model.HDWallet;
 import org.loois.dapp.model.OriginalOrder;
-import org.loois.dapp.protocol.Config;
+import org.loois.dapp.protocol.LooisConfig;
 import org.loois.dapp.protocol.core.params.NotifyTransactionSubmittedParams;
 import org.loois.dapp.utils.IBan;
 import org.web3j.abi.FunctionEncoder;
@@ -146,7 +146,7 @@ public class SignManager {
     private SignModel signApproveData(String tokenProtocol, HDWallet wallet, BigInteger nonce, BigInteger gasPriceGwei,
                                       BigInteger gasLimit, BigInteger value, String password) throws IOException, CipherException {
         Function function = new Function("approve",
-                Arrays.asList(new Address(Config.DELEGATE_ADDRESS), new Uint(value)),
+                Arrays.asList(new Address(Loois.getOptions().getDelegateAddress()), new Uint(value)),
                 Collections.emptyList());
         String data = FunctionEncoder.encode(function);
         BigInteger gasPriceWei = Convert.toWei(gasPriceGwei.toString(), Convert.Unit.GWEI).toBigInteger();
@@ -167,10 +167,12 @@ public class SignManager {
                                        HDWallet wallet,
                                        String password) throws Exception {
         String data = getCancelOrderMessage(sellTokenProtocol, buyTokenProtocol, order);
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.PROTOCOL_ADDRESS, data);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit,
+                Loois.getOptions().getProtocolAddress(), data);
         String signData = signData(rawTransaction, wallet, password);
         NotifyTransactionSubmittedParams params =
-                new NotifyTransactionSubmittedParams(null, nonce.intValue(), Config.PROTOCOL_ADDRESS, gasPrice, gasLimit, data, wallet.address);
+                new NotifyTransactionSubmittedParams(null, nonce.intValue(),
+                        Loois.getOptions().getProtocolAddress(), gasPrice, gasLimit, data, wallet.address);
         return new SignModel(params, signData);
 
     }
@@ -184,10 +186,10 @@ public class SignManager {
                                                HDWallet wallet,
                                                String password) throws Exception {
         String data = abiCancelTokenPairOrder(protocolB, protocolS);
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.PROTOCOL_ADDRESS, data);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Loois.getOptions().getProtocolAddress(), data);
         String signData = signData(rawTransaction, wallet, password);
         NotifyTransactionSubmittedParams params =
-                new NotifyTransactionSubmittedParams(null, nonce.intValue(), Config.PROTOCOL_ADDRESS, gasPrice, gasLimit, data, wallet.address);
+                new NotifyTransactionSubmittedParams(null, nonce.intValue(), Loois.getOptions().getProtocolAddress(), gasPrice, gasLimit, data, wallet.address);
         return new SignModel(params, signData);
     }
 
@@ -220,11 +222,11 @@ public class SignManager {
                 nonce,
                 gasPrice,
                 gasLimit,
-                Config.PROTOCOL_ADDRESS,
+                Loois.getOptions().getProtocolAddress(),
                 data);
         String signData = signData(rawTransaction, wallet, password);
         NotifyTransactionSubmittedParams params =
-                new NotifyTransactionSubmittedParams(null, nonce.intValue(), Config.PROTOCOL_ADDRESS, gasPrice, gasLimit, data, wallet.address);
+                new NotifyTransactionSubmittedParams(null, nonce.intValue(), Loois.getOptions().getProtocolAddress(), gasPrice, gasLimit, data, wallet.address);
         return new SignModel(params, signData);
     }
 
@@ -309,7 +311,8 @@ public class SignManager {
                 Arrays.asList(new Uint8(param), new Utf8String(address)),
                 Collections.emptyList());
         String data = FunctionEncoder.encode(function);
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit, Config.BIND_CONTRACT_ADDRESS, data);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, gasPrice, gasLimit,
+                Loois.getOptions().getBindContractAddress(), data);
         String sign = signData(rawTransaction, wallet, password);
         NotifyTransactionSubmittedParams params =
                 new NotifyTransactionSubmittedParams(null, nonce.intValue(), bindContractAddress, gasPrice, gasLimit, data, wallet.address);
@@ -362,7 +365,7 @@ public class SignManager {
                             String password) throws IOException, CipherException {
 
         Credentials credentials = Credentials.create(LWallet.decrypt(password, wallet.getWalletFile()));
-        byte[] signMessage = TransactionEncoder.signMessage(rawTransaction, Loois.getChainId(), credentials);
+        byte[] signMessage = TransactionEncoder.signMessage(rawTransaction, Loois.getOptions().getChainId(), credentials);
         return Numeric.toHexString(signMessage);
     }
 

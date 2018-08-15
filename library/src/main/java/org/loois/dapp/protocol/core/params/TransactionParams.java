@@ -1,10 +1,11 @@
 package org.loois.dapp.protocol.core.params;
 
-import org.loois.dapp.protocol.Config;
+import org.loois.dapp.Loois;
+import org.loois.dapp.protocol.LooisConfig;
 
 public class TransactionParams {
     public String owner;
-    public String delegateAddress = Config.DELEGATE_ADDRESS;
+    public String delegateAddress = Loois.getOptions().getDelegateAddress();
     public String thxHash;
     public String symbol;
     public String status;

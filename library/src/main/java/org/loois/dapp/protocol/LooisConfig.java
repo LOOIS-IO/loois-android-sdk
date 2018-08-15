@@ -1,6 +1,12 @@
 package org.loois.dapp.protocol;
 
-public class Config {
+import org.web3j.tx.ChainId;
+
+public class LooisConfig {
+
+    public static final String BASE_URL = "http://api.loois.io/";
+
+    public static final String ETH_URL = "https://relay1.loopring.io/";
 
     /**
      * The loopring TokenTransferDelegate Protocol.
@@ -12,15 +18,12 @@ public class Config {
      */
     public static final String PROTOCOL_ADDRESS = "0x8d8812b72d1e4ffCeC158D25f56748b7d67c1e78";
 
-    public static final String WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-
     public static final String BIND_CONTRACT_ADDRESS = "0xbf78B6E180ba2d1404c92Fc546cbc9233f616C42";
-    /**
-     *
-     */
+
+    public static final String ORDER_WALLET_ADDRESS = "0x1D3e0DDFdc3D597C4f42b8a0F17d4e8C866B3485";
+
     public static final String CONTRACT_VERSION = "v1.51";
 
-    public static final String BASE_URL = "http://api.loois.io/";
+    public static final byte CHAIN_ID = ChainId.MAINNET;
 
-//    public static final String BASE_URL = "https://relay1.loopring.io/socket.io/";
 }

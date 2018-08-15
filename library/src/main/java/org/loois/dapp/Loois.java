@@ -5,9 +5,10 @@ import android.util.Log;
 import org.loois.dapp.manager.OrderManager;
 import org.loois.dapp.manager.TokenManager;
 import org.loois.dapp.manager.TransactionManager;
-import org.loois.dapp.protocol.Config;
+import org.loois.dapp.protocol.LooisConfig;
 import org.loois.dapp.protocol.LooisApi;
 import org.loois.dapp.protocol.LooisSocketApi;
+import org.loois.dapp.protocol.Options;
 import org.loois.dapp.protocol.core.LooisApiImpl;
 import org.loois.dapp.protocol.core.LooisSocketImpl;
 import org.web3j.protocol.Web3j;
@@ -33,19 +34,18 @@ public class Loois {
     private static TransactionManager transactionManager;
     private static TokenManager tokenManager;
     private static OrderManager orderManager;
+    private static Options options;
 
     private static boolean enableDebugLog = true;
-    private static byte sChainId = ChainId.MAINNET;
-
 
 
     public static void initialize() {
-        initialize(Config.BASE_URL, ChainId.MAINNET);
+        initialize(new Options());
     }
 
-    public static void initialize(String url, byte chainId) {
-        httpService = new HttpService(url);
-        sChainId = chainId;
+    public static void initialize(Options opt) {
+        options = opt;
+        httpService = new HttpService(options.getBaseUrl());
     }
 
 
@@ -125,7 +125,7 @@ public class Loois {
         }
     }
 
-    public static byte getChainId() {
-        return sChainId;
+    public static Options getOptions() {
+        return options;
     }
 }

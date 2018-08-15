@@ -1,12 +1,13 @@
 package org.loois.dapp.protocol.core.socket;
 
 
-import org.loois.dapp.protocol.Config;
+import org.loois.dapp.Loois;
+import org.loois.dapp.protocol.LooisConfig;
 
 public class DepthBody {
 
     public String market;
-    public String delegateAddress = Config.DELEGATE_ADDRESS;
+    public String delegateAddress = Loois.getOptions().getDelegateAddress();
     public int length = 20;
 
     public DepthBody(String market) {

@@ -3,7 +3,8 @@ package org.loois.dapp.protocol.core;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.loois.dapp.protocol.Config;
+import org.loois.dapp.Loois;
+import org.loois.dapp.protocol.LooisConfig;
 import org.loois.dapp.protocol.LooisSocketApi;
 import org.loois.dapp.protocol.core.socket.DepthBody;
 import org.loois.dapp.protocol.core.socket.MarketCapBody;
@@ -65,7 +66,7 @@ public class LooisSocketImpl implements LooisSocketApi {
         opts.callFactory = okHttpClient;
         opts.webSocketFactory = okHttpClient;
         try {
-            socket = IO.socket(Config.BASE_URL, opts);
+            socket = IO.socket(Loois.getOptions().getBaseUrl(), opts);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

@@ -1,14 +1,15 @@
 package org.loois.dapp.protocol.core.params;
 
-import org.loois.dapp.protocol.Config;
+import org.loois.dapp.Loois;
+import org.loois.dapp.protocol.LooisConfig;
 
 public class FrozenLRCFeeParams {
 
     public String owner;
 
-    public String contractVersion = Config.CONTRACT_VERSION;
+    public String contractVersion = Loois.getOptions().getContractVersion();
 
-    public String delegateAddress = Config.DELEGATE_ADDRESS;
+    public String delegateAddress = Loois.getOptions().getDelegateAddress();
 
     public FrozenLRCFeeParams(String owner) {
         this.owner = owner;

@@ -1,5 +1,6 @@
 package org.loois;
 
+import android.graphics.Path;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import org.loois.dapp.Loois;
 import org.loois.dapp.manager.InitWalletManager;
 import org.loois.dapp.manager.LooisListener;
 import org.loois.dapp.model.HDWallet;
+import org.loois.dapp.protocol.Options;
 import org.loois.dapp.protocol.core.response.SupportedToken;
 
 import java.math.BigDecimal;
@@ -45,7 +47,10 @@ public class TransactionTestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaction);
         mAddressText = findViewById(R.id.address);
-        Loois.initialize(BABY_BASE_URL, BABY_CHAIN_ID);
+        Options options = new Options();
+        options.setBaseUrl(BABY_BASE_URL);
+        options.setChainId(BABY_CHAIN_ID);
+        Loois.initialize(options);
         InitWalletManager.shared().importPrivateKey(PRIVATE_KEY, PASSWORD, mHDWalletLooisListener);
     }
 

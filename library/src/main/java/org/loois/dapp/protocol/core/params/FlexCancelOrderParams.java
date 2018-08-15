@@ -1,11 +1,12 @@
 package org.loois.dapp.protocol.core.params;
 
-import org.loois.dapp.protocol.Config;
+import org.loois.dapp.Loois;
+import org.loois.dapp.protocol.LooisConfig;
 
 public class FlexCancelOrderParams {
 
-    public String contractVersion = Config.CONTRACT_VERSION;
-    public String delegateAddress = Config.DELEGATE_ADDRESS;
+    public String contractVersion = Loois.getOptions().getContractVersion();
+    public String delegateAddress = Loois.getOptions().getDelegateAddress();
 
     public String orderHash;
     public int cutoffTime;

@@ -7,13 +7,10 @@ import org.loois.dapp.Loois;
 import org.loois.dapp.common.Params;
 import org.loois.dapp.model.HDWallet;
 import org.loois.dapp.model.OriginalOrder;
-import org.loois.dapp.protocol.Config;
 import org.loois.dapp.protocol.core.params.NotifyTransactionSubmittedParams;
-import org.loois.dapp.rx.LooisError;
 import org.loois.dapp.rx.LooisSubscriber;
 import org.loois.dapp.rx.RxResultHelper;
 import org.loois.dapp.rx.ScheduleCompat;
-import org.reactivestreams.Publisher;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Wallet;
@@ -87,7 +84,7 @@ public class TransactionManager {
                                    BigDecimal amountEther,
                                    String password,
                                    HDWallet wallet,
-                                   LooisListener listener) {
+                                   LooisListener<String> listener) {
         Flowable.just(to)
                 .map((Function<String, Response<String>>) s -> {
                     SignManager.SignModel signModel = SignManager.shared()
@@ -219,7 +216,7 @@ public class TransactionManager {
                                           HDWallet wallet,
                                           String password,
                                           BigDecimal amountEther,
-                                          LooisListener listener) {
+                                          LooisListener<String> listener) {
         Flowable.just(password)
                 .map((Function<String, Response<String>>) s -> {
                     SignManager.SignModel signModel = SignManager.shared().signDeposit(protocolAddress, gasPriceGwei, gasLimit, nonce, wallet, password, amountEther);

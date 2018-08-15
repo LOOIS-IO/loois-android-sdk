@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.loois.dapp.manager.InitWalletManager;
 import org.loois.dapp.model.HDWallet;
 import org.loois.dapp.model.OrderInfo;
+import org.loois.dapp.protocol.Options;
 import org.loois.dapp.protocol.core.params.SubmitOrderParams;
 import org.loois.dapp.protocol.core.params.SupportedTokensParams;
 import org.loois.dapp.protocol.core.response.SupportedToken;
@@ -41,7 +42,10 @@ public class OrderTest {
     @Before
     public void on() {
         asyncToSync();
-        Loois.initialize(BABY_BASE_URL, BABY_CHAIN_ID);
+        Options options = new Options();
+        options.setBaseUrl(BABY_BASE_URL);
+        options.setChainId(BABY_CHAIN_ID);
+        Loois.initialize(options);
         try {
             mHDWallet = InitWalletManager.shared().importPrivateKey(PRIVATE_KEY, PASSWORD);
             getSupportToken();
