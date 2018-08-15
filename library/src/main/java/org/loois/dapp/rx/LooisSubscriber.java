@@ -28,6 +28,5 @@ public abstract class LooisSubscriber<T> implements FlowableSubscriber<T>{
 
     @Override
     public void onComplete() {
-
     }
 }
