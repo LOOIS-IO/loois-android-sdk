@@ -24,7 +24,7 @@ public class IBan {
         return null;
     }
 
-    /**
+    /*
      *
      * String右边补 char
      */
@@ -41,7 +41,7 @@ public class IBan {
         }
         return new String(charr);
     }
-    /**
+    /*
      *
      * String左边补 char
      */

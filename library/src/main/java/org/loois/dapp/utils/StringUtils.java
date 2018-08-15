@@ -5,7 +5,7 @@ import org.loois.dapp.common.Constants;
 public class StringUtils {
 
 
-    /**
+    /*
      * 合并byte数组
      */
     public static byte[] unitByteArray(byte[] byte1,byte[] byte2){

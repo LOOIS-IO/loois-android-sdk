@@ -111,7 +111,7 @@ public class SignManager {
     }
 
 
-    /**
+    /*
      * If token's allowance is 0, it means token never authenticated before, we need to sign a big value.
      *
      * @param tokenProtocol Sell token's protocol owner
@@ -132,7 +132,7 @@ public class SignManager {
         return signApproveData(tokenProtocol, wallet, nonce, gasPrice, gasLimit, value, password);
     }
 
-    /**
+    /*
      * If token's allowance is not 0, but still not cover order amount, we need to authenticate twice:
      * 1. Call signApproveZero to sign 0 and send the signed data.
      * 2. Call signApproveMax to sign a big value and send the signed data.

@@ -31,14 +31,19 @@ import io.reactivex.functions.Function;
 public class OrderManager {
 
 
-    /**
+    /*
+    *
+    *
+    * /**
      * Create submit order params.
      * https://github.com/Loopring/relay/blob/wallet_v2/LOOPRING_RELAY_API_SPEC_V2.md#loopring_submitorder
      *
-     * @param privateKey
-     * @return
-     * @throws Exception
-     */
+     * @param privateKey privateKey
+     * @return submit params
+     * @throws Exception common exception
+     *
+    *
+    * */
     public SubmitOrderParams createSubmitOrderParams(String protocolAddress,
                                                      String delegateAddress,
                                                      String privateKey,
@@ -128,7 +133,7 @@ public class OrderManager {
 
 
 
-    /**
+    /*
      * Submit an order.
      * @param orderInfo User order information
      */

@@ -25,6 +25,11 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
 }
 
 dependencies {
@@ -48,7 +53,7 @@ dependencies {
 publish {
     userOrg = 'lhalcyon'//bintray.com用户名
     groupId = 'org.loois'//jcenter上的路径
-    artifactId = 'sdk'//项目名称
+    artifactId = 'android-sdk'//项目名称
     publishVersion = '0.1.0-SNAPSHOT'//版本号
     desc = 'Android SDK for Ethereum Wallet & Loois Relay'
     website = 'http://loois.org'

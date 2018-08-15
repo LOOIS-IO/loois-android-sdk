@@ -7,7 +7,6 @@ import org.loois.dapp.Loois;
 import org.loois.dapp.model.HDWallet;
 import org.loois.dapp.rx.LooisSubscriber;
 import org.loois.dapp.rx.ScheduleCompat;
-import org.reactivestreams.Publisher;
 import org.spongycastle.util.encoders.Hex;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.ECKeyPair;
@@ -26,7 +25,6 @@ import io.github.novacrypto.bip39.WordList;
 import io.github.novacrypto.bip39.Words;
 import io.github.novacrypto.bip44.AddressIndex;
 import io.reactivex.Flowable;
-import io.reactivex.functions.Function;
 
 /**
  * <pre>
@@ -95,6 +93,7 @@ public class InitWalletManager {
      * @param password the password user input  用户输入的密码
      * @param addressIndex {@link AddressIndex} derive owner 派生地址
      * @return wallet 钱包
+     * @throws CipherException cipher exception
      */
     public HDWallet generateWallet(String mnemonic,
                                    String password,
