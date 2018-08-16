@@ -5,7 +5,7 @@
 
 ### 集成步骤
 #### 1. 添加依赖
-
+    compile 'org.loois:android-sdk:0.1.0'
 #### 2. 初始SDK
 通常在Application的onCreate方法中调用initialize方法完成Loois SDK的初始化：
 
