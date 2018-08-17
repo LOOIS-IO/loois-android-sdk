@@ -1,5 +1,6 @@
 package org.loois.dapp.protocol.core;
 
+import org.loois.dapp.Loois;
 import org.loois.dapp.protocol.LooisApi;
 import org.loois.dapp.protocol.core.params.BalanceParams;
 import org.loois.dapp.protocol.core.params.CutoffParams;
@@ -47,6 +48,7 @@ import org.loois.dapp.protocol.core.response.LooisTransactions;
 import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.loois.dapp.protocol.core.response.LooisUnlockWallet;
 import org.loois.dapp.protocol.core.response.Market;
+import org.loois.dapp.protocol.core.response.PriceQuoteResult;
 import org.loois.dapp.rx.LooisSubscriber;
 import org.loois.dapp.rx.RxResultHelper;
 import org.web3j.protocol.Web3jService;
@@ -199,6 +201,13 @@ public final class LooisApiImpl implements LooisApi {
                 web3jService,
                 LooisPriceQuote.class
         );
+    }
+
+    @Override
+    public Flowable<PriceQuoteResult> looisPriceQuoteFlowable(PriceQuoteParams... params) {
+        return Flowable.just(params)
+                .map(priceQuoteParams -> Loois.client().looisPriceQuote(params).send())
+                .compose(RxResultHelper.handleResult());
     }
 
     @Override

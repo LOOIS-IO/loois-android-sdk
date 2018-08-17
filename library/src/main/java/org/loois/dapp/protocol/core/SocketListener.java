@@ -26,4 +26,5 @@ public class SocketListener {
 
     public void onLooisTickers(SocketLooisTickers socketLoopringTickers) {
     }
+
 }

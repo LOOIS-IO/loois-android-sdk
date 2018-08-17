@@ -46,6 +46,7 @@ import org.loois.dapp.protocol.core.response.LooisTransactions;
 import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.loois.dapp.protocol.core.response.LooisUnlockWallet;
 import org.loois.dapp.protocol.core.response.Market;
+import org.loois.dapp.protocol.core.response.PriceQuoteResult;
 import org.web3j.protocol.core.Request;
 import org.web3j.protocol.core.Response;
 
@@ -107,6 +108,9 @@ public interface LooisApi {
 
     Request<?, LooisFlexCancelOrder> looisFlexCancelOrder(LooisFlexCancelOrder ...params);
 
+
+    //Flowable API
     Flowable<List<Market>> looisTickerFlowable();
+    Flowable<PriceQuoteResult> looisPriceQuoteFlowable(PriceQuoteParams... params);
 
 }
