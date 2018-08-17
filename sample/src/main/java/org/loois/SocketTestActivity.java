@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import org.loois.dapp.Loois;
+import org.loois.dapp.protocol.Options;
 import org.loois.dapp.protocol.core.LooisSocketImpl;
 import org.loois.dapp.protocol.core.SocketListener;
 import org.loois.dapp.protocol.core.socket.SocketBalance;
@@ -24,17 +26,18 @@ public class SocketTestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_socket_test);
+        Loois.initialize();
 
 //        testSocketBalance();
 
-//        testSocketMarketcap();
+        testSocketMarketcap();
 
 //        testSocketDepth();
 
 //        testSocketTickers();
 
 
-        testSocketLooisTickers();
+//        testSocketLooisTickers();
     }
 
     private void testSocketLooisTickers() {
@@ -55,9 +58,8 @@ public class SocketTestActivity extends AppCompatActivity {
 
 
     private void testSocketTickers() {
-        LooisSocketImpl socket = new LooisSocketImpl();
-        socket.onTickers("LRC-WETH");
-        socket.registerTickersListener(new SocketListener(){
+        Loois.socket().onTickers("LRC-WETH");
+        Loois.socket().registerTickersListener(new SocketListener(){
             @Override
             public void onTickers(SocketTickers socketTickers) {
                 runOnUiThread(new Runnable() {
@@ -88,9 +90,8 @@ public class SocketTestActivity extends AppCompatActivity {
     }
 
     private void testSocketMarketcap() {
-        LooisSocketImpl socket = new LooisSocketImpl();
-        socket.onMarketCap("CNY");
-        socket.registerMarketCapListener(new SocketListener(){
+        Loois.socket().onMarketCap("USD");
+        Loois.socket().registerMarketCapListener(new SocketListener(){
             @Override
             public void onMarketCap(SocketMarketCap result) {
                 runOnUiThread(new Runnable() {

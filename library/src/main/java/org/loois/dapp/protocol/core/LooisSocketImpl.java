@@ -191,6 +191,7 @@ public class LooisSocketImpl implements LooisSocketApi {
             socket.on(SocketMethod.marketcap_res, args -> {
                 String jsonString = (String) args[0];
                 try {
+                    Loois.log(jsonString);
                     SocketMarketCap socketMarketCap = objectMapper.readValue(jsonString, SocketMarketCap.class);
                     ArrayList<SocketListener> listeners = eventListeners.get(SocketMethod.marketcap_res);
                     if (listeners != null) {
