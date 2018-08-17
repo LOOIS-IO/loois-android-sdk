@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
+//apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 26
@@ -38,23 +38,23 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'io.github.novacrypto:BIP44:0.0.3'
-    implementation 'io.github.novacrypto:BIP39:0.1.9'
-    implementation 'com.lhalcyon:bip32:1.0.0'
-    implementation 'com.lambdaworks:scrypt:1.4.0'
+    api 'io.github.novacrypto:BIP44:0.0.3'
+    api 'io.github.novacrypto:BIP39:0.1.9'
+    api 'com.lhalcyon:bip32:1.0.0'
+    api 'com.lambdaworks:scrypt:1.4.0'
     api 'org.web3j:core:3.3.1-android'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    implementation ('io.socket:socket.io-client:1.0.0') {
+    api 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    api ('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'
     }
 
 }
 
-publish {
-    userOrg = 'lhalcyon'//bintray.com用户名
-    groupId = 'org.loois'//jcenter上的路径
-    artifactId = 'android-sdk'//项目名称
-    publishVersion = '0.1.0'//版本号
-    desc = 'Android SDK for Ethereum Wallet & Loois Relay'
-    website = 'http://loois.org'
-}
+//publish {
+//    userOrg = 'lhalcyon'//bintray.com用户名
+//    groupId = 'org.loois'//jcenter上的路径
+//    artifactId = 'android-sdk'//项目名称
+//    publishVersion = '0.1.0'//版本号
+//    desc = 'Android SDK for Ethereum Wallet & Loois Relay'
+//    website = 'http://loois.org'
+//}

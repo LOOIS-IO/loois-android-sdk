@@ -335,6 +335,7 @@ public class LooisSocketImpl implements LooisSocketApi {
             try {
                 SocketLooisTickers socketLooisTickers = objectMapper.readValue(jsonString, SocketLooisTickers.class);
                 ArrayList<SocketListener> listeners = eventListeners.get(SocketMethod.loopringTickers_res);
+                Loois.log("onLooisTickers res " + jsonString);
                 if (listeners != null) {
                     for (SocketListener listener: listeners) {
                         listener.onLooisTickers(socketLooisTickers);

@@ -1,5 +1,6 @@
 package org.loois.dapp.rx;
 
+import org.loois.dapp.Loois;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.FlowableSubscriber;
@@ -28,5 +29,6 @@ public abstract class LooisSubscriber<T> implements FlowableSubscriber<T>{
 
     @Override
     public void onComplete() {
+        Loois.log("onComplete");
     }
 }

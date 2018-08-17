@@ -40,6 +40,8 @@ public class Loois {
 
     private static boolean enableDebugLog = true;
 
+    private static final String RPC_V2 = "rpc/v2/";
+
 
     public static void initialize() {
         initialize(new Options());
@@ -47,7 +49,7 @@ public class Loois {
 
     public static void initialize(Options opt) {
         options = opt;
-        httpService = new HttpService(options.getBaseUrl());
+        httpService = new HttpService(options.getBaseUrl() + RPC_V2);
     }
 
 

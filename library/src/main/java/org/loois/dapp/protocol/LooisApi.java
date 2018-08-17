@@ -45,8 +45,13 @@ import org.loois.dapp.protocol.core.response.LooisTickers;
 import org.loois.dapp.protocol.core.response.LooisTransactions;
 import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.loois.dapp.protocol.core.response.LooisUnlockWallet;
+import org.loois.dapp.protocol.core.response.Market;
 import org.web3j.protocol.core.Request;
 import org.web3j.protocol.core.Response;
+
+import java.util.List;
+
+import io.reactivex.Flowable;
 
 
 /**
@@ -101,4 +106,7 @@ public interface LooisApi {
     Request<?, LooisSearchLocalERC20Token> looisSearchLocalERC20Token(SearchLocalERC20TokenParams...params);
 
     Request<?, LooisFlexCancelOrder> looisFlexCancelOrder(LooisFlexCancelOrder ...params);
+
+    Flowable<List<Market>> looisTickerFlowable();
+
 }

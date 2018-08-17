@@ -21,6 +21,7 @@ import org.loois.dapp.protocol.core.params.TickersParams;
 import org.loois.dapp.protocol.core.params.TransactionParams;
 import org.loois.dapp.protocol.core.params.TrendParams;
 import org.loois.dapp.protocol.core.params.UnlockWalletParams;
+import org.loois.dapp.protocol.core.response.BalanceResult;
 import org.loois.dapp.protocol.core.response.LooisBalance;
 import org.loois.dapp.protocol.core.response.LooisCutoff;
 import org.loois.dapp.protocol.core.response.LooisDepth;
@@ -45,11 +46,21 @@ import org.loois.dapp.protocol.core.response.LooisTickers;
 import org.loois.dapp.protocol.core.response.LooisTransactions;
 import org.loois.dapp.protocol.core.response.LooisTrend;
 import org.loois.dapp.protocol.core.response.LooisUnlockWallet;
+import org.loois.dapp.protocol.core.response.Market;
+import org.loois.dapp.rx.LooisSubscriber;
+import org.loois.dapp.rx.RxResultHelper;
 import org.web3j.protocol.Web3jService;
 import org.web3j.protocol.core.Request;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.functions.Function;
 
 
 public final class LooisApiImpl implements LooisApi {
@@ -60,6 +71,13 @@ public final class LooisApiImpl implements LooisApi {
         this.web3jService = web3jService;
     }
 
+
+    public Flowable<BalanceResult> looisBalanceFlowable(BalanceParams... params) {
+        return Flowable.just(params)
+                .map(balanceParams -> looisBalance(params).send())
+                .compose(RxResultHelper.handleResult());
+    }
+
     @Override
     public Request<?, LooisBalance> looisBalance(BalanceParams... params) {
         return new Request<>(
@@ -68,6 +86,12 @@ public final class LooisApiImpl implements LooisApi {
                 web3jService,
                 LooisBalance.class
         );
+    }
+
+    public Flowable<String> looisSubmitOrderFlowable(SubmitOrderParams... params) {
+        return Flowable.just(params)
+                .map(submitOrderParams -> looisSubmitOrder(submitOrderParams).send())
+                .compose(RxResultHelper.handleResult());
     }
 
     @Override
@@ -98,6 +122,13 @@ public final class LooisApiImpl implements LooisApi {
                 web3jService,
                 LooisDepth.class
         );
+    }
+
+    @Override
+    public Flowable<List<Market>> looisTickerFlowable() {
+        return Flowable.create((FlowableOnSubscribe<LooisTicker>) emitter
+                -> emitter.onNext(looisTicker().send()), BackpressureStrategy.ERROR)
+                .compose(RxResultHelper.handleResult());
     }
 
     @Override
